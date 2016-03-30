@@ -1,3 +1,4 @@
+archiveAutoIncrement = 1;
 window.monitor = true;
 archive = {};
 tabsMappings = {};
@@ -11,12 +12,13 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 
 function logRequest(details) {
 	if(details.type == "main_frame") {
-		tabsMappings[details.tabId] = {'initialURL': details.url};
-		if(!(details.url in archive)) archive[details.url] = {'requests': []}
+		archive[archiveAutoIncrement] = {'rootRequestURL': details.url, 'requests': []};
+		tabsMappings[details.tabId] = {'rootRequestId': archiveAutoIncrement};
+		archiveAutoIncrement++;
 	}
 	if(details.tabId in tabsMappings) {
-		initialURL = tabsMappings[details.tabId].initialURL;
-		archive[initialURL].requests.push(details);
-		addRequestNode(initialURL, details);
+		var ID = tabsMappings[details.tabId].rootRequestId;
+		archive[ID].requests.push(details);
+		addRequestNode(archive[ID].rootRequestURL, details);
 	}
 }

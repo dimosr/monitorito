@@ -1,4 +1,4 @@
-autoIncrement = 1;
+nodesAutoIncrement = 1;
 graph = {};
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		document.getElementById('node_url').innerHTML = nodes._data[nodeId].title;
 	});
 	network.on("deselectNode", function(eventParams) {
-		nodeId = eventParams.nodes[0];
 		document.getElementById('node_url').innerHTML = "";
 	});
 
@@ -48,7 +47,7 @@ function createGraphNode(parsedRequestUrl, isRootRequest) {
 	var nodeSize = isRootRequest ? 40 : 20;
 	var faviconURL = parsedRequestUrl.protocol + "//" + parsedRequestUrl.host + "/favicon.ico";
 	nodes.add({
-		id: autoIncrement, 
+		id: nodesAutoIncrement, 
 		shape: 'circularImage', 
 		size: nodeSize, 
 		image: faviconURL,
@@ -58,8 +57,8 @@ function createGraphNode(parsedRequestUrl, isRootRequest) {
 		'color.highlight.border': '#CCC6E2', 
 		title: parsedRequestUrl.hostname
 	});
-	graph[parsedRequestUrl.hostname] = {ID: autoIncrement, adjacent: {}};
-	autoIncrement++;
+	graph[parsedRequestUrl.hostname] = {ID: nodesAutoIncrement, adjacent: {}};
+	nodesAutoIncrement++;
 }
 
 function existsEdge(fromParsedRequestUrl, toParsedRequestUrl) {
