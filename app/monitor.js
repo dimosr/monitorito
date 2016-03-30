@@ -19,9 +19,9 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 
 function logRequest(details) {
 	if(tabsMappings.hasOwnProperty(details.tabId)) {
-		addRequestNode(details)
 		initialURL = tabsMappings[details.tabId].initialURL;
 		archive[initialURL].requests.push(details);
+		addRequestNode(initialURL, details);
 	} 
 	//else console.log(details);	//irrelevant requests (Chrome functionalities)
 }
