@@ -19,7 +19,7 @@ function addRequestNode(rootRequest, request) {
 	var parsedRootRequestUrl = parseURL(rootRequest);
 	var parsedRequestUrl = parseURL(request.url);
 
-	if(!graph.hasOwnProperty(parsedRequestUrl.hostname)) {
+	if(!(parsedRequestUrl.hostname in graph)) {
 		createGraphNode(parsedRequestUrl);
 	}
 
