@@ -20,7 +20,7 @@ function addRequestNode(rootRequest, request) {
 	var parsedRequestUrl = parseURL(request.url);
 
 	if(!(parsedRequestUrl.hostname in graph)) {
-		createGraphNode(parsedRequestUrl);
+		createGraphNode(parsedRequestUrl, request.type == "main_frame");
 	}
 
 	if(!sameDomain(parsedRootRequestUrl, parsedRequestUrl)) {
@@ -31,12 +31,13 @@ function addRequestNode(rootRequest, request) {
 
 }
 
-function createGraphNode(parsedRequestUrl) {
+function createGraphNode(parsedRequestUrl, isRootRequest) {
+	var nodeSize = isRootRequest ? 40 : 20;
 	var faviconURL = parsedRequestUrl.protocol + "//" + parsedRequestUrl.host + "/favicon.ico";
 	nodes.add({
 		id: autoIncrement, 
 		shape: 'circularImage', 
-		size: 25, 
+		size: nodeSize, 
 		image: faviconURL,
 		brokenImage: 'resources/img/default_node_img.jpg', 
 		borderWidth: 5,
@@ -57,7 +58,9 @@ function createEdgeBetweenNodes(fromParsedRequestUrl, toParsedRequestUrl) {
 	fromNodeId = graph[fromParsedRequestUrl.hostname].ID;
 	toNodeId = graph[toParsedRequestUrl.hostname].ID;
 	edges.add({
-		'arrows.to': {enabled: true, scaleFactor: 2},
+		arrows: {
+			to: {scaleFactor: 1}
+		},
 		from: fromNodeId,
 		to: toNodeId,
 		width: 3
