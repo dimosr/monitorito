@@ -1,3 +1,11 @@
+#main-container {
+	margin: 1%;
+}
+
 #graph {
 	border: 2px solid black;
+}
+
+#node-widget .name {
+	text-align: center;
 }

@@ -13,7 +13,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	var options = {};
 
 	var network = new vis.Network(container, data, options);
+
+	network.on("selectNode", function(eventParams) {
+		nodeId = eventParams.nodes[0];
+		document.getElementById('node_url').innerHTML = nodes._data[nodeId].title;
+	});
+	network.on("deselectNode", function(eventParams) {
+		nodeId = eventParams.nodes[0];
+		document.getElementById('node_url').innerHTML = "";
+	});
+
+
 });
+
+
 
 function addRequestNode(rootRequest, request) {
 	var parsedRootRequestUrl = parseURL(rootRequest);

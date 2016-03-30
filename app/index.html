@@ -1,5 +1,7 @@
 <html>
 	<head>
+		<link rel="stylesheet" href="lib/foundation/css/foundation.min.css">
+		<script src="lib/foundation/js/foundation.min.js"></script>
 		<script src="monitor.js"></script>
 		<script src="lib/vis/vis.min.js"></script>
 		<link href="lib/vis/vis.min.css" rel="stylesheet" type="text/css" />
@@ -9,7 +11,15 @@
 	</head>
 
 	<body>
-		<div id="graph">
+		<div id="main-container" class="row" >
+			<div id="graph" class="columns large-9">
+			</div>
+			<div id="node-widget" class="columns large-3">
+				<div class="row">
+					<div class="columns large-6 name">URL: </div>
+					<div id="node_url" class="columns large-6 value"></div>
+				</div>
+			</div>
 		</div>
 		
 	</body>
