@@ -45,7 +45,7 @@ function addRequestNode(rootRequest, request) {
 
 function createGraphNode(parsedRequestUrl, isRootRequest) {
 	var nodeSize = isRootRequest ? 40 : 20;
-	var faviconURL = parsedRequestUrl.protocol + "//" + parsedRequestUrl.host + "/favicon.ico";
+	var faviconURL = "http://www.google.com/s2/favicons?domain=" + parsedRequestUrl.host;
 	nodes.add({
 		id: nodesAutoIncrement, 
 		shape: 'circularImage', 
