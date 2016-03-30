@@ -37,7 +37,7 @@ function addRequestNode(rootRequest, request) {
 
 	if(!sameDomain(parsedRootRequestUrl, parsedRequestUrl)) {
 		if(!existsEdge(parsedRootRequestUrl, parsedRequestUrl)) {
-			createEdgeBetweenNodes(parsedRootRequestUrl, parsedRequestUrl);
+			createDependencyEdge(parsedRootRequestUrl, parsedRequestUrl);
 		}
 	}
 
@@ -66,7 +66,15 @@ function existsEdge(fromParsedRequestUrl, toParsedRequestUrl) {
 	return toParsedRequestUrl.hostname in fromNodeAdjVertices;
 }
 
-function createEdgeBetweenNodes(fromParsedRequestUrl, toParsedRequestUrl) {
+function createDependencyEdge(fromParsedRequestUrl, toParsedRequestUrl) {
+	createEdge(fromParsedRequestUrl, toParsedRequestUrl, "dependency");
+}
+
+function createRedirectEdge(fromParsedRequestUrl, toParsedRequestUrl) {
+	createEdge(fromParsedRequestUrl, toParsedRequestUrl, "redirect");
+}
+
+function createEdge(fromParsedRequestUrl, toParsedRequestUrl, edgeType) {
 	fromNodeId = graph[fromParsedRequestUrl.hostname].ID;
 	toNodeId = graph[toParsedRequestUrl.hostname].ID;
 	edges.add({
@@ -75,7 +83,8 @@ function createEdgeBetweenNodes(fromParsedRequestUrl, toParsedRequestUrl) {
 		},
 		from: fromNodeId,
 		to: toNodeId,
-		width: 3
+		width: 3,
+		dashes: edgeType == "redirect" ? true: false
 	})
 	graph[fromParsedRequestUrl.hostname].adjacent[toParsedRequestUrl.hostname] = true;
 }
