@@ -35,6 +35,9 @@ function addRequestNode(rootRequest, request) {
 	if(!(parsedRequestUrl.hostname in graph)) {
 		createGraphNode(parsedRequestUrl, request.type == "main_frame");
 	}
+	else {
+		addRequestToNode(parsedRequestUrl);
+	}
 
 	if(!sameDomain(parsedRootRequestUrl, parsedRequestUrl)) {
 		if(!existsEdge(parsedRootRequestUrl, parsedRequestUrl)) {
@@ -56,7 +59,8 @@ function createGraphNode(parsedRequestUrl, isRootRequest) {
 		borderWidth: 5,
 		'color.border': '#04000F',
 		'color.highlight.border': '#CCC6E2', 
-		title: parsedRequestUrl.hostname
+		title: parsedRequestUrl.hostname,
+		requests: [parsedRequestUrl.text]
 	});
 	graph[parsedRequestUrl.hostname] = {ID: nodesAutoIncrement, adjacent: {}};
 	nodesAutoIncrement++;
@@ -76,8 +80,8 @@ function createRedirectEdge(fromParsedRequestUrl, toParsedRequestUrl) {
 }
 
 function createEdge(fromParsedRequestUrl, toParsedRequestUrl, edgeType) {
-	fromNodeId = graph[fromParsedRequestUrl.hostname].ID;
-	toNodeId = graph[toParsedRequestUrl.hostname].ID;
+	var fromNodeId = graph[fromParsedRequestUrl.hostname].ID;
+	var toNodeId = graph[toParsedRequestUrl.hostname].ID;
 	edges.add({
 		id: edgesAutoIncrement,
 		arrows: {
@@ -94,8 +98,13 @@ function createEdge(fromParsedRequestUrl, toParsedRequestUrl, edgeType) {
 }
 
 function addLinkToEdge(fromParsedRequestUrl, toParsedRequestUrl) {
-	edgeId = graph[fromParsedRequestUrl.hostname].adjacent[toParsedRequestUrl.hostname].edge;
+	var edgeId = graph[fromParsedRequestUrl.hostname].adjacent[toParsedRequestUrl.hostname].edge;
 	edges._data[edgeId].links.push({from: fromParsedRequestUrl.text, to: toParsedRequestUrl.text});
+}
+
+function addRequestToNode(parsedRequestUrl) {
+	var nodeID = graph[parsedRequestUrl.hostname].ID;
+	nodes.get(nodeID).requests.push(parsedRequestUrl.text);
 }
 
 function sameDomain(parsedRootRequestUrl, parsedRequestUrl) {
