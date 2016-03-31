@@ -20,6 +20,7 @@ function parseURL(url) {
         pathname: tempLink.pathname,
         search: tempLink.search,
         searchObject: searchObject,
-        hash: tempLink.hash
+        hash: tempLink.hash,
+        text: url 
     };
 }

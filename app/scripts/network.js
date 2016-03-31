@@ -1,4 +1,5 @@
 nodesAutoIncrement = 1;
+edgesAutoIncrement = 1;
 graph = {};
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -78,15 +79,23 @@ function createEdge(fromParsedRequestUrl, toParsedRequestUrl, edgeType) {
 	fromNodeId = graph[fromParsedRequestUrl.hostname].ID;
 	toNodeId = graph[toParsedRequestUrl.hostname].ID;
 	edges.add({
+		id: edgesAutoIncrement,
 		arrows: {
 			to: {scaleFactor: 1}
 		},
 		from: fromNodeId,
 		to: toNodeId,
 		width: 3,
-		dashes: edgeType == "redirect" ? true: false
+		dashes: edgeType == "redirect" ? true: false,
+		links: [{from: fromParsedRequestUrl.text, to: toParsedRequestUrl.text}]
 	})
-	graph[fromParsedRequestUrl.hostname].adjacent[toParsedRequestUrl.hostname] = true;
+	graph[fromParsedRequestUrl.hostname].adjacent[toParsedRequestUrl.hostname] = {edge: edgesAutoIncrement};
+	edgesAutoIncrement++;
+}
+
+function addLinkToEdge(fromParsedRequestUrl, toParsedRequestUrl) {
+	edgeId = graph[fromParsedRequestUrl.hostname].adjacent[toParsedRequestUrl.hostname].edge;
+	edges._data[edgeId].links.push({from: fromParsedRequestUrl.text, to: toParsedRequestUrl.text});
 }
 
 function sameDomain(parsedRootRequestUrl, parsedRequestUrl) {

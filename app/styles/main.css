@@ -1,11 +1,24 @@
+body {
+	background-color: grey;
+}
+
 #main-container {
 	margin: 1%;
 }
 
 #graph {
 	border: 2px solid black;
+	border-radius: 5%;
+	background-color: white;
 }
 
 #node-widget .name {
 	text-align: center;
+	border: 2px solid black;
+	border-radius: 5%;
+}
+
+#logo {
+	width: 150px;
+	height: 150px;
 }

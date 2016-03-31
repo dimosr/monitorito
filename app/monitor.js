@@ -36,12 +36,18 @@ function logRedirect(details) {
 
 	var parsedPreviousURL = parseURL(previousURL);
 	var parsedNewURL = parseURL(newURL);
-	if(parsedPreviousURL.hostname != parsedNewURL.hostname) {		//http -> https redirect
+	if(parsedPreviousURL.hostname != parsedNewURL.hostname) {		//not http -> https redirect
 		var ID = tabsMappings[details.tabId].rootRequestId;
-		archive[ID].redirectedTo = newURL;
+		if(details.type == "main_frame") archive[ID].redirectedTo = newURL;
+		else {
+			var requests = archive[ID].requests;
+			for(var requestID in requests) {
+				if(requests[requestID].url == previousURL) requests[requestID].redirectedTo = newURL;
+			}
+		}		
 				
 		if(!existsEdge(parsedPreviousURL, parsedNewURL)) {
-			if(!(parsedNewURL.hostname in graph)) createGraphNode(parsedNewURL, type == "main_frame");
+			if(!(parsedNewURL.hostname in graph)) createGraphNode(parsedNewURL, details.type == "main_frame");
 			createRedirectEdge(parsedPreviousURL, parsedNewURL);
 		} 
 	}
