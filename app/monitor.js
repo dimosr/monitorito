@@ -31,24 +31,26 @@ function logRequest(details) {
 }
 
 function logRedirect(details) {
-	var previousURL = details.url;
-	var newURL = details.redirectUrl;
+	if(details.tabId in tabsMappings) {
+		var previousURL = details.url;
+		var newURL = details.redirectUrl;
 
-	var parsedPreviousURL = parseURL(previousURL);
-	var parsedNewURL = parseURL(newURL);
-	if(parsedPreviousURL.hostname != parsedNewURL.hostname) {		//not http -> https redirect
-		var ID = tabsMappings[details.tabId].rootRequestId;
-		if(details.type == "main_frame") archive[ID].redirectedTo = newURL;
-		else {
-			var requests = archive[ID].requests;
-			for(var requestID in requests) {
-				if(requests[requestID].url == previousURL) requests[requestID].redirectedTo = newURL;
-			}
-		}		
+		var parsedPreviousURL = parseURL(previousURL);
+		var parsedNewURL = parseURL(newURL);
+		if(parsedPreviousURL.hostname != parsedNewURL.hostname) {		//not http -> https redirect
+			var ID = tabsMappings[details.tabId].rootRequestId;
+			if(details.type == "main_frame") archive[ID].redirectedTo = newURL;
+			else {
+				var requests = archive[ID].requests;
+				for(var requestID in requests) {
+					if(requests[requestID].url == previousURL) requests[requestID].redirectedTo = newURL;
+				}
+			}		
 				
-		if(!existsEdge(parsedPreviousURL, parsedNewURL)) {
-			if(!(parsedNewURL.hostname in graph)) createGraphNode(parsedNewURL, details.type == "main_frame");
-			createRedirectEdge(parsedPreviousURL, parsedNewURL);
-		} 
+			if(!existsEdge(parsedPreviousURL, parsedNewURL)) {
+				if(!(parsedNewURL.hostname in graph)) createGraphNode(parsedNewURL, details.type == "main_frame");
+				createRedirectEdge(parsedPreviousURL, parsedNewURL);
+			} 
+		}
 	}
 }
