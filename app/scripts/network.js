@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	network.on("selectNode", function(eventParams) {
 		nodeId = eventParams.nodes[0];
-		document.getElementById('node_url').innerHTML = nodes._data[nodeId].title;
+		document.getElementById('node_url').innerHTML = nodes.get(nodeId).title;
 	});
 	network.on("deselectNode", function(eventParams) {
 		document.getElementById('node_url').innerHTML = "";
@@ -99,7 +99,7 @@ function createEdge(fromParsedRequestUrl, toParsedRequestUrl, edgeType) {
 
 function addLinkToEdge(fromParsedRequestUrl, toParsedRequestUrl) {
 	var edgeId = graph[fromParsedRequestUrl.hostname].adjacent[toParsedRequestUrl.hostname].edge;
-	edges._data[edgeId].links.push({from: fromParsedRequestUrl.text, to: toParsedRequestUrl.text});
+	edges.get(edgeId).links.push({from: fromParsedRequestUrl.text, to: toParsedRequestUrl.text});
 }
 
 function addRequestToNode(parsedRequestUrl) {
