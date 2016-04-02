@@ -71,6 +71,31 @@ function showEdgeStatistics(eventParams) {
 	document.getElementById('edge_type').innerHTML = edge.type;
 	document.getElementById('edge_from').innerHTML = fromNode.title;
 	document.getElementById('edge_to').innerHTML = toNode.title;
+
+	var requestsList = document.getElementById('edge_requests');
+	for(var i=0; i < edge.links.length; i++) {
+		var entry = document.createElement('li');
+		var link1 = document.createElement('a');
+		link1.setAttribute("href", edge.links[i].from);
+		link1.setAttribute("title", edge.links[i].from);
+		link1.setAttribute("target", "_blank");
+		link1.innerHTML = "from";
+
+		var span = document.createElement('span');
+		span.innerHTML = " --> "
+
+		var link2 = document.createElement('a');
+		link2.setAttribute("href", edge.links[i].to);
+		link2.setAttribute("title", edge.links[i].to);
+		link2.setAttribute("target", "_blank");
+		link2.innerHTML = "to";
+
+
+		entry.appendChild(link1);
+		entry.appendChild(span);
+		entry.appendChild(link2);
+		requestsList.appendChild(entry);
+	}
 }
 
 function emptyNodeStatistics() {
@@ -84,6 +109,9 @@ function emptyEdgeStatistics() {
 	document.getElementById('edge_type').innerHTML = "";
 	document.getElementById('edge_from').innerHTML = "";
 	document.getElementById('edge_to').innerHTML = "";
+
+	var requestsList = document.getElementById('edge_requests');
+	while(requestsList.firstChild) requestsList.removeChild(requestsList.firstChild);
 }
 
 function addRequestNode(rootRequest, request) {
