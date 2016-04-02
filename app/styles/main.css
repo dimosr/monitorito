@@ -24,27 +24,14 @@ body {
 	padding: 5px;
 }
 
-#requests_list {
-	max-height: 100px;
+#node_requests, #edge_requests {
+	height: 70px;
 	overflow:hidden;
 	overflow-y:scroll;
 }
 
-#requests_list a{
+#node_requests a, #edge_requests a{
 	color: white;
 }
 
 
-::-webkit-scrollbar {
-    width: 12px;
-}
- 
-::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
-    border-radius: 10px;
-}
- 
-::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
-}

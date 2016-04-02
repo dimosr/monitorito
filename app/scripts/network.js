@@ -15,36 +15,76 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	var network = new vis.Network(container, data, options);
 
-	network.on("selectNode", function(eventParams) {
-		nodeId = eventParams.nodes[0];
-		node = nodes.get(nodeId);
-
-		document.getElementById('node_url').innerHTML = node.title;
-
-		var requestsList = document.getElementById('requests_list');
-		for(var i=0; i < node.requests.length; i++) {
-			var entry = document.createElement('li');
-			var link = document.createElement('a');
-			link.setAttribute("href", node.requests[i]);
-			link.setAttribute("title", node.requests[i]);
-			link.setAttribute("target", "_blank");
-			link.innerHTML = "Request " + (i+1);
-			entry.appendChild(link);
-			requestsList.appendChild(entry);
+	network.on("select", function(eventParams) {
+		if(eventParams.nodes.length == 1) {		//only in node selections
+			emptyEdgeStatistics();
+			showNodeStatistics(eventParams);
 		}
-
+		else if(eventParams.nodes.length == 0 && eventParams.edges.length == 1) {	//only in edge selections
+			emptyNodeStatistics();
+			showEdgeStatistics(eventParams);
+		}
 	});
+
 	network.on("deselectNode", function(eventParams) {
-		document.getElementById('node_url').innerHTML = "";
-		
-		var requestsList = document.getElementById('requests_list');
-		while(requestsList.firstChild) requestsList.removeChild(requestsList.firstChild);
+		var previousSelection = eventParams.previousSelection;
+		if(previousSelection.nodes.length == 1) {		//only in node selections
+			emptyNodeStatistics();
+		}
 	});
 
+	network.on("deselectEdge", function(eventParams) {
+		var previousSelection = eventParams.previousSelection;
+		if(previousSelection.nodes.length == 0 && previousSelection.edges.length == 1) {	//only in edge selections
+			emptyEdgeStatistics();
+		}
+	});
 
 });
 
+function showNodeStatistics(eventParams) {
+	nodeId = eventParams.nodes[0];
+	node = nodes.get(nodeId);
 
+	document.getElementById('node_domain').innerHTML = node.title;
+
+	var requestsList = document.getElementById('node_requests');
+	for(var i=0; i < node.requests.length; i++) {
+		var entry = document.createElement('li');
+		var link = document.createElement('a');
+		link.setAttribute("href", node.requests[i]);
+		link.setAttribute("title", node.requests[i]);
+		link.setAttribute("target", "_blank");
+		link.innerHTML = "Request " + (i+1);
+		entry.appendChild(link);
+		requestsList.appendChild(entry);
+	}
+}
+
+function showEdgeStatistics(eventParams) {
+	edgeId = eventParams.edges[0];
+	edge = edges.get(edgeId);
+
+	fromNode = nodes.get(edge.from);
+	toNode = nodes.get(edge.to);
+
+	document.getElementById('edge_type').innerHTML = edge.type;
+	document.getElementById('edge_from').innerHTML = fromNode.title;
+	document.getElementById('edge_to').innerHTML = toNode.title;
+}
+
+function emptyNodeStatistics() {
+	document.getElementById('node_domain').innerHTML = "";
+		
+	var requestsList = document.getElementById('node_requests');
+	while(requestsList.firstChild) requestsList.removeChild(requestsList.firstChild);
+}
+
+function emptyEdgeStatistics() {
+	document.getElementById('edge_type').innerHTML = "";
+	document.getElementById('edge_from').innerHTML = "";
+	document.getElementById('edge_to').innerHTML = "";
+}
 
 function addRequestNode(rootRequest, request) {
 	var parsedRootRequestUrl = parseURL(rootRequest);
@@ -109,6 +149,7 @@ function createEdge(fromParsedRequestUrl, toParsedRequestUrl, edgeType) {
 		to: toNodeId,
 		width: 3,
 		dashes: edgeType == "redirect" ? true: false,
+		type: edgeType,
 		links: [{from: fromParsedRequestUrl.text, to: toParsedRequestUrl.text}]
 	})
 	graph[fromParsedRequestUrl.hostname].adjacent[toParsedRequestUrl.hostname] = {edge: edgesAutoIncrement};
