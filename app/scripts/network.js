@@ -51,11 +51,7 @@ function showNodeStatistics(eventParams) {
 	var requestsList = document.getElementById('node_requests');
 	for(var i=0; i < node.requests.length; i++) {
 		var entry = document.createElement('li');
-		var link = document.createElement('a');
-		link.setAttribute("href", node.requests[i]);
-		link.setAttribute("title", node.requests[i]);
-		link.setAttribute("target", "_blank");
-		link.innerHTML = "Request " + (i+1);
+		var link = createAnchor(node.requests[i], node.requests[i], "_blank", "Request " + (i+1));
 		entry.appendChild(link);
 		requestsList.appendChild(entry);
 	}
@@ -75,21 +71,12 @@ function showEdgeStatistics(eventParams) {
 	var requestsList = document.getElementById('edge_requests');
 	for(var i=0; i < edge.links.length; i++) {
 		var entry = document.createElement('li');
-		var link1 = document.createElement('a');
-		link1.setAttribute("href", edge.links[i].from);
-		link1.setAttribute("title", edge.links[i].from);
-		link1.setAttribute("target", "_blank");
-		link1.innerHTML = "from";
+		var link1 = createAnchor(edge.links[i].from, edge.links[i].from, "_blank", "from");
 
 		var span = document.createElement('span');
 		span.innerHTML = " --> "
 
-		var link2 = document.createElement('a');
-		link2.setAttribute("href", edge.links[i].to);
-		link2.setAttribute("title", edge.links[i].to);
-		link2.setAttribute("target", "_blank");
-		link2.innerHTML = "to";
-
+		var link2 = createAnchor(edge.links[i].to, edge.links[i].to, "_blank", "to");
 
 		entry.appendChild(link1);
 		entry.appendChild(span);
