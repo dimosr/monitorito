@@ -5,6 +5,7 @@
 		<script src="lib/vis/vis.min.js"></script>
 		<link href="lib/vis/vis.min.css" rel="stylesheet" type="text/css" />
 		<link href="styles/main.css" rel="stylesheet" type="text/css" />
+		<link href="styles/scrollbar.css" rel="stylesheet" type="text/css" />
 		<script src="scripts/util.js"></script>
 		<script src="scripts/network.js"></script>
 	</head>
@@ -28,12 +29,21 @@
 						</div>
 
 						<div id="node_widget" class="row">
-							<div class="columns large-12">Selected Node</div>
+							<div class="row">
+								<div class="columns large-12">Selected Node</div>
+							</div>
 
-							<div class="columns large-4 name">URL </div>
-							<div id="node_url" class="columns large-8 value">---</div>
+							<div class="row">
+								<div class="columns large-3 name">Domain</div>
+								<div id="node_url" class="columns large-9 value"></div>
+							</div>
 
-
+							<div class="row">
+								<div class="columns large-3 name">Requests </div>
+								<div id="node_url" class="columns large-9 value">
+									<ul id="requests_list"></ul>
+								</div>
+							</div>
 						</div>
 
 						<div id="edge_widget" class="row">

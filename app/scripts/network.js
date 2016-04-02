@@ -17,10 +17,28 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	network.on("selectNode", function(eventParams) {
 		nodeId = eventParams.nodes[0];
-		document.getElementById('node_url').innerHTML = nodes.get(nodeId).title;
+		node = nodes.get(nodeId);
+
+		document.getElementById('node_url').innerHTML = node.title;
+
+		var requestsList = document.getElementById('requests_list');
+		for(var i=0; i < node.requests.length; i++) {
+			var entry = document.createElement('li');
+			var link = document.createElement('a');
+			link.setAttribute("href", node.requests[i]);
+			link.setAttribute("title", node.requests[i]);
+			link.setAttribute("target", "_blank");
+			link.innerHTML = "Request " + (i+1);
+			entry.appendChild(link);
+			requestsList.appendChild(entry);
+		}
+
 	});
 	network.on("deselectNode", function(eventParams) {
 		document.getElementById('node_url').innerHTML = "";
+		
+		var requestsList = document.getElementById('requests_list');
+		while(requestsList.firstChild) requestsList.removeChild(requestsList.firstChild);
 	});
 
 
