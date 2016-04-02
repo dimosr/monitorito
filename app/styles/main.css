@@ -12,10 +12,16 @@ body {
 	background-color: white;
 }
 
-#node-widget .name {
-	text-align: center;
+#total_stats, #node_widget, #edge_widget{
+	margin-bottom: 10px;
+}
+
+#total_stats, #node_widget, #edge_widget {
 	border: 2px solid black;
 	border-radius: 5%;
+	background-color: #5c85d6;
+	font-family: "Courier New", Courier, monospace;
+	padding: 5px;
 }
 
 #logo {
