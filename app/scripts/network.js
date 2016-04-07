@@ -54,11 +54,12 @@ function showNodeStatistics(eventParams) {
 	document.getElementById('node_domain').innerHTML = node.title;
 	$('#node_requests_no').html(node.requests.length);
 
-	var requestsList = $('#node_requests_dialog ul');
+	var requestsTable = $('#node_requests_dialog tbody');
 	for(var i=0; i < node.requests.length; i++) {
-		var link = createAnchor(node.requests[i], node.requests[i], "_blank", "Request " + (i+1));
-		var entry = $('<li>').append(link);
-		requestsList.append(entry);
+		var noColumn = $('<td>').html(i+1);
+		var urlColumn = $('<td>').html(node.requests[i]);
+		var row = $('<tr>').append(noColumn).append(urlColumn);
+		requestsTable.append(row);
 	}
 }
 
@@ -74,14 +75,12 @@ function showEdgeStatistics(eventParams) {
 	document.getElementById('edge_to').innerHTML = toNode.title;
 	$('#edge_requests_no').html(edge.links.length);
 
-	var requestsList = $('#edge_requests_dialog ul');
+	var requestsTable = $('#edge_requests_dialog tbody');
 	for(var i=0; i < edge.links.length; i++) {
-		var span1 = $('<span>').html('Request ' + (i+1) + " : ");
-		var link1 = createAnchor(edge.links[i].from, edge.links[i].from, "_blank", "From URL");
-		var span2 = $('<span>').html(' --> ');
-		var link2 = createAnchor(edge.links[i].to, edge.links[i].to, "_blank", "To URL");
-		var entry = $('<li>').append(span1).append(link1).append(span2).append(link2);
-		requestsList.append(entry);
+		var fromColumn = $('<td>').html(edge.links[i].from);
+		var toColumn = $('<td>').html(edge.links[i].to);
+		var row = $('<tr>').append(fromColumn).append(toColumn);
+		requestsTable.append(row);
 	}
 }
 
@@ -89,7 +88,7 @@ function emptyNodeStatistics() {
 	document.getElementById('node_domain').innerHTML = "";
 	
 	$('#node_requests_no').html('');
-	$('#node_requests_dialog ul').html('');
+	$('#node_requests_dialog tbody').html('');
 }
 
 function emptyEdgeStatistics() {
@@ -98,7 +97,7 @@ function emptyEdgeStatistics() {
 	document.getElementById('edge_to').innerHTML = "";
 
 	$('#edge_requests_no').html('');
-	$('#edge_requests_dialog ul').html('');
+	$('#edge_requests_dialog tbody').html('');
 }
 
 function addRequestNode(rootRequest, request) {

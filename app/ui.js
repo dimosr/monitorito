@@ -8,7 +8,10 @@ $(function() {
 		hide: {
 			effect: "scale",
 			duration: 300
-		}
+		},
+		modal: true,
+		width: $(window).width()*0.6,
+		height: $(window).height()*0.6
 	});
  
 	$( "#node_requests_opener" ).click(function() {
