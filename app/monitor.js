@@ -3,16 +3,26 @@ window.monitor = true;
 archive = {};
 tabsMappings = {};
 
-chrome.webRequest.onBeforeSendHeaders.addListener(
+excludedUrlPatterns = ["https://www.google.gr/_/chrome/newtab"];
+
+function isExcluded(url) {
+	for(var i=0; i < excludedUrlPatterns.length; i++) {
+		var excludedPattern = excludedUrlPatterns[i];
+		if(url.toLowerCase().search(excludedPattern.toLowerCase()) >= 0) return true;
+	}
+	return false;
+}
+
+chrome.webRequest.onBeforeRequest.addListener(
 	function(details) {
-		if(monitor) logRequest(details);
+		if(monitor && !isExcluded(details.url)) logRequest(details);
 	},
 	{urls: ["<all_urls>"]}
 );
 
 chrome.webRequest.onBeforeRedirect.addListener(
 	function(details) {
-		if(monitor) logRedirect(details);
+		if(monitor && !isExcluded(details.url)) logRedirect(details);
 	},
 	{urls: ["<all_urls>"]}
 );

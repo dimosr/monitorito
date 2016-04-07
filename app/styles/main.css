@@ -29,6 +29,10 @@ body {
 	color: white;
 }
 
+#edge_requests_opener, #node_requests_opener{
+	display: none;
+}
+
 table {
     table-layout: fixed;
     word-wrap:break-word;

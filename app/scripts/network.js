@@ -79,6 +79,7 @@ function showNodeStatistics(eventParams) {
 		var row = $('<tr>').append(noColumn).append(urlColumn);
 		requestsTable.append(row);
 	}
+	$('#node_requests_opener').show();
 }
 
 function showEdgeStatistics(eventParams) {
@@ -100,6 +101,7 @@ function showEdgeStatistics(eventParams) {
 		var row = $('<tr>').append(fromColumn).append(toColumn);
 		requestsTable.append(row);
 	}
+	$('#edge_requests_opener').show();
 }
 
 function emptyNodeStatistics() {
@@ -107,6 +109,7 @@ function emptyNodeStatistics() {
 	
 	$('#node_requests_no').html('');
 	$('#node_requests_dialog tbody').html('');
+	$('#node_requests_opener').hide();
 }
 
 function emptyEdgeStatistics() {
@@ -116,6 +119,7 @@ function emptyEdgeStatistics() {
 
 	$('#edge_requests_no').html('');
 	$('#edge_requests_dialog tbody').html('');
+	$('#edge_requests_opener').hide();
 }
 
 function addRequestNode(rootRequest, request) {
