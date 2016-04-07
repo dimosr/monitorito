@@ -52,6 +52,7 @@ function showNodeStatistics(eventParams) {
 	node = nodes.get(nodeId);
 
 	document.getElementById('node_domain').innerHTML = node.title;
+	$('#node_requests_no').html(node.requests.length);
 
 	var requestsList = $('#node_requests_dialog ul');
 	for(var i=0; i < node.requests.length; i++) {
@@ -71,6 +72,7 @@ function showEdgeStatistics(eventParams) {
 	document.getElementById('edge_type').innerHTML = edge.type;
 	document.getElementById('edge_from').innerHTML = fromNode.title;
 	document.getElementById('edge_to').innerHTML = toNode.title;
+	$('#edge_requests_no').html(edge.links.length);
 
 	var requestsList = $('#edge_requests_dialog ul');
 	for(var i=0; i < edge.links.length; i++) {
@@ -85,7 +87,8 @@ function showEdgeStatistics(eventParams) {
 
 function emptyNodeStatistics() {
 	document.getElementById('node_domain').innerHTML = "";
-		
+	
+	$('#node_requests_no').html('');
 	$('#node_requests_dialog ul').html('');
 }
 
@@ -94,6 +97,7 @@ function emptyEdgeStatistics() {
 	document.getElementById('edge_from').innerHTML = "";
 	document.getElementById('edge_to').innerHTML = "";
 
+	$('#edge_requests_no').html('');
 	$('#edge_requests_dialog ul').html('');
 }
 
