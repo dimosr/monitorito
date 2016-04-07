@@ -48,12 +48,11 @@ function showNodeStatistics(eventParams) {
 
 	document.getElementById('node_domain').innerHTML = node.title;
 
-	var requestsList = document.getElementById('node_requests');
+	var requestsList = $('#node_requests_dialog ul');
 	for(var i=0; i < node.requests.length; i++) {
-		var entry = document.createElement('li');
 		var link = createAnchor(node.requests[i], node.requests[i], "_blank", "Request " + (i+1));
-		entry.appendChild(link);
-		requestsList.appendChild(entry);
+		var entry = $('<li>').append(link);
+		requestsList.append(entry);
 	}
 }
 
@@ -68,28 +67,21 @@ function showEdgeStatistics(eventParams) {
 	document.getElementById('edge_from').innerHTML = fromNode.title;
 	document.getElementById('edge_to').innerHTML = toNode.title;
 
-	var requestsList = document.getElementById('edge_requests');
+	var requestsList = $('#edge_requests_dialog ul');
 	for(var i=0; i < edge.links.length; i++) {
-		var entry = document.createElement('li');
-		var link1 = createAnchor(edge.links[i].from, edge.links[i].from, "_blank", "from");
-
-		var span = document.createElement('span');
-		span.innerHTML = " --> "
-
-		var link2 = createAnchor(edge.links[i].to, edge.links[i].to, "_blank", "to");
-
-		entry.appendChild(link1);
-		entry.appendChild(span);
-		entry.appendChild(link2);
-		requestsList.appendChild(entry);
+		var span1 = $('<span>').html('Request ' + (i+1) + " : ");
+		var link1 = createAnchor(edge.links[i].from, edge.links[i].from, "_blank", "From URL");
+		var span2 = $('<span>').html(' --> ');
+		var link2 = createAnchor(edge.links[i].to, edge.links[i].to, "_blank", "To URL");
+		var entry = $('<li>').append(span1).append(link1).append(span2).append(link2);
+		requestsList.append(entry);
 	}
 }
 
 function emptyNodeStatistics() {
 	document.getElementById('node_domain').innerHTML = "";
 		
-	var requestsList = document.getElementById('node_requests');
-	while(requestsList.firstChild) requestsList.removeChild(requestsList.firstChild);
+	$('#node_requests_dialog ul').html('');
 }
 
 function emptyEdgeStatistics() {
@@ -97,8 +89,7 @@ function emptyEdgeStatistics() {
 	document.getElementById('edge_from').innerHTML = "";
 	document.getElementById('edge_to').innerHTML = "";
 
-	var requestsList = document.getElementById('edge_requests');
-	while(requestsList.firstChild) requestsList.removeChild(requestsList.firstChild);
+	$('#edge_requests_dialog ul').html('');
 }
 
 function addRequestNode(rootRequest, request) {

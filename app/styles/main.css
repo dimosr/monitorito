@@ -24,13 +24,8 @@ body {
 	padding: 5px;
 }
 
-#node_requests, #edge_requests {
-	height: 70px;
-	overflow:hidden;
-	overflow-y:scroll;
-}
 
-#node_requests a, #edge_requests a{
+#node_requests_dialog a, #edge_requests_dialog a{
 	color: white;
 }
 
