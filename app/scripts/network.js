@@ -16,7 +16,25 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		nodes: nodes,
 		edges: edges
 	};
-	var options = {};
+	var options = {
+		edges: {
+			smooth: false
+		},
+		interaction: {
+			tooltipDelay: 0
+		},
+		physics: {
+			"forceAtlas2Based": {
+				"gravitationalConstant": -60,
+				"centralGravity": 0.005,
+				"springLength": 100,
+				"springConstant": 0.1,
+				"avoidOverlap": 0.5
+			},
+			"minVelocity": 0.75,
+			"solver": "forceAtlas2Based"
+		}
+	};
 
 	var network = new vis.Network(container, data, options);
 
