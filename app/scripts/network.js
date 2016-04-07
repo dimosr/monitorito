@@ -2,6 +2,11 @@ nodesAutoIncrement = 1;
 edgesAutoIncrement = 1;
 graph = {};
 
+var EdgeType = {
+	REQUEST: "dependency",
+	REDIRECT: "redirection",
+}
+
 document.addEventListener("DOMContentLoaded", function(event) {
     var container = document.getElementById('graph');
 
@@ -104,7 +109,7 @@ function addRequestNode(rootRequest, request) {
 	}
 
 	if(!sameDomain(parsedRootRequestUrl, parsedRequestUrl)) {
-		if(!existsEdge(parsedRootRequestUrl, parsedRequestUrl)) {
+		if(!existsEdge(parsedRootRequestUrl, parsedRequestUrl, EdgeType.REQUEST)) {
 			createDependencyEdge(parsedRootRequestUrl, parsedRequestUrl);
 		}
 	}
@@ -130,17 +135,22 @@ function createGraphNode(parsedRequestUrl, isRootRequest) {
 	nodesAutoIncrement++;
 }
 
-function existsEdge(fromParsedRequestUrl, toParsedRequestUrl) {
-	fromNodeAdjVertices = graph[fromParsedRequestUrl.hostname].adjacent;
-	return toParsedRequestUrl.hostname in fromNodeAdjVertices;
+function existsEdge(fromParsedRequestUrl, toParsedRequestUrl, edgeType) {
+	var fromNodeAdjVertices = graph[fromParsedRequestUrl.hostname].adjacent;
+	if(!(toParsedRequestUrl.hostname in fromNodeAdjVertices)) return false;
+	else {
+		var edgeID = fromNodeAdjVertices[toParsedRequestUrl.hostname].edge;
+		var edge = edges.get(edgeID);
+		return edge.type == edgeType;
+	}
 }
 
 function createDependencyEdge(fromParsedRequestUrl, toParsedRequestUrl) {
-	createEdge(fromParsedRequestUrl, toParsedRequestUrl, "dependency");
+	createEdge(fromParsedRequestUrl, toParsedRequestUrl, EdgeType.REQUEST);
 }
 
 function createRedirectEdge(fromParsedRequestUrl, toParsedRequestUrl) {
-	createEdge(fromParsedRequestUrl, toParsedRequestUrl, "redirect");
+	createEdge(fromParsedRequestUrl, toParsedRequestUrl, EdgeType.REDIRECT);
 }
 
 function createEdge(fromParsedRequestUrl, toParsedRequestUrl, edgeType) {
@@ -154,7 +164,7 @@ function createEdge(fromParsedRequestUrl, toParsedRequestUrl, edgeType) {
 		from: fromNodeId,
 		to: toNodeId,
 		width: 3,
-		dashes: edgeType == "redirect" ? true: false,
+		dashes: edgeType == EdgeType.REDIRECT ? true: false,
 		type: edgeType,
 		links: [{from: fromParsedRequestUrl.text, to: toParsedRequestUrl.text}]
 	})

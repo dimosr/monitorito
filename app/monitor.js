@@ -47,7 +47,7 @@ function logRedirect(details) {
 				}
 			}		
 				
-			if(!existsEdge(parsedPreviousURL, parsedNewURL)) {
+			if(!existsEdge(parsedPreviousURL, parsedNewURL, EdgeType.REDIRECT)) {
 				if(!(parsedNewURL.hostname in graph)) createGraphNode(parsedNewURL, details.type == "main_frame");
 				createRedirectEdge(parsedPreviousURL, parsedNewURL);
 			} 
