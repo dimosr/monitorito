@@ -31,8 +31,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				springConstant: 0.1,
 				avoidOverlap: 0.5
 			},
-			minVelocity: 0.5,
-			maxVelocity: 50,
 			solver: "barnesHut"
 		}
 	};
