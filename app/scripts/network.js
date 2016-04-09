@@ -121,6 +121,16 @@ function emptyEdgeStatistics() {
 	$('#edge_requests_opener').hide();
 }
 
+function increaseFirstPartySites() {
+	var firstPartySites = parseInt($('#first_party').html());
+	$('#first_party').html(firstPartySites+1);
+}
+
+function increaseThirdPartySites() {
+	var thirdPartySites = parseInt($('#third_party').html());
+	$('#third_party').html(thirdPartySites+1);
+}
+
 function addRequestNode(rootRequest, request) {
 	if(!(request.url.hostname in graph)) {
 		createGraphNode(request, request.type == "main_frame");
@@ -153,6 +163,8 @@ function createGraphNode(request, isRootRequest) {
 	});
 	graph[request.url.hostname] = {ID: nodesAutoIncrement, adjacent: {}};
 	nodesAutoIncrement++;
+	if(isRootRequest) increaseFirstPartySites();
+	else increaseThirdPartySites();
 }
 
 function existsEdge(fromRequest, toRequest, edgeType) {
