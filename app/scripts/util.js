@@ -24,20 +24,3 @@ function parseURL(url) {
         text: url 
     };
 }
-
-/* Constructor for anchor element */
-function createAnchor(href, title, target, innerHTML) {
-    var link = $('<a>').attr({
-        'href': href, 
-        'title': title, 
-        'target': target,
-    }).html(innerHTML);
-    return link;
-    /*
-    var link = document.createElement('a');
-    link.setAttribute("href", href);
-    link.setAttribute("title", title);
-    link.setAttribute("target", target);
-    link.innerHTML = innerHTML;
-    return link;*/
-}

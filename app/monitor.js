@@ -27,39 +27,40 @@ chrome.webRequest.onBeforeRedirect.addListener(
 	{urls: ["<all_urls>"]}
 );
 
-function logRequest(details) {
-	if(details.type == "main_frame") {
-		archive[archiveAutoIncrement] = {'rootRequestURL': details.url, 'requests': []};
-		tabsMappings[details.tabId] = {'rootRequestId': archiveAutoIncrement};
+function logRequest(request) {
+	if(request.type == "main_frame") {
+		request.url = parseURL(request.url);
+		archive[archiveAutoIncrement] = {'rootRequest': request, 'requests': []};
+		tabsMappings[request.tabId] = {'requestsGroup': archive[archiveAutoIncrement]};
 		archiveAutoIncrement++;
+		addRequestNode(request, request);
 	}
-	if(details.tabId in tabsMappings) {
-		var ID = tabsMappings[details.tabId].rootRequestId;
-		archive[ID].requests.push(details);
-		addRequestNode(archive[ID].rootRequestURL, details);
+	else if(request.tabId in tabsMappings) {
+		request.url = parseURL(request.url);
+		var requestsGroup = tabsMappings[request.tabId].requestsGroup;
+		requestsGroup.requests.push(request);
+		addRequestNode(requestsGroup.rootRequest, request);
 	}
+	
 }
 
-function logRedirect(details) {
-	if(details.tabId in tabsMappings) {
-		var previousURL = details.url;
-		var newURL = details.redirectUrl;
-
-		var parsedPreviousURL = parseURL(previousURL);
-		var parsedNewURL = parseURL(newURL);
-		if(parsedPreviousURL.hostname != parsedNewURL.hostname) {		//not http -> https redirect
-			var ID = tabsMappings[details.tabId].rootRequestId;
-			if(details.type == "main_frame") archive[ID].redirectedTo = newURL;
+function logRedirect(request) {
+	if(request.tabId in tabsMappings) {
+		var previousURL = parseURL(request.url);
+		var newURL = parseURL(request.redirectUrl);
+		if(previousURL.hostname != newURL.hostname) {		//not http -> https redirect
+			var requestsGroup = tabsMappings[request.tabId].requestsGroup;
+			if(request.type == "main_frame") requestsGroup.redirectedTo = newURL;
 			else {
-				var requests = archive[ID].requests;
+				var requests = requestsGroup.requests;
 				for(var requestID in requests) {
 					if(requests[requestID].url == previousURL) requests[requestID].redirectedTo = newURL;
 				}
 			}		
 				
-			if(!existsEdge(parsedPreviousURL, parsedNewURL, EdgeType.REDIRECT)) {
-				if(!(parsedNewURL.hostname in graph)) createGraphNode(parsedNewURL, details.type == "main_frame");
-				createRedirectEdge(parsedPreviousURL, parsedNewURL);
+			if(!existsEdge(previousURL, newURL, EdgeType.REDIRECT)) {
+				if(!(newURL.hostname in graph)) createGraphNode(newURL, request.type == "main_frame");
+				createRedirectEdge(previousURL, newURL);
 			} 
 		}
 	}
