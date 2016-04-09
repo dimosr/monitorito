@@ -140,7 +140,7 @@ function addRequestNode(rootRequest, request) {
 	}
 
 	if(!sameDomain(rootRequest, request)) {
-		if(!existsEdge(rootRequest, request, EdgeType.REQUEST)) {
+		if(!existsEdge(rootRequest.url.hostname, request.url.hostname, EdgeType.REQUEST)) {
 			createDependencyEdge(rootRequest, request);
 		}
 	}
@@ -167,11 +167,11 @@ function createGraphNode(request, isRootRequest) {
 	else increaseThirdPartySites();
 }
 
-function existsEdge(fromRequest, toRequest, edgeType) {
-	var fromNodeAdjVertices = graph[fromRequest.url.hostname].adjacent;
-	if(!(toRequest.url.hostname in fromNodeAdjVertices)) return false;
+function existsEdge(fromHostname, toHostname, edgeType) {
+	var fromNodeAdjVertices = graph[fromHostname].adjacent;
+	if(!(toHostname in fromNodeAdjVertices)) return false;
 	else {
-		var edgeID = fromNodeAdjVertices[toRequest.url.hostname].edge;
+		var edgeID = fromNodeAdjVertices[toHostname].edge;
 		var edge = edges.get(edgeID);
 		return edge.type == edgeType;
 	}

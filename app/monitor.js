@@ -2,6 +2,7 @@ archiveAutoIncrement = 1;
 window.monitor = true;
 archive = {};
 tabsMappings = {};
+redirects = {};
 
 excludedUrlPatterns = ["https://www.google.gr/_/chrome/newtab"];
 
@@ -41,12 +42,17 @@ function logRequest(request) {
 		requestsGroup.requests.push(request);
 		addRequestNode(requestsGroup.rootRequest, request);
 	}
+
+	if(request.url.hostname in redirects) {
+		createRedirectEdge(redirects[request.url.hostname], request);
+	}
 	
 }
 
 function logRedirect(request) {
 	if(request.tabId in tabsMappings) {
-		var previousURL = parseURL(request.url);
+		request.url = parseURL(request.url);
+		var previousURL = parseURL(request.url.text);
 		var newURL = parseURL(request.redirectUrl);
 		if(previousURL.hostname != newURL.hostname) {		//not http -> https redirect
 			var requestsGroup = tabsMappings[request.tabId].requestsGroup;
@@ -58,10 +64,7 @@ function logRedirect(request) {
 				}
 			}		
 				
-			if(!existsEdge(previousURL, newURL, EdgeType.REDIRECT)) {
-				if(!(newURL.hostname in graph)) createGraphNode(newURL, request.type == "main_frame");
-				createRedirectEdge(previousURL, newURL);
-			} 
+			if(!existsEdge(previousURL.hostname, newURL.hostname, EdgeType.REDIRECT)) redirects[newURL.hostname] = request;
 		}
 	}
 }
