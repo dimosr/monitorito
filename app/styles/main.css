@@ -37,3 +37,7 @@ table {
     table-layout: fixed;
     word-wrap:break-word;
 }
+
+.param_key{
+	cursor: pointer;
+}

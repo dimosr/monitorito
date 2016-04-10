@@ -73,11 +73,27 @@ function showNodeStatistics(eventParams) {
 
 	var requestsTable = $('#node_requests_dialog tbody');
 	for(var i=0; i < node.requests.length; i++) {
-		var noColumn = $('<td>').html(i+1);
+		var methodColumn = $('<td>').html(node.requests[i].method);
 		var urlColumn = $('<td>').html(node.requests[i].url.text);
-		var row = $('<tr>').append(noColumn).append(urlColumn);
+		var body = $('<ul>');
+		if(node.requests[i].requestBody !== undefined && node.requests[i].requestBody.formData !== undefined) {
+			var bodyParams = node.requests[i].requestBody.formData;
+			for(var keyIdx = 0; keyIdx < Object.keys(bodyParams).length; keyIdx++) {
+				var key = Object.keys(bodyParams)[keyIdx];
+				var paramVals = $('<ul>').addClass('param_values').attr('title', 'Values of parameter ' + key);
+				for(var j = 0; j < bodyParams[key].length; j++) {
+					var paramValue = $('<li>').html(escapeHtml(bodyParams[key][j]));
+					paramVals.append(paramValue);
+				}
+				var paramKey = $('<li>').addClass('param_key').html(key).append(paramVals);
+				body.append(paramKey);
+			}
+		}
+		var bodyColumn = $('<td>').html(body);
+		var row = $('<tr>').append(methodColumn).append(urlColumn).append(bodyColumn);
 		requestsTable.append(row);
 	}
+	enablePostParamsDialog();
 	$('#node_requests_opener').show();
 }
 

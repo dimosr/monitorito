@@ -18,7 +18,8 @@ chrome.webRequest.onBeforeRequest.addListener(
 	function(details) {
 		if(monitor && !isExcluded(details.url)) logRequest(details);
 	},
-	{urls: ["<all_urls>"]}
+	{urls: ["<all_urls>"]},
+	['requestBody']
 );
 
 chrome.webRequest.onBeforeRedirect.addListener(
