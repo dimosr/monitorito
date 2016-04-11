@@ -74,7 +74,7 @@ function showNodeStatistics(eventParams) {
 	var requestsTable = $('#node_requests_dialog tbody');
 	for(var i=0; i < node.requests.length; i++) {
 		var methodColumn = $('<td>').html(node.requests[i].method);
-		var urlColumn = $('<td>').html(node.requests[i].url.text);
+		var urlColumn = $('<td>').html(node.requests[i].url.toString());
 		var body = $('<ul>');
 		if(node.requests[i].requestBody !== undefined && node.requests[i].requestBody.formData !== undefined) {
 			var bodyParams = node.requests[i].requestBody.formData;
@@ -148,7 +148,7 @@ function increaseThirdPartySites() {
 }
 
 function addRequestNode(rootRequest, request) {
-	if(!(request.url.hostname in graph)) {
+	if(!(request.url.hostname() in graph)) {
 		createGraphNode(request, request.type == "main_frame");
 	}
 	else {
@@ -156,7 +156,7 @@ function addRequestNode(rootRequest, request) {
 	}
 
 	if(!sameDomain(rootRequest, request)) {
-		if(!existsEdge(rootRequest.url.hostname, request.url.hostname, EdgeType.REQUEST)) {
+		if(!existsEdge(rootRequest.url.hostname(), request.url.hostname(), EdgeType.REQUEST)) {
 			createDependencyEdge(rootRequest, request);
 		}
 	}
@@ -164,7 +164,7 @@ function addRequestNode(rootRequest, request) {
 
 function createGraphNode(request, isRootRequest) {
 	var nodeSize = isRootRequest ? 40 : 20;
-	var faviconURL = "http://www.google.com/s2/favicons?domain=" + request.url.host;
+	var faviconURL = "http://www.google.com/s2/favicons?domain=" + request.url.hostname();
 	nodes.add({
 		id: nodesAutoIncrement, 
 		shape: 'circularImage', 
@@ -174,20 +174,20 @@ function createGraphNode(request, isRootRequest) {
 		borderWidth: 5,
 		'color.border': '#04000F',
 		'color.highlight.border': '#CCC6E2', 
-		title: request.url.hostname,
+		title: request.url.hostname(),
 		requests: [request]
 	});
-	graph[request.url.hostname] = {ID: nodesAutoIncrement, adjacent: {}};
+	graph[request.url.hostname()] = {ID: nodesAutoIncrement, adjacent: {}};
 	nodesAutoIncrement++;
 	if(isRootRequest) increaseFirstPartySites();
 	else increaseThirdPartySites();
 }
 
-function existsEdge(fromHostname, toHostname, edgeType) {
-	var fromNodeAdjVertices = graph[fromHostname].adjacent;
-	if(!(toHostname in fromNodeAdjVertices)) return false;
+function existsEdge(fromhostname, tohostname, edgeType) {
+	var fromNodeAdjVertices = graph[fromhostname].adjacent;
+	if(!(tohostname in fromNodeAdjVertices)) return false;
 	else {
-		var edgeID = fromNodeAdjVertices[toHostname].edge;
+		var edgeID = fromNodeAdjVertices[tohostname].edge;
 		var edge = edges.get(edgeID);
 		return edge.type == edgeType;
 	}
@@ -202,8 +202,8 @@ function createRedirectEdge(fromRequest, toRequest) {
 }
 
 function createEdge(fromRequest, toRequest, edgeType) {
-	var fromNode = graph[fromRequest.url.hostname];
-	var toNode = graph[toRequest.url.hostname];
+	var fromNode = graph[fromRequest.url.hostname()];
+	var toNode = graph[toRequest.url.hostname()];
 	edges.add({
 		id: edgesAutoIncrement,
 		arrows: {
@@ -214,22 +214,22 @@ function createEdge(fromRequest, toRequest, edgeType) {
 		width: 3,
 		dashes: edgeType == EdgeType.REDIRECT ? true: false,
 		type: edgeType,
-		links: [{from: fromRequest.url.text, to: toRequest.url.text}]
+		links: [{from: fromRequest.url.toString(), to: toRequest.url.toString()}]
 	});
-	fromNode.adjacent[toRequest.url.hostname] = {edge: edges.get(edgesAutoIncrement)};
+	fromNode.adjacent[toRequest.url.hostname()] = {edge: edges.get(edgesAutoIncrement)};
 	edgesAutoIncrement++;
 }
 
 function addLinkToEdge(fromRequest, toRequest) {
-	var edge = graph[fromRequest.url.hostname].adjacent[toRequest.url.hostname].edge;
-	edge.links.push({from: fromRequest.url.text, to: toRequest.url.text});
+	var edge = graph[fromRequest.url.hostname()].adjacent[toRequest.url.hostname()].edge;
+	edge.links.push({from: fromRequest.url.toString(), to: toRequest.url.toString()});
 }
 
 function addRequestToNode(request) {
-	var nodeID = graph[request.url.hostname].ID;
+	var nodeID = graph[request.url.hostname()].ID;
 	nodes.get(nodeID).requests.push(request);
 }
 
 function sameDomain(request1, request2) {
-	return request1.url.hostname == request2.url.hostname;
+	return request1.url.hostname() == request2.url.hostname();
 }

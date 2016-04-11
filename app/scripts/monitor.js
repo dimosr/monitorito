@@ -30,32 +30,31 @@ chrome.webRequest.onBeforeRedirect.addListener(
 );
 
 function logRequest(request) {
+	request.url = new URI(request.url);
 	if(request.type == "main_frame") {
-		request.url = parseURL(request.url);
 		archive[archiveAutoIncrement] = {'rootRequest': request, 'requests': []};
 		tabsMappings[request.tabId] = {'requestsGroup': archive[archiveAutoIncrement]};
 		archiveAutoIncrement++;
 		addRequestNode(request, request);
 	}
 	else if(request.tabId in tabsMappings) {
-		request.url = parseURL(request.url);
 		var requestsGroup = tabsMappings[request.tabId].requestsGroup;
 		requestsGroup.requests.push(request);
 		addRequestNode(requestsGroup.rootRequest, request);
 	}
 
-	if(request.url.hostname in redirects) {
-		createRedirectEdge(redirects[request.url.hostname], request);
+	if(request.url.hostname() in redirects) {
+		createRedirectEdge(redirects[request.url.hostname()], request);
 	}
 	
 }
 
 function logRedirect(request) {
 	if(request.tabId in tabsMappings) {
-		request.url = parseURL(request.url);
-		var previousURL = parseURL(request.url.text);
-		var newURL = parseURL(request.redirectUrl);
-		if(previousURL.hostname != newURL.hostname) {		//not http -> https redirect
+		request.url = new URI(request.url);
+		var previousURL = request.url;
+		var newURL = new URI(request.redirectUrl);
+		if(previousURL.hostname() != newURL.hostname()) {		//not http -> https redirect
 			var requestsGroup = tabsMappings[request.tabId].requestsGroup;
 			if(request.type == "main_frame") requestsGroup.redirectedTo = newURL;
 			else {
@@ -65,7 +64,7 @@ function logRedirect(request) {
 				}
 			}		
 				
-			if(!existsEdge(previousURL.hostname, newURL.hostname, EdgeType.REDIRECT)) redirects[newURL.hostname] = request;
+			if(!existsEdge(previousURL.hostname(), newURL.hostname(), EdgeType.REDIRECT)) redirects[newURL.hostname()] = request;
 		}
 	}
 }
