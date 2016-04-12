@@ -76,8 +76,8 @@ function showNodeStatistics(eventParams) {
 		var methodColumn = $('<td>').html(node.requests[i].method);
 		var urlColumn = $('<td>').html(node.requests[i].url.toString());
 		var body = $('<ul>');
-		if(node.requests[i].requestBody !== undefined && node.requests[i].requestBody.formData !== undefined) {
-			var bodyParams = node.requests[i].requestBody.formData;
+		if(node.requests[i].method == "POST") {
+			var bodyParams = node.requests[i].bodyParams;
 			for(var keyIdx = 0; keyIdx < Object.keys(bodyParams).length; keyIdx++) {
 				var key = Object.keys(bodyParams)[keyIdx];
 				var paramVals = $('<ul>').addClass('param_values').attr('title', 'Values of parameter ' + key);
@@ -148,15 +148,15 @@ function increaseThirdPartySites() {
 }
 
 function addRequestNode(rootRequest, request) {
-	if(!(request.url.hostname() in graph)) {
-		createGraphNode(request, request.type == "main_frame");
+	if(!(request.getHostname() in graph)) {
+		createGraphNode(request, rootRequest == request);
 	}
 	else {
 		addRequestToNode(request);
 	}
 
 	if(!sameDomain(rootRequest, request)) {
-		if(!existsEdge(rootRequest.url.hostname(), request.url.hostname(), EdgeType.REQUEST)) {
+		if(!existsEdge(rootRequest.getHostname(), request.getHostname(), EdgeType.REQUEST)) {
 			createDependencyEdge(rootRequest, request);
 		}
 	}
@@ -164,7 +164,7 @@ function addRequestNode(rootRequest, request) {
 
 function createGraphNode(request, isRootRequest) {
 	var nodeSize = isRootRequest ? 40 : 20;
-	var faviconURL = "http://www.google.com/s2/favicons?domain=" + request.url.hostname();
+	var faviconURL = "http://www.google.com/s2/favicons?domain=" + request.getHostname();
 	nodes.add({
 		id: nodesAutoIncrement, 
 		shape: 'circularImage', 
@@ -174,10 +174,10 @@ function createGraphNode(request, isRootRequest) {
 		borderWidth: 5,
 		'color.border': '#04000F',
 		'color.highlight.border': '#CCC6E2', 
-		title: request.url.hostname(),
+		title: request.getHostname(),
 		requests: [request]
 	});
-	graph[request.url.hostname()] = {ID: nodesAutoIncrement, adjacent: {}};
+	graph[request.getHostname()] = {ID: nodesAutoIncrement, adjacent: {}};
 	nodesAutoIncrement++;
 	if(isRootRequest) increaseFirstPartySites();
 	else increaseThirdPartySites();
@@ -202,8 +202,8 @@ function createRedirectEdge(fromRequest, toRequest) {
 }
 
 function createEdge(fromRequest, toRequest, edgeType) {
-	var fromNode = graph[fromRequest.url.hostname()];
-	var toNode = graph[toRequest.url.hostname()];
+	var fromNode = graph[fromRequest.getHostname()];
+	var toNode = graph[toRequest.getHostname()];
 	edges.add({
 		id: edgesAutoIncrement,
 		arrows: {
@@ -214,22 +214,22 @@ function createEdge(fromRequest, toRequest, edgeType) {
 		width: 3,
 		dashes: edgeType == EdgeType.REDIRECT ? true: false,
 		type: edgeType,
-		links: [{from: fromRequest.url.toString(), to: toRequest.url.toString()}]
+		links: [{from: fromRequest.url, to: toRequest.url}]
 	});
-	fromNode.adjacent[toRequest.url.hostname()] = {edge: edges.get(edgesAutoIncrement)};
+	fromNode.adjacent[toRequest.getHostname()] = {edge: edges.get(edgesAutoIncrement)};
 	edgesAutoIncrement++;
 }
 
 function addLinkToEdge(fromRequest, toRequest) {
-	var edge = graph[fromRequest.url.hostname()].adjacent[toRequest.url.hostname()].edge;
-	edge.links.push({from: fromRequest.url.toString(), to: toRequest.url.toString()});
+	var edge = graph[fromRequest.getHostname()].adjacent[toRequest.getHostname()].edge;
+	edge.links.push({from: fromRequest.url(), to: toRequest.url});
 }
 
 function addRequestToNode(request) {
-	var nodeID = graph[request.url.hostname()].ID;
+	var nodeID = graph[request.getHostname()].ID;
 	nodes.get(nodeID).requests.push(request);
 }
 
 function sameDomain(request1, request2) {
-	return request1.url.hostname() == request2.url.hostname();
+	return request1.getHostname() == request2.getHostname();
 }

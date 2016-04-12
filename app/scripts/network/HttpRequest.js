@@ -1,16 +1,25 @@
-function HttpRequest(method, type, url, timestamp, bodyParams) {
+function HttpRequest(method, url, timestamp, bodyParams) {
 	this.method = method;
-	this.type = type;
+	this.url = url;
 	this.timestamp = timestamp;
 	this.bodyParams = bodyParams;
 
-	this._url = new URI(url);
+	this._redirectedTo = null;
 }
 
 HttpRequest.prototype.getHostname = function() {
-	return this._url.hostname();
+	var uri = new URI(this.url);
+	return uri.hostname();
 };
 
-HttpRequest.prototype.getUrl = function() {
-	return this._url.toString();
-};
+HttpRequest.prototype.wasRedirected = function() {
+	this._redirectedTo == null;
+}
+
+HttpRequest.prototype.redirectTo = function(newURL) {
+	this._redirectedTo = newURL;
+}
+
+HttpRequest.prototype.getRedirectUrl = function() {
+	return this._redirectedTo;
+}

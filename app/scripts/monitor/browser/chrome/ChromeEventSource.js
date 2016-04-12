@@ -1,21 +1,17 @@
 function ChromeEventSource() {
-	this._observers = [];
+	EventSource.call(this);
 }
 
-ChromeEventSource.prototype.register = function(observer) {
-	this._observers.push(observer);
-}
+ChromeEventSource.prototype = new EventSource();
 
-ChromeEventSource.prototype.notifyForRequest = function(request) {
-	for(var i = 0; i < this._observers.length; i++) {
-		var observer = this._observers[i];
-		observer.onRequest(request);
+ChromeEventSource.prototype.buildHttpRequest = function(customRequest) {
+	if(	customRequest.method == "POST" && 
+		customRequest.requestBody !== undefined && 
+		customRequest.requestBody.formData !== undefined) {
+		var bodyParams = customRequest.requestBody.formData;
 	}
-}
-
-ChromeEventSource.prototype.notifyForRedirect = function(request) {
-	for(var i = 0; i < this._observers.length; i++) {
-		var observer = this._observers[i];
-		observer.onRedirect(request);
+	else {
+		var bodyParams = {};
 	}
+	return new HttpRequest(customRequest.method, customRequest.url, customRequest.timestamp, bodyParams);
 }

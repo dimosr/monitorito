@@ -33,23 +33,23 @@ MonitoringService.prototype.toBeExcluded = function(url) {
 	return false;
 }
 
-MonitoringService.prototype.onRequest = function(request) {
-	if(this._monitorEnabled && !this.toBeExcluded(request.url)) {
-		request.url = new URI(request.url);
-		if(request.type == "main_frame") {
-			this._archive[this._archiveAutoIncrement] = {'rootRequest': request, 'requests': []};
-			this._tabsMappings[request.tabId] = {'requestsGroup': this._archive[this._archiveAutoIncrement]};
+MonitoringService.prototype.onRequest = function(httpRequest, isRoot, tabID) {
+	if(this._monitorEnabled && !this.toBeExcluded(httpRequest.url)) {
+		if(isRoot) {
+			var session = new Session(httpRequest);
+			this._archive[this._archiveAutoIncrement] = session;
+			this._tabsMappings[tabID] = {'session': session};
 			this._archiveAutoIncrement++;
-			addRequestNode(request, request);
+			addRequestNode(httpRequest, httpRequest);
 		}
-		else if(request.tabId in this._tabsMappings) {
-			var requestsGroup = this._tabsMappings[request.tabId].requestsGroup;
-			requestsGroup.requests.push(request);
-			addRequestNode(requestsGroup.rootRequest, request);
+		else if(tabID in this._tabsMappings) {
+			var session = this._tabsMappings[tabID].session;
+			session.addEmbeddedRequest(httpRequest);
+			addRequestNode(session.getRootRequest(), httpRequest);
 		}
 
-		if(request.url.hostname() in this._redirects) {
-			createRedirectEdge(this._redirects[request.url.hostname()], request);
+		if(httpRequest.getHostname() in this._redirects) {
+			createRedirectEdge(this._redirects[httpRequest.getHostname()], httpRequest);
 		}
 	}
 };
@@ -57,21 +57,12 @@ MonitoringService.prototype.onRequest = function(request) {
 MonitoringService.prototype.onRedirect = function(request) {
 	if(this._monitorEnabled && !this.toBeExcluded(request.url)) {
 		if(request.tabId in this._tabsMappings) {
-			request.url = new URI(request.url);
-			var previousURL = request.url;
+			var previousURL = new URI(request.url);
 			var newURL = new URI(request.redirectUrl);
-			if(previousURL.hostname() != newURL.hostname()) {		//not http -> https redirect
-				var requestsGroup = this._tabsMappings[request.tabId].requestsGroup;
-				if(request.type == "main_frame") requestsGroup.redirectedTo = newURL;
-				else {
-					var requests = requestsGroup.requests;
-					for(var requestID in requests) {
-						if(requests[requestID].url == previousURL) requests[requestID].redirectedTo = newURL;
-					}
-				}		
-					
-				if(!existsEdge(previousURL.hostname(), newURL.hostname(), EdgeType.REDIRECT)) this._redirects[newURL.hostname()] = request;
-			}
+			var session = this._tabsMappings[request.tabId].session;
+			session.addRedirect(previousURL, newURL);
+			var httpRequest = new HttpRequest(request.method, request.url, request.timestamp, null);	
+			if(!existsEdge(previousURL.hostname(), newURL.hostname(), EdgeType.REDIRECT)) this._redirects[newURL.hostname()] = httpRequest;
 		}
 	}
 };

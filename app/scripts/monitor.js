@@ -5,7 +5,8 @@ monitoringService.addExcludedUrlPattern("https://www.google.gr/_/chrome/newtab")
 
 chrome.webRequest.onBeforeRequest.addListener(
 	function(details) {
-		eventSource.notifyForRequest(details);
+		var httpRequest = eventSource.buildHttpRequest(details);
+		eventSource.notifyForRequest(httpRequest, (details.type == "main_frame"), details.tabId);
 	},
 	{urls: ["<all_urls>"]},
 	['requestBody']
