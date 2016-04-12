@@ -1,10 +1,9 @@
 function MonitoringService(eventSource) {
-	this._archiveAutoIncrement = 0;
 	this._monitorEnabled = true;
 	this._archive = [];
 	this._redirects = {};
 	this._excludedUrlPatterns = [];
-	this._tabsMappings = {};
+	this._tabSessionMap = {};
 
 	eventSource.register(this);
 }
@@ -37,32 +36,31 @@ MonitoringService.prototype.onRequest = function(httpRequest, isRoot, tabID) {
 	if(this._monitorEnabled && !this.toBeExcluded(httpRequest.url)) {
 		if(isRoot) {
 			var session = new Session(httpRequest);
-			this._archive[this._archiveAutoIncrement] = session;
-			this._tabsMappings[tabID] = {'session': session};
-			this._archiveAutoIncrement++;
-			addRequestNode(httpRequest, httpRequest);
+			this._archive.push(session);
+			this._tabSessionMap[tabID] = {'session': session};
+			graph.addRequestNode(httpRequest, httpRequest);
 		}
-		else if(tabID in this._tabsMappings) {
-			var session = this._tabsMappings[tabID].session;
+		else if(tabID in this._tabSessionMap) {
+			var session = this._tabSessionMap[tabID].session;
 			session.addEmbeddedRequest(httpRequest);
-			addRequestNode(session.getRootRequest(), httpRequest);
+			graph.addRequestNode(session.getRootRequest(), httpRequest);
 		}
 
 		if(httpRequest.getHostname() in this._redirects) {
-			createRedirectEdge(this._redirects[httpRequest.getHostname()], httpRequest);
+			graph.createRedirectEdge(this._redirects[httpRequest.getHostname()], httpRequest);
 		}
 	}
 };
 
 MonitoringService.prototype.onRedirect = function(request) {
 	if(this._monitorEnabled && !this.toBeExcluded(request.url)) {
-		if(request.tabId in this._tabsMappings) {
+		if(request.tabId in this._tabSessionMap) {
 			var previousURL = new URI(request.url);
 			var newURL = new URI(request.redirectUrl);
-			var session = this._tabsMappings[request.tabId].session;
+			var session = this._tabSessionMap[request.tabId].session;
 			session.addRedirect(previousURL, newURL);
 			var httpRequest = new HttpRequest(request.method, request.url, request.timestamp, null);	
-			if(!existsEdge(previousURL.hostname(), newURL.hostname(), EdgeType.REDIRECT)) this._redirects[newURL.hostname()] = httpRequest;
+			if(!graph.existsEdge(previousURL.hostname(), newURL.hostname(), Graph.EdgeType.REDIRECT)) this._redirects[newURL.hostname()] = httpRequest;
 		}
 	}
 };
