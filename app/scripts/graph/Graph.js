@@ -26,8 +26,8 @@ function Graph(container) {
 		}
 	};
 	this._network = new vis.Network(container, data, options);
-	this._network.nodes = data.nodes;
-	this._network.edges = data.edges;
+	this._network.nodes = [];
+	this._network.edges = [];
 
 	this._network._selectEdgeCallback = function(selectedEdge){};
 	this._network._selectNodeCallback = function(selectedNode){};
@@ -35,11 +35,6 @@ function Graph(container) {
 	this._network._deselectNodeCallback = function(deselectedNodes){};
 
 	this.setupListeners();
-}
-
-Graph.EdgeType = {
-	REQUEST: "dependency",
-	REDIRECT: "redirection",
 }
 
 Graph.prototype.addRequestNode = function(rootRequest, request) {
@@ -51,78 +46,63 @@ Graph.prototype.addRequestNode = function(rootRequest, request) {
 	}
 
 	if(rootRequest.getHostname() != request.getHostname()) {
-		if(!this.existsEdge(rootRequest.getHostname(), request.getHostname(), Graph.EdgeType.REQUEST)) {
+		if(!this.existsEdge(rootRequest.getHostname(), request.getHostname(), Edge.Type.REQUEST)) {
 			this.createDependencyEdge(rootRequest, request);
 		}
 	}
 }
 
 Graph.prototype.createGraphNode = function(request, isRootRequest) {
-	var nodeSize = isRootRequest ? 40 : 20;
-	var faviconURL = "http://www.google.com/s2/favicons?domain=" + request.getHostname();
-	this._network.nodes.add({
-		id: this._nodesAutoIncrement, 
-		shape: 'circularImage', 
-		size: nodeSize, 
-		image: faviconURL,
-		brokenImage: 'resources/img/default_node_img.jpg', 
-		borderWidth: 5,
-		'color.border': '#04000F',
-		'color.highlight.border': '#CCC6E2', 
-		title: request.getHostname(),
-		requests: [request]
-	});
-	this._graph[request.getHostname()] = {ID: this._nodesAutoIncrement, adjacent: {}};
+	var nodeType = isRootRequest ? Node.Type.ROOT : Node.Type.EMBEDDED;
+	var node = new Node(this._nodesAutoIncrement, nodeType, request.getHostname());
+	node.addRequest(request);
+	this._addNodeToNetwork(node);
+
+	this._graph[request.getHostname()] = node;
 	this._nodesAutoIncrement++;
-	if(isRootRequest) increaseFirstPartySites();
-	else increaseThirdPartySites();
+	if(isRootRequest) InterfaceHandler.increaseFirstPartySites();
+	else InterfaceHandler.increaseThirdPartySites();
 }
 
 Graph.prototype.existsEdge = function(fromHostname, toHostname, edgeType) {
 	var fromNodeAdjVertices = this._graph[fromHostname].adjacent;
 	if(!(toHostname in fromNodeAdjVertices)) return false;
 	else {
-		var edgeID = fromNodeAdjVertices[toHostname].edge;
-		var edge = this._network.edges.get(edgeID);
+		var edge = fromNodeAdjVertices[toHostname].edge;
 		return edge.type == edgeType;
 	}
 }
 
 Graph.prototype.createDependencyEdge = function(fromRequest, toRequest) {
-	this.createEdge(fromRequest, toRequest, Graph.EdgeType.REQUEST);
+	this.createEdge(fromRequest, toRequest, Edge.Type.REQUEST);
 }
 
 Graph.prototype.createRedirectEdge = function(fromRequest, toRequest) {
-	this.createEdge(fromRequest, toRequest, Graph.EdgeType.REDIRECT);
+	this.createEdge(fromRequest, toRequest, Edge.Type.REDIRECT);
 }
 
 Graph.prototype.createEdge = function(fromRequest, toRequest, edgeType) {
 	var fromNode = this._graph[fromRequest.getHostname()];
 	var toNode = this._graph[toRequest.getHostname()];
-	this._network.edges.add({
-		id: this._edgesAutoIncrement,
-		arrows: {
-			to: {scaleFactor: 1}
-		},
-		from: fromNode.ID,
-		to: toNode.ID,
-		width: 3,
-		dashes: edgeType == Graph.EdgeType.REDIRECT ? true: false,
-		type: edgeType,
-		links: [{from: fromRequest.url, to: toRequest.url}]
-	});
-	fromNode.adjacent[toRequest.getHostname()] = {edge: this._network.edges.get(this._edgesAutoIncrement)};
+	var edge = new Edge(this._edgesAutoIncrement, edgeType, fromNode, toNode);
+	edge.addRequest(fromRequest, toRequest);
+	this._addEdgeToNetwork(edge);
+
+
+	fromNode.addAdjacentNode(toNode, edge);
 	this._edgesAutoIncrement++;
 }
 
 Graph.prototype.addLinkToEdge = function(fromRequest, toRequest) {
-	var edge = this._graph[fromRequest.getHostname()].adjacent[toRequest.getHostname()].edge;
-	edge.links.push({from: fromRequest.url(), to: toRequest.url});
+	var fromNode = this._graph[fromRequest.getHostname()];
+	var toNode = this._graph[toRequest.getHostname()];
+	var edge = fromNode.getEdgeWithAdjacent(toNode);
+	edge.addRequest(fromRequest, toRequest);
 }
 
 Graph.prototype.addRequestToNode = function(request) {
-	var nodeID = this._graph[request.getHostname()].ID;
-	this._network.nodes.get(nodeID).requests.push(request);
+	var node = this._graph[request.getHostname()];
+	node.addRequest(request);
 }
 
 Graph.prototype.onSelectNode = function(callbackFunction) {
@@ -144,11 +124,11 @@ Graph.prototype.onDeselectEdge = function(callbackFunction) {
 Graph.prototype.setupListeners = function() {
 	this._network.on("select", function(eventParams) {
 		if(eventParams.nodes.length == 1) {//Node Selected
-			var selectedNode = this.nodes.get(eventParams.nodes[0]);
+			var selectedNode = this.nodes[eventParams.nodes[0]];
 			this._selectNodeCallback(selectedNode);
 		}
 		else if(eventParams.nodes.length == 0 && eventParams.edges.length == 1) {//Edge Selected
-			var selectedEdge = this.edges.get(eventParams.edges[0]);
+			var selectedEdge = this.edges[eventParams.edges[0]];
 			this._selectEdgeCallback(selectedEdge);
 		}
 	});
@@ -171,9 +151,19 @@ Graph.prototype.setupListeners = function() {
 }
 
 Graph.prototype.getNode = function(ID) {
-	return this._network.nodes.get(ID);
+	return this._network.nodes[ID];
 }
 
 Graph.prototype.getEdge = function(ID) {
-	return this._network.edges.get(ID);
+	return this._network.edges[ID];
+}
+
+Graph.prototype._addNodeToNetwork = function(node) {
+	this._network.nodes[this._nodesAutoIncrement] = node;
+	this._network.body.data.nodes.add(node.vizNode);
+}
+
+Graph.prototype._addEdgeToNetwork = function(edge) {
+	this._network.edges[this._edgesAutoIncrement] = edge;
+	this._network.body.data.edges.add(edge.vizEdge)
 }

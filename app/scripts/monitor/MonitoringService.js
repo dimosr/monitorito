@@ -60,7 +60,7 @@ MonitoringService.prototype.onRedirect = function(request) {
 			var session = this._tabSessionMap[request.tabId].session;
 			session.addRedirect(previousURL, newURL);
 			var httpRequest = new HttpRequest(request.method, request.url, request.timestamp, null);	
-			if(!graph.existsEdge(previousURL.hostname(), newURL.hostname(), Graph.EdgeType.REDIRECT)) this._redirects[newURL.hostname()] = httpRequest;
+			if(!graph.existsEdge(previousURL.hostname(), newURL.hostname(), Edge.Type.REDIRECT)) this._redirects[newURL.hostname()] = httpRequest;
 		}
 	}
 };
