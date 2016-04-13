@@ -13,5 +13,5 @@ ChromeEventSource.prototype.buildHttpRequest = function(customRequest) {
 	else {
 		var bodyParams = {};
 	}
-	return new HttpRequest(customRequest.method, customRequest.url, customRequest.timestamp, bodyParams);
+	return new HttpRequest(customRequest.method, customRequest.url, customRequest.timeStamp, bodyParams);
 }

@@ -1,26 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     var container = $('#graph')[0];
 
-	var options = {
-		edges: {
-			smooth: false
-		},
-		interaction: {
-			tooltipDelay: 0
-		},
-		physics: {
-			barnesHut: {
-				gravitationalConstant: -14000,
-				centralGravity: 0,
-				springLength: 250,
-				springConstant: 0.1,
-				avoidOverlap: 0.5
-			},
-			solver: "barnesHut"
-		}
-	};
-
-	graph = new Graph(container, options);
+	graph = new Graph(container);
 
 	graph.onSelectNode(function(selectedNode) {
 		emptyEdgeStatistics();

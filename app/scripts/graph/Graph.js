@@ -1,4 +1,4 @@
-function Graph(container, options) {
+function Graph(container) {
 	this._nodesAutoIncrement = 1;
 	this._edgesAutoIncrement = 1;
 	this._graph = {};
@@ -6,6 +6,24 @@ function Graph(container, options) {
 	var data = {
 		nodes: new vis.DataSet([]),
 		edges: new vis.DataSet([])
+	};
+	var options = {
+		edges: {
+			smooth: false
+		},
+		interaction: {
+			tooltipDelay: 0
+		},
+		physics: {
+			barnesHut: {
+				gravitationalConstant: -14000,
+				centralGravity: 0,
+				springLength: 250,
+				springConstant: 0.1,
+				avoidOverlap: 0.5
+			},
+			solver: "barnesHut"
+		}
 	};
 	this._network = new vis.Network(container, data, options);
 	this._network.nodes = data.nodes;
