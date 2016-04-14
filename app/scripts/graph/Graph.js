@@ -1,30 +1,17 @@
-function Graph(container) {
-	this._nodesAutoIncrement = 1;
-	this._edgesAutoIncrement = 1;
+function Graph(container, interfaceHandler) {
+	this.interfaceHandler = interfaceHandler;
+
+	this._nodesAutoIncrement = 0;
+	this._edgesAutoIncrement = 0;
 	this._graph = {};
+	this._FirstPartyDomains = 0;
+	this._ThirdPartyDomains = 0;
 
 	var data = {
 		nodes: new vis.DataSet([]),
 		edges: new vis.DataSet([])
 	};
-	var options = {
-		edges: {
-			smooth: false
-		},
-		interaction: {
-			tooltipDelay: 0
-		},
-		physics: {
-			barnesHut: {
-				gravitationalConstant: -14000,
-				centralGravity: 0,
-				springLength: 250,
-				springConstant: 0.1,
-				avoidOverlap: 0.5
-			},
-			solver: "barnesHut"
-		}
-	};
+	var options = Graph.getConfigurationOptions();
 	this._network = new vis.Network(container, data, options);
 	this._network.nodes = [];
 	this._network.edges = [];
@@ -60,8 +47,8 @@ Graph.prototype.createGraphNode = function(request, isRootRequest) {
 
 	this._graph[request.getHostname()] = node;
 	this._nodesAutoIncrement++;
-	if(isRootRequest) InterfaceHandler.increaseFirstPartySites();
-	else InterfaceHandler.increaseThirdPartySites();
+	if(isRootRequest) this.interfaceHandler.setFirstPartySites(++this._FirstPartyDomains);
+	else this.interfaceHandler.setThirdPartySites(++this._ThirdPartyDomains);
 }
 
 Graph.prototype.existsEdge = function(fromHostname, toHostname, edgeType) {
@@ -166,4 +153,25 @@ Graph.prototype._addNodeToNetwork = function(node) {
 Graph.prototype._addEdgeToNetwork = function(edge) {
 	this._network.edges[this._edgesAutoIncrement] = edge;
 	this._network.body.data.edges.add(edge.vizEdge)
+}
+
+Graph.getConfigurationOptions = function() {
+	return {
+		edges: {
+			smooth: false
+		},
+		interaction: {
+			tooltipDelay: 0
+		},
+		physics: {
+			barnesHut: {
+				gravitationalConstant: -14000,
+				centralGravity: 0,
+				springLength: 250,
+				springConstant: 0.1,
+				avoidOverlap: 0.5
+			},
+			solver: "barnesHut"
+		}
+	};
 }

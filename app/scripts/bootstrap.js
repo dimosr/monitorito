@@ -1,23 +1,24 @@
 document.addEventListener("DOMContentLoaded", function(event) {
-	InterfaceHandler.enableNodeEdgeDialog();
+	interfaceHandler = new InterfaceHandler();
+	interfaceHandler.enableWidgetDialogs();
 
     var container = $('#graph')[0];
 
-	graph = new Graph(container);
+	graph = new Graph(container, interfaceHandler);
 
 	graph.onSelectNode(function(selectedNode) {
-		InterfaceHandler.emptyEdgeStatistics();
-		InterfaceHandler.showNodeStatistics(selectedNode);
+		interfaceHandler.emptyEdgeStatistics();
+		interfaceHandler.showNodeStatistics(selectedNode);
 	});
 	graph.onSelectEdge(function(selectedEdge) {
-		InterfaceHandler.emptyNodeStatistics();
-		InterfaceHandler.showEdgeStatistics(selectedEdge);
+		interfaceHandler.emptyNodeStatistics();
+		interfaceHandler.showEdgeStatistics(selectedEdge);
 	});
 	graph.onDeselectNode(function(deselectedNodes) {
-		InterfaceHandler.emptyNodeStatistics();
+		interfaceHandler.emptyNodeStatistics();
 	});
 	graph.onDeselectEdge(function(deselectedEdges) {
-		InterfaceHandler.emptyEdgeStatistics();
+		interfaceHandler.emptyEdgeStatistics();
 	});
 
 	var eventSource = new ChromeEventSource();

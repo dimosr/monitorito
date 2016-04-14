@@ -1,22 +1,44 @@
-function InterfaceHandler() {}
+function InterfaceHandler() {
+	this.nodeWidget = {
+		$opener: $("#node_requests_opener"),
+		$dialogContent: $("#node_requests_dialog"),
+		$dialogTableBody: $("#node_requests_dialog tbody"),
+		$domainField: $("#node_domain"),
+		$requestsNumberField: $("#node_requests_no")
+	};
+	this.edgeWidget = {
+		$opener: $("#edge_requests_opener"),
+		$dialogContent: $("#edge_requests_dialog"),
+		$dialogTableBody: $("#edge_requests_dialog tbody"),
+		$typeField: $("#edge_type"),
+		$from: $("#edge_from"),
+		$to: $("#edge_to"),
+		$requestsNumberField: $("#edge_requests_no")
+	}
 
-InterfaceHandler.enableNodeEdgeDialog = function() {
-	$( "#node_requests_dialog, #edge_requests_dialog" ).dialog({
+	this.firstPartyContainer = $("#first_party");
+	this.thirdPartyContainer = $("#third_party");
+}
+
+InterfaceHandler.prototype.enableWidgetDialogs = function() {
+	var dialogOptions = {
 		autoOpen: false,
 		modal: true,
 		width: $(window).width()*0.6,
 		height: $(window).height()*0.6
-	});
+	};
+	this.nodeWidget.$dialogContent.dialog(dialogOptions);
+	this.edgeWidget.$dialogContent.dialog(dialogOptions);
  
-	$( "#node_requests_opener" ).click(function() {
-		$( "#node_requests_dialog" ).dialog( "open" );
+	this.nodeWidget.$opener.click({content: this.nodeWidget.$dialogContent}, function(event) {
+		event.data.content.dialog( "open" );
 	});
-	$( "#edge_requests_opener" ).click(function() {
-		$( "#edge_requests_dialog" ).dialog( "open" );
+	this.edgeWidget.$opener.click({content: this.edgeWidget.$dialogContent}, function(event) {
+		event.data.content.dialog( "open" );
 	});
 };
 
-InterfaceHandler.enablePostParamsDialog = function() {
+InterfaceHandler.prototype.enablePostParamsDialog = function() {
 	$('.param_key').each(function() {  
 		$.data(this, 'dialog', 
 			$(this).children('.param_values').dialog({
@@ -38,84 +60,87 @@ InterfaceHandler.enablePostParamsDialog = function() {
 	}).click(function() {
 		$.data(this, 'dialog').dialog('open');
 		return false;  
-	});  
+	});
 }
 
-
-InterfaceHandler.increaseFirstPartySites = function() {
-	var firstPartySites = parseInt($('#first_party').html());
-	$('#first_party').html(firstPartySites+1);
+InterfaceHandler.prototype.setFirstPartySites = function(sitesNumber) {
+	this.firstPartyContainer.html(sitesNumber);
 }
 
-InterfaceHandler.increaseThirdPartySites = function() {
-	var thirdPartySites = parseInt($('#third_party').html());
-	$('#third_party').html(thirdPartySites+1);
+InterfaceHandler.prototype.setThirdPartySites = function(sitesNumber) {
+	this.thirdPartyContainer.html(sitesNumber);
 }
 
+InterfaceHandler.prototype.showNodeStatistics = function(node) {
+	var widget = this.nodeWidget;
+	var requests = node.requests;
+	widget.$domainField.html(node.getDomain());
+	widget.$requestsNumberField.html(requests.length);
 
-InterfaceHandler.showNodeStatistics = function(node) {
-	$('#node_domain').html(node.getDomain());
-	$('#node_requests_no').html(node.requests.length);
-
-	var requestsTable = $('#node_requests_dialog tbody');
-	for(var i=0; i < node.requests.length; i++) {
-		var methodColumn = $('<td>').html(node.requests[i].method);
-		var urlColumn = $('<td>').html(node.requests[i].url.toString());
-		var body = $('<ul>');
-		if(node.requests[i].method == "POST") {
-			var bodyParams = node.requests[i].bodyParams;
-			for(var keyIdx = 0; keyIdx < Object.keys(bodyParams).length; keyIdx++) {
-				var key = Object.keys(bodyParams)[keyIdx];
-				var paramVals = $('<ul>').addClass('param_values').attr('title', 'Values of parameter ' + key);
+	var requestsRows = "";
+	for(var i=0; i < requests.length; i++) {
+		var request = requests[i];
+		var methodColumn = "<td>" + request.method + "</td>";
+		var urlColumn = "<td>" + request.url + "</td>";
+		var parametersContent = "";
+		if(request.method == "POST") {
+			var bodyParams = request.bodyParams;
+			var paramKeys = Object.keys(bodyParams);
+			for(var keyIdx = 0; keyIdx < paramKeys.length; keyIdx++) {
+				var key = paramKeys[keyIdx];
+				var paramValues = "";
 				for(var j = 0; j < bodyParams[key].length; j++) {
-					var paramValue = $('<li>').html(escapeHtml(bodyParams[key][j]));
-					paramVals.append(paramValue);
+					var paramValue = "<li>" + Util.escapeHtml(bodyParams[key][j]) + "</li>";
+					paramValues += paramValue;
 				}
-				var paramKey = $('<li>').addClass('param_key').html(key).append(paramVals);
-				body.append(paramKey);
+				paramValues = "<ul title='Values of parameter " + key + "' class='param_values'>" + paramValues + "</ul>";
+				parametersContent += "<li class='param_key'>" + key + paramValues + "</li>";
 			}
 		}
-		var bodyColumn = $('<td>').html(body);
-		var row = $('<tr>').append(methodColumn).append(urlColumn).append(bodyColumn);
-		requestsTable.append(row);
+		var bodyColumn = "<td><ul>" + parametersContent + "</ul></td>";
+		requestsRows += "<tr>" + methodColumn + urlColumn + bodyColumn + "</tr>";
 	}
-	InterfaceHandler.enablePostParamsDialog();
-	$('#node_requests_opener').show();
+	widget.$dialogTableBody.append(requestsRows);
+
+	this.enablePostParamsDialog();
+	widget.$opener.show();
 }
 
-InterfaceHandler.showEdgeStatistics = function(edge) {
-	fromNode = edge.from;
-	toNode = edge.to;
+InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
+	var widget = this.edgeWidget;
+	var fromNode = edge.from;
+	var toNode = edge.to;
+	var links = edge.links;
 
-	$('#edge_type').html(edge.type.name);
-	$('#edge_from').html(fromNode.getDomain());
-	$('#edge_to').html(toNode.getDomain());
-	$('#edge_requests_no').html(edge.links.length);
+	widget.$typeField.html(edge.type.name);
+	widget.$from.html(fromNode.getDomain());
+	widget.$to.html(toNode.getDomain());
+	widget.$requestsNumberField.html(links.length);
 
-	var requestsTable = $('#edge_requests_dialog tbody');
-	for(var i=0; i < edge.links.length; i++) {
-		var fromColumn = $('<td>').html(edge.links[i].from.url);
-		var toColumn = $('<td>').html(edge.links[i].to.url);
-		var row = $('<tr>').append(fromColumn).append(toColumn);
-		requestsTable.append(row);
+	var contentToAdd = '';
+	for(var i=0; i < links.length; i++) {
+		var fromCol = "<td>" + links[i].from.url + "</td>";
+		var toCol = "<td>" + links[i].to.url + "</td>";
+		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
 	}
-	$('#edge_requests_opener').show();
+	widget.$dialogTableBody.append(contentToAdd);
+	widget.$opener.show();
 }
 
-InterfaceHandler.emptyNodeStatistics = function() {
-	$('#node_domain').html('');
-	
-	$('#node_requests_no').html('');
-	$('#node_requests_dialog tbody').html('');
-	$('#node_requests_opener').hide();
+InterfaceHandler.prototype.emptyNodeStatistics = function() {
+	var widget = this.nodeWidget;
+	widget.$domainField.html('');
+	widget.$requestsNumberField.html('');
+	widget.$dialogTableBody.html('');
+	widget.$opener.hide();
 }
 
-InterfaceHandler.emptyEdgeStatistics = function() {
-	$('#edge_type').html("");
-	$('#edge_from').html("");
-	$('#edge_to').html("");
-
-	$('#edge_requests_no').html('');
-	$('#edge_requests_dialog tbody').html('');
-	$('#edge_requests_opener').hide();
+InterfaceHandler.prototype.emptyEdgeStatistics = function() {
+	var widget = this.edgeWidget;
+	widget.$typeField.html("");
+	widget.$from.html("");
+	widget.$to.html("");
+	widget.$requestsNumberField.html("");
+	widget.$dialogTableBody.html('');
+	widget.$opener.hide();
 }
