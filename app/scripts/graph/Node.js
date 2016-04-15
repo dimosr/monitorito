@@ -3,13 +3,8 @@ function Node(ID, type, domain) {
 	this.requests = [];
 	this.adjacent = {};
 
-	this.vizNode = Node.buildVizNode(ID, type, domain);
-}
-
-Node.Type = {
-	ROOT: {size: 40},
-	INTERMEDIATE: {size: 30},
-	EMBEDDED: {size: 20}
+	var size = type == HttpRequest.Type.ROOT ? 40 : 20;
+	this.vizNode = Node.buildVizNode(ID, size, domain);
 }
 
 Node.prototype.getID = function() {
@@ -28,15 +23,19 @@ Node.prototype.addAdjacentNode = function(adjNode, edge) {
 	this.adjacent[adjNode.getDomain()] = {'edge': edge};
 }
 
-Node.prototype.getEdgeWithAdjacent = function(adjNode) {
+Node.prototype.getEdgeTo = function(adjNode) {
 	return this.adjacent[adjNode.getDomain()].edge;
 }
 
-Node.buildVizNode = function(ID, type, domain) {
+Node.prototype.isAdjacentTo = function(adjNode) {
+	return adjNode.getDomain() in this.adjacent;
+}
+
+Node.buildVizNode = function(ID, size, domain) {
 	return {
 		id: ID, 
 		shape: 'circularImage', 
-		size: type.size, 
+		size: size, 
 		image: Node.getFaviconURL(domain),
 		borderWidth: 5,
 		'color.border': '#04000F',

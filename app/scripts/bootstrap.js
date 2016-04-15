@@ -3,33 +3,33 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	interfaceHandler.enableWidgetDialogs();
 
     var container = $('#graph')[0];
+    var graph = new Graph(container);
+    var graphController = new GraphController(graph, interfaceHandler);
 
-	graph = new Graph(container, interfaceHandler);
-
-	graph.onSelectNode(function(selectedNode) {
+	graphController.addSelectNodeListener(function(selectedNode) {
 		interfaceHandler.emptyEdgeStatistics();
 		interfaceHandler.showNodeStatistics(selectedNode);
 	});
-	graph.onSelectEdge(function(selectedEdge) {
+	graphController.addSelectEdgeListener(function(selectedEdge) {
 		interfaceHandler.emptyNodeStatistics();
 		interfaceHandler.showEdgeStatistics(selectedEdge);
 	});
-	graph.onDeselectNode(function(deselectedNodes) {
+	graphController.addDeselectNodeListener(function(deselectedNodes) {
 		interfaceHandler.emptyNodeStatistics();
 	});
-	graph.onDeselectEdge(function(deselectedEdges) {
+	graphController.addDeselectEdgeListener(function(deselectedEdges) {
 		interfaceHandler.emptyEdgeStatistics();
 	});
 
 	var eventSource = new ChromeEventSource();
 
-	var monitoringService = new MonitoringService(eventSource);
+	var monitoringService = new MonitoringService(eventSource, graphController);
 	monitoringService.addExcludedUrlPattern("https://www.google.gr/_/chrome/newtab");
 
 	chrome.webRequest.onBeforeRequest.addListener(
 		function(details) {
 			var httpRequest = eventSource.buildHttpRequest(details);
-			eventSource.notifyForRequest(httpRequest, (details.type == "main_frame"), details.tabId);
+			eventSource.notifyForRequest(httpRequest, details.tabId);
 		},
 		{urls: ["<all_urls>"]},
 		['requestBody']
@@ -37,7 +37,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	chrome.webRequest.onBeforeRedirect.addListener(
 		function(details) {
-			eventSource.notifyForRedirect(details);
+			var redirect = eventSource.buildRedirect(details);
+			eventSource.notifyForRedirect(redirect);
 		},
 		{urls: ["<all_urls>"]}
 	);

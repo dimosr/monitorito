@@ -119,8 +119,8 @@ InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
 
 	var contentToAdd = '';
 	for(var i=0; i < links.length; i++) {
-		var fromCol = "<td>" + links[i].from.url + "</td>";
-		var toCol = "<td>" + links[i].to.url + "</td>";
+		var fromCol = "<td>" + links[i].from + "</td>";
+		var toCol = "<td>" + links[i].to + "</td>";
 		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
 	}
 	widget.$dialogTableBody.append(contentToAdd);

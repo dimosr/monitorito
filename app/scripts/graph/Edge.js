@@ -12,8 +12,8 @@ Edge.Type = {
 	REDIRECT: {name: "Redirect", dashes: true},
 }
 
-Edge.prototype.addRequest = function(fromRequest, toRequest) {
-	this.links.push({from: fromRequest, to: toRequest});
+Edge.prototype.addRequest = function(fromURL, toURL) {
+	this.links.push({from: fromURL, to: toURL});
 }
 
 Edge.buildVizEdge = function(ID, type, fromNode, toNode){

@@ -1,11 +1,7 @@
-function Graph(container, interfaceHandler) {
-	this.interfaceHandler = interfaceHandler;
-
+function Graph(container) {
 	this._nodesAutoIncrement = 0;
 	this._edgesAutoIncrement = 0;
 	this._graph = {};
-	this._FirstPartyDomains = 0;
-	this._ThirdPartyDomains = 0;
 
 	var data = {
 		nodes: new vis.DataSet([]),
@@ -24,72 +20,51 @@ function Graph(container, interfaceHandler) {
 	this.setupListeners();
 }
 
-Graph.prototype.addRequestNode = function(rootRequest, request) {
-	if(!(request.getHostname() in this._graph)) {
-		this.createGraphNode(request, rootRequest == request);
-	}
-	else {
-		this.addRequestToNode(request);
-	}
-
-	if(rootRequest.getHostname() != request.getHostname()) {
-		if(!this.existsEdge(rootRequest.getHostname(), request.getHostname(), Edge.Type.REQUEST)) {
-			this.createDependencyEdge(rootRequest, request);
-		}
-	}
-}
-
-Graph.prototype.createGraphNode = function(request, isRootRequest) {
-	var nodeType = isRootRequest ? Node.Type.ROOT : Node.Type.EMBEDDED;
-	var node = new Node(this._nodesAutoIncrement, nodeType, request.getHostname());
-	node.addRequest(request);
-	this._addNodeToNetwork(node);
-
-	this._graph[request.getHostname()] = node;
-	this._nodesAutoIncrement++;
-	if(isRootRequest) this.interfaceHandler.setFirstPartySites(++this._FirstPartyDomains);
-	else this.interfaceHandler.setThirdPartySites(++this._ThirdPartyDomains);
-}
-
 Graph.prototype.existsEdge = function(fromHostname, toHostname, edgeType) {
-	var fromNodeAdjVertices = this._graph[fromHostname].adjacent;
-	if(!(toHostname in fromNodeAdjVertices)) return false;
+	var fromNode = this.getNode(fromHostname);
+	var toNode = this.getNode(toHostname);
+	if(!fromNode.isAdjacentTo(toNode)) return false;
 	else {
-		var edge = fromNodeAdjVertices[toHostname].edge;
+		var edge = fromNode.getEdgeTo(toNode);
 		return edge.type == edgeType;
 	}
 }
 
-Graph.prototype.createDependencyEdge = function(fromRequest, toRequest) {
-	this.createEdge(fromRequest, toRequest, Edge.Type.REQUEST);
+Graph.prototype.existsNode = function(hostname) {
+	return hostname in this._graph;
 }
 
-Graph.prototype.createRedirectEdge = function(fromRequest, toRequest) {
-	this.createEdge(fromRequest, toRequest, Edge.Type.REDIRECT);
-}
-
-Graph.prototype.createEdge = function(fromRequest, toRequest, edgeType) {
-	var fromNode = this._graph[fromRequest.getHostname()];
-	var toNode = this._graph[toRequest.getHostname()];
-	var edge = new Edge(this._edgesAutoIncrement, edgeType, fromNode, toNode);
-	edge.addRequest(fromRequest, toRequest);
-	this._addEdgeToNetwork(edge);
-
-
-	fromNode.addAdjacentNode(toNode, edge);
-	this._edgesAutoIncrement++;
-}
-
-Graph.prototype.addLinkToEdge = function(fromRequest, toRequest) {
-	var fromNode = this._graph[fromRequest.getHostname()];
-	var toNode = this._graph[toRequest.getHostname()];
-	var edge = fromNode.getEdgeWithAdjacent(toNode);
-	edge.addRequest(fromRequest, toRequest);
+Graph.prototype.createNode = function(hostname, requestType) {
+	var node = new Node(this._nodesAutoIncrement, requestType, hostname);
+	this._addNodeToNetwork(node);
+	this._graph[hostname] = node;
+	this._nodesAutoIncrement++;
 }
 
 Graph.prototype.addRequestToNode = function(request) {
 	var node = this._graph[request.getHostname()];
 	node.addRequest(request);
+}
+
+Graph.prototype.createEdge = function(fromHostname, toHostname, edgeType) {
+	var fromNode = this.getNode(fromHostname);
+	var toNode = this.getNode(toHostname);
+	var edge = new Edge(this._edgesAutoIncrement, edgeType, fromNode, toNode);
+	this._addEdgeToNetwork(edge);
+	this._edgesAutoIncrement++;
+
+	fromNode.addAdjacentNode(toNode, edge);
+}
+
+Graph.prototype.addLinkToEdge = function(fromURL, toURL) {
+	var fromNode = this.getNode(Util.getUrlHostname(fromURL));
+	var toNode = this.getNode(Util.getUrlHostname(toURL));
+	var edge = fromNode.getEdgeTo(toNode);
+	edge.addRequest(fromURL, toURL);
+}
+
+Graph.prototype.getNode = function(hostname) {
+	return this._graph[hostname];
 }
 
 Graph.prototype.onSelectNode = function(callbackFunction) {
@@ -137,14 +112,6 @@ Graph.prototype.setupListeners = function() {
 	});
 }
 
-Graph.prototype.getNode = function(ID) {
-	return this._network.nodes[ID];
-}
-
-Graph.prototype.getEdge = function(ID) {
-	return this._network.edges[ID];
-}
-
 Graph.prototype._addNodeToNetwork = function(node) {
 	this._network.nodes[this._nodesAutoIncrement] = node;
 	this._network.body.data.nodes.add(node.vizNode);
@@ -161,7 +128,9 @@ Graph.getConfigurationOptions = function() {
 			smooth: false
 		},
 		interaction: {
-			tooltipDelay: 0
+			tooltipDelay: 0,
+			keyboard: true,
+			navigationButtons: true
 		},
 		physics: {
 			barnesHut: {

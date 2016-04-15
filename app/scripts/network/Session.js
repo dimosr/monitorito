@@ -15,12 +15,3 @@ Session.prototype.getRootRequest = function() {
 Session.prototype.getEmbeddedRequests = function() {
 	return this._embeddedRequests;
 }
-
-Session.prototype.addRedirect = function(oldURL, newURL) {
-	if(this._rootRequest.url == oldURL)	this._rootRequest.redirectTo(newURL);
-	else {
-		for(var i = 0; i < this._embeddedRequests.length; i++) {
-			if(this._embeddedRequests[i].url == oldURL) this._embeddedRequests[i].redirectTo(newURL);
-		}
-	}
-}

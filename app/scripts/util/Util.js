@@ -10,3 +10,8 @@ Util.escapeHtml = function (text) {
     };
     return text.replace(/[\"'&<>]/g, function (a) { return escMap[a]; });
 };
+
+Util.getUrlHostname = function(url) {
+	var parsedURL = new URI(url);
+	return parsedURL.hostname();
+}

@@ -13,9 +13,9 @@ EventSource.prototype.notifyForRequest = function(request, isRoot, tabID) {
 	}
 }
 
-EventSource.prototype.notifyForRedirect = function(request) {
+EventSource.prototype.notifyForRedirect = function(redirect) {
 	for(var i = 0; i < this._observers.length; i++) {
 		var observer = this._observers[i];
-		observer.onRedirect(request);
+		observer.onRedirect(redirect);
 	}
 }

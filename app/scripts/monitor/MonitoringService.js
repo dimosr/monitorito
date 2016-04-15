@@ -1,11 +1,13 @@
-function MonitoringService(eventSource) {
+function MonitoringService(eventSource, graphController) {
 	this._monitorEnabled = true;
-	this._archive = [];
-	this._redirects = {};
+	this._requestsArchive = [];
+	this._redirectsArchive = [];
 	this._excludedUrlPatterns = [];
 	this._tabSessionMap = {};
+	this._redirectedRequests = {};
 
 	eventSource.register(this);
+	this.graphController = graphController;
 }
 
 MonitoringService.prototype.disable = function() {
@@ -32,35 +34,58 @@ MonitoringService.prototype.toBeExcluded = function(url) {
 	return false;
 }
 
-MonitoringService.prototype.onRequest = function(httpRequest, isRoot, tabID) {
+MonitoringService.prototype.onRequest = function(httpRequest, tabID) {
 	if(this._monitorEnabled && !this.toBeExcluded(httpRequest.url)) {
-		if(isRoot) {
-			var session = new Session(httpRequest);
-			this._archive.push(session);
-			this._tabSessionMap[tabID] = {'session': session};
-			graph.addRequestNode(httpRequest, httpRequest);
-		}
-		else if(tabID in this._tabSessionMap) {
-			var session = this._tabSessionMap[tabID].session;
-			session.addEmbeddedRequest(httpRequest);
-			graph.addRequestNode(session.getRootRequest(), httpRequest);
-		}
+		if(this._isTabMonitored(tabID) || httpRequest.type == HttpRequest.Type.ROOT) {
+			var session = this._archiveRequest(httpRequest, tabID);
+			this.graphController.addRequest(session.getRootRequest(), httpRequest);
 
-		if(httpRequest.getHostname() in this._redirects) {
-			graph.createRedirectEdge(this._redirects[httpRequest.getHostname()], httpRequest);
+			this.checkForRedirect(httpRequest);
 		}
 	}
 };
 
-MonitoringService.prototype.onRedirect = function(request) {
-	if(this._monitorEnabled && !this.toBeExcluded(request.url)) {
-		if(request.tabId in this._tabSessionMap) {
-			var previousURL = new URI(request.url);
-			var newURL = new URI(request.redirectUrl);
-			var session = this._tabSessionMap[request.tabId].session;
-			session.addRedirect(previousURL, newURL);
-			var httpRequest = new HttpRequest(request.method, request.url, request.timestamp, null);	
-			if(!graph.existsEdge(previousURL.hostname(), newURL.hostname(), Edge.Type.REDIRECT)) this._redirects[newURL.hostname()] = httpRequest;
+MonitoringService.prototype.onRedirect = function(redirect, tabID) {
+	if(this._monitorEnabled && !this.toBeExcluded(redirect.getInitialURL())) {
+		if(this._isTabMonitored(tabID) || redirect.type == HttpRequest.Type.ROOT) {
+			this._archiveRedirect(redirect);
+			this._redirectedRequests[redirect.getFinalURL()] = redirect;
 		}
 	}
 };
+
+MonitoringService.prototype._archiveRequest = function(httpRequest, tabID) {
+	if(httpRequest.type == HttpRequest.Type.ROOT) {
+		var session = new Session(httpRequest);
+		this._requestsArchive.push(session);
+		this._monitorTabSession(tabID, session);
+	}
+	else {
+		var session = this._getTabSession(tabID);
+		session.addEmbeddedRequest(httpRequest);
+	}
+	return session;
+}
+
+MonitoringService.prototype._archiveRedirect = function(redirect) {
+	this._redirectsArchive.push(redirect);
+}
+
+MonitoringService.prototype.checkForRedirect = function(httpRequest) {
+	if(httpRequest.url in this._redirectedRequests) {
+		var redirect = this._redirectedRequests[httpRequest.url];
+		this.graphController.addRedirect(redirect);
+	}
+}
+
+MonitoringService.prototype._isTabMonitored = function(tabID) {
+	return (tabID in this._tabSessionMap);
+}
+
+MonitoringService.prototype._monitorTabSession = function(tabID, launchedSession) {
+	this._tabSessionMap[tabID] = {'session': launchedSession};
+}
+
+MonitoringService.prototype._getTabSession = function(tabID) {
+	return this._tabSessionMap[tabID].session;
+}

@@ -13,5 +13,11 @@ ChromeEventSource.prototype.buildHttpRequest = function(customRequest) {
 	else {
 		var bodyParams = {};
 	}
-	return new HttpRequest(customRequest.method, customRequest.url, customRequest.timeStamp, bodyParams);
+	var type = customRequest.type == "main_frame" ? HttpRequest.Type.ROOT : HttpRequest.Type.EMBEDDED;
+	return new HttpRequest(customRequest.method, customRequest.url, customRequest.timeStamp, bodyParams, type);
+}
+
+ChromeEventSource.prototype.buildRedirect = function(customRequest) {
+	var type = customRequest.type == "main_frame" ? HttpRequest.Type.ROOT : HttpRequest.Type.EMBEDDED;
+	return new Redirect(customRequest.url, customRequest.redirectUrl, type);
 }
