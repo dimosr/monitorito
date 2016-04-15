@@ -7,7 +7,11 @@ function GraphController(graph, interfaceHandler) {
 }
 
 GraphController.prototype.addRequest = function(rootRequest, request) {
-	if(!this.graph.existsNode(request.getHostname())) this.graph.createNode(request.getHostname(), request.type);
+	if(!this.graph.existsNode(request.getHostname())) {
+		this.graph.createNode(request.getHostname(), request.type);
+		if(request.type == HttpRequest.Type.ROOT) this.increaseFirstPartyDomains();
+		else this.increaseThirdPartyDomains();
+	}
 	this.graph.addRequestToNode(request);
 
 	if(rootRequest.getHostname() != request.getHostname()) {
@@ -16,9 +20,6 @@ GraphController.prototype.addRequest = function(rootRequest, request) {
 		}
 		this.graph.addLinkToEdge(rootRequest.url, request.url);
 	}
-
-	if(rootRequest == request) this.interfaceHandler.setFirstPartySites(++this._FirstPartyDomains);
-	else this.interfaceHandler.setThirdPartySites(++this._ThirdPartyDomains);
 }
 
 GraphController.prototype.addRedirect = function(redirect) {
@@ -45,4 +46,14 @@ GraphController.prototype.addDeselectNodeListener = function(callbackFunction) {
 
 GraphController.prototype.addDeselectEdgeListener = function(callbackFunction) {
 	this.graph.onDeselectEdge(callbackFunction);
+}
+
+GraphController.prototype.increaseFirstPartyDomains = function() {
+	this._FirstPartyDomains++;
+	this.interfaceHandler.setFirstPartyDomains(this._FirstPartyDomains);
+}
+
+GraphController.prototype.increaseThirdPartyDomains = function() {
+	this._ThirdPartyDomains++;
+	this.interfaceHandler.setThirdPartyDomains(this._ThirdPartyDomains);
 }

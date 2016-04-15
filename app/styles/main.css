@@ -1,9 +1,11 @@
-body {
+html,body {
 	background-color: grey;
+	height: auto;
 }
 
 #main-container {
 	margin: 1%;
+	height: 95%;
 }
 
 #graph {

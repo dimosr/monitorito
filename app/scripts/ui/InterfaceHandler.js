@@ -24,8 +24,8 @@ InterfaceHandler.prototype.enableWidgetDialogs = function() {
 	var dialogOptions = {
 		autoOpen: false,
 		modal: true,
-		width: $(window).width()*0.6,
-		height: $(window).height()*0.6
+		width: $(window).width()*0.7,
+		height: $(window).height()*0.7
 	};
 	this.nodeWidget.$dialogContent.dialog(dialogOptions);
 	this.edgeWidget.$dialogContent.dialog(dialogOptions);
@@ -63,11 +63,11 @@ InterfaceHandler.prototype.enablePostParamsDialog = function() {
 	});
 }
 
-InterfaceHandler.prototype.setFirstPartySites = function(sitesNumber) {
+InterfaceHandler.prototype.setFirstPartyDomains = function(sitesNumber) {
 	this.firstPartyContainer.html(sitesNumber);
 }
 
-InterfaceHandler.prototype.setThirdPartySites = function(sitesNumber) {
+InterfaceHandler.prototype.setThirdPartyDomains = function(sitesNumber) {
 	this.thirdPartyContainer.html(sitesNumber);
 }
 
@@ -80,6 +80,7 @@ InterfaceHandler.prototype.showNodeStatistics = function(node) {
 	var requestsRows = "";
 	for(var i=0; i < requests.length; i++) {
 		var request = requests[i];
+		var typeColumn = "<td>" + request.type + "</td>";
 		var methodColumn = "<td>" + request.method + "</td>";
 		var urlColumn = "<td>" + request.url + "</td>";
 		var parametersContent = "";
@@ -98,7 +99,7 @@ InterfaceHandler.prototype.showNodeStatistics = function(node) {
 			}
 		}
 		var bodyColumn = "<td><ul>" + parametersContent + "</ul></td>";
-		requestsRows += "<tr>" + methodColumn + urlColumn + bodyColumn + "</tr>";
+		requestsRows += "<tr>" + typeColumn + methodColumn + urlColumn + bodyColumn + "</tr>";
 	}
 	widget.$dialogTableBody.append(requestsRows);
 
