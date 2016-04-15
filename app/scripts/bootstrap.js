@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function(event) {
-	interfaceHandler = new InterfaceHandler();
+	var interfaceHandler = new InterfaceHandler();
 	interfaceHandler.enableWidgetDialogs();
 
     var container = $('#graph')[0];
@@ -22,25 +22,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	});
 
 	var eventSource = new ChromeEventSource();
+	eventSource.collectRequests();
+	eventSource.collectRedirects();
 
 	var monitoringService = new MonitoringService(eventSource, graphController);
 	monitoringService.addExcludedUrlPattern("https://www.google.gr/_/chrome/newtab");
-
-	chrome.webRequest.onBeforeRequest.addListener(
-		function(details) {
-			var httpRequest = eventSource.buildHttpRequest(details);
-			eventSource.notifyForRequest(httpRequest, details.tabId);
-		},
-		{urls: ["<all_urls>"]},
-		['requestBody']
-	);
-
-	chrome.webRequest.onBeforeRedirect.addListener(
-		function(details) {
-			var redirect = eventSource.buildRedirect(details);
-			eventSource.notifyForRedirect(redirect);
-		},
-		{urls: ["<all_urls>"]}
-	);
-
 });
