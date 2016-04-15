@@ -1,3 +1,5 @@
+"use strict";
+
 function HttpRequest(method, url, timestamp, bodyParams, type) {
 	this.method = method;
 	this.url = url;

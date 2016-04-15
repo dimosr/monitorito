@@ -1,3 +1,5 @@
+"use strict";
+
 function InterfaceHandler() {
 	this.nodeWidget = {
 		$opener: $("#node_requests_opener"),

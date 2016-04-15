@@ -1,3 +1,5 @@
+"use strict";
+
 function Redirect(fromURL, toURL, type) {
 	this._from = fromURL;
 	this._to = toURL;

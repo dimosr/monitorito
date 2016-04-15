@@ -1,3 +1,5 @@
+"use strict";
+
 function MonitoringService(eventSource, graphController) {
 	this._monitorEnabled = true;
 	this._requestsArchive = [];

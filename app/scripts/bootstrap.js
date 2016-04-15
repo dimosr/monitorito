@@ -1,3 +1,5 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", function(event) {
 	var interfaceHandler = new InterfaceHandler();
 	interfaceHandler.enableWidgetDialogs();

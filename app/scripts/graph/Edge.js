@@ -1,3 +1,5 @@
+"use strict";
+
 function Edge(ID, type, fromNode, toNode) {
 	this.type = type;
 	this.from = fromNode;

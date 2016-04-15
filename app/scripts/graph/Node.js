@@ -1,3 +1,5 @@
+"use strict";
+
 function Node(ID, type, domain) {
 	this.type = type;
 	this.requests = [];

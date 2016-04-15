@@ -1,3 +1,5 @@
+"use strict";
+
 function Util(){}
 
 Util.escapeHtml = function (text) {

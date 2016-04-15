@@ -1,3 +1,5 @@
+"use strict";
+
 function GraphController(graph, interfaceHandler) {
 	this.graph = graph;
 	this.interfaceHandler = interfaceHandler;

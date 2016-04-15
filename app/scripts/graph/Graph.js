@@ -1,3 +1,5 @@
+"use strict";
+
 function Graph(container) {
 	this._nodesAutoIncrement = 0;
 	this._edgesAutoIncrement = 0;

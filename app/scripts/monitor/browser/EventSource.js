@@ -1,3 +1,5 @@
+"use strict";
+
 function EventSource() {
 	this._observers = [];
 }
