@@ -5,14 +5,18 @@
 		<meta name="viewport" content="width=device-width">
 		<title>Unit Tests</title>
 		<link rel="stylesheet" href="./qunit/qunit-1.23.0.css">
+
+		<!-- 3rd party Libraries -->
+		<script src="../app/lib/uri/URI.js"></script>
+		<!-- Libraries -->
 	</head>
 	<body>
 		<div id="qunit"></div>
 		<div id="qunit-fixture"></div>
 		<script src="./qunit/qunit-1.23.0.js"></script>
-		<script src="./blanket/blanket.min.js" data-cover-flags="ignoreCors"></script>
+		<script src="./blanket/blanket.min.js" data-cover-flags="branchTracking"></script>
 		
-		<script src="../app/scripts/util.js" data-cover></script>
-		<script src="./scripts/util.js"></script>
+		<script src="../app/scripts/util/Util.js" data-cover></script>
+		<script src="./scripts/util/Util.js"></script>
 	</body>
 </html>
