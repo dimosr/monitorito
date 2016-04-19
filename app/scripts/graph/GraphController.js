@@ -9,16 +9,16 @@ function GraphController(graph, interfaceHandler) {
 }
 
 GraphController.prototype.addRequest = function(rootRequest, request) {
-	if(!this.graph.existsNode(request.getHostname())) {
-		this.graph.createNode(request.getHostname(), request.type);
+	if(!this.graph.existsNode(Util.getUrlHostname(request.url))) {
+		this.graph.createNode(Util.getUrlHostname(request.url), request.type);
 		if(request.type == HttpRequest.Type.ROOT) this.increaseFirstPartyDomains();
 		else this.increaseThirdPartyDomains();
 	}
 	this.graph.addRequestToNode(request);
 
-	if(rootRequest.getHostname() != request.getHostname()) {
-		if(!this.graph.existsEdge(rootRequest.getHostname(), request.getHostname(), Edge.Type.REQUEST)) {
-			this.graph.createEdge(rootRequest.getHostname(), request.getHostname(), Edge.Type.REQUEST);
+	if( Util.getUrlHostname(rootRequest.url) != Util.getUrlHostname(request.url) ) {
+		if(!this.graph.existsEdge(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url), Edge.Type.REQUEST)) {
+			this.graph.createEdge(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url), Edge.Type.REQUEST);
 		}
 		this.graph.addLinkToEdge(rootRequest.url, request.url);
 	}

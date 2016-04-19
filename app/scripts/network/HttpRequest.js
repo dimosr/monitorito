@@ -12,8 +12,3 @@ HttpRequest.Type = {
 	ROOT: "Root",
 	EMBEDDED: "Embedded"
 }
-
-HttpRequest.prototype.getHostname = function() {
-	var uri = new URI(this.url);
-	return uri.hostname();
-};

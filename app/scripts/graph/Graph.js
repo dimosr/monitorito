@@ -44,7 +44,7 @@ Graph.prototype.createNode = function(hostname, requestType) {
 }
 
 Graph.prototype.addRequestToNode = function(request) {
-	var node = this._graph[request.getHostname()];
+	var node = this._graph[Util.getUrlHostname(request.url)];
 	node.addRequest(request);
 }
 
