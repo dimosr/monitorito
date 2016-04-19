@@ -4,19 +4,41 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width">
 		<title>Unit Tests</title>
-		<link rel="stylesheet" href="./qunit/qunit-1.23.0.css">
+		<link rel="stylesheet" href="test-lib/qunit/qunit-1.23.0.css">
 
-		<!-- 3rd party Libraries -->
-		<script src="../app/lib/uri/URI.js"></script>
+		<!-- Unit Testing, Mocking Libraries -->
+		<script src="test-lib/qunit/qunit-1.23.0.js"></script>
+		<script src="test-lib/blanket/blanket.min.js" data-cover-flags="branchTracking"></script>
+		<script src="test-lib/sinon/sinon-1.17.3.js"></script>
+		<script src="test-lib/sinon/sinon-qunit-1.0.0.js"></script>
+		<!-- -->
+
 		<!-- Libraries -->
+		<script src="../app/lib/jquery-1.10.2/jquery.js"></script>
+		<script src="../app/lib/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+		<script src="../app/lib/uri/URI.js"></script>
+		<script src="../app/lib/vis/vis.min.js"></script>
+		<!-- Libraries -->
+
+		<script src="../app/scripts/util/Util.js" data-cover></script>
+		<script src="../app/scripts/ui/InterfaceHandler.js" data-cover></script>
+
+		<script src="../app/scripts/network/Session.js" data-cover></script>
+		<script src="../app/scripts/network/HttpRequest.js" data-cover></script>
+		<script src="../app/scripts/network/Redirect.js" data-cover></script>
+		<script src="../app/scripts/monitor/browser/EventSource.js" data-cover></script>
+		<script src="../app/scripts/monitor/browser/chrome/ChromeEventSource.js" data-cover></script>
+		<script src="../app/scripts/monitor/MonitoringService.js" data-cover></script>
+
+		<script src="../app/scripts/graph/Node.js" data-cover></script>
+		<script src="../app/scripts/graph/Edge.js" data-cover></script>
+		<script src="../app/scripts/graph/Graph.js" data-cover></script>
+		<script src="../app/scripts/graph/GraphController.js" data-cover></script>	
 	</head>
 	<body>
 		<div id="qunit"></div>
 		<div id="qunit-fixture"></div>
-		<script src="./qunit/qunit-1.23.0.js"></script>
-		<script src="./blanket/blanket.min.js" data-cover-flags="branchTracking"></script>
 		
-		<script src="../app/scripts/util/Util.js" data-cover></script>
 		<script src="./scripts/util/Util.js"></script>
 	</body>
 </html>
