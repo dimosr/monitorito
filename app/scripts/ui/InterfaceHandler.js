@@ -75,7 +75,7 @@ InterfaceHandler.prototype.setThirdPartyDomains = function(sitesNumber) {
 
 InterfaceHandler.prototype.showNodeStatistics = function(node) {
 	var widget = this.nodeWidget;
-	var requests = node.requests;
+	var requests = node.getRequests();
 	widget.$domainField.html(node.getDomain());
 	widget.$requestsNumberField.html(requests.length);
 

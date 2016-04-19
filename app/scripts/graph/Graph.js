@@ -25,7 +25,7 @@ function Graph(container) {
 Graph.prototype.existsEdge = function(fromHostname, toHostname, edgeType) {
 	var fromNode = this.getNode(fromHostname);
 	var toNode = this.getNode(toHostname);
-	if(!fromNode.isAdjacentTo(toNode)) return false;
+	if(!fromNode.hasEdgeTo(toNode)) return false;
 	else {
 		var edge = fromNode.getEdgeTo(toNode);
 		return edge.type == edgeType;
@@ -55,7 +55,7 @@ Graph.prototype.createEdge = function(fromHostname, toHostname, edgeType) {
 	this._addEdgeToNetwork(edge);
 	this._edgesAutoIncrement++;
 
-	fromNode.addAdjacentNode(toNode, edge);
+	fromNode.addEdgeTo(toNode, edge);
 }
 
 Graph.prototype.addLinkToEdge = function(fromURL, toURL) {
