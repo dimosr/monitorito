@@ -1,21 +1,24 @@
 "use strict";
 
 function Node(ID, type, domain) {
-	this.type = type;
-
+	this._type = type;
 	this._adjacent = {};
 	this._requests = [];
 
 	var size = type == HttpRequest.Type.ROOT ? 40 : 20;
-	this.vizNode = Node.buildVizNode(ID, size, domain);
+	this._vizNode = Node.buildVizNode(ID, size, domain);
+}
+
+Node.prototype.getType = function() {
+	return this._type;
 }
 
 Node.prototype.getID = function() {
-	return this.vizNode.id;
+	return this._vizNode.id;
 }
 
 Node.prototype.getDomain = function() {
-	return this.vizNode.title;
+	return this._vizNode.title;
 }
 
 Node.prototype.addRequest = function(HttpRequest) {
@@ -49,6 +52,10 @@ Node.buildVizNode = function(ID, size, domain) {
 		'color.highlight.border': '#CCC6E2', 
 		title: domain
 	}
+}
+
+Node.prototype.getVizNode = function() {
+	return this._vizNode;
 }
 
 Node.getFaviconURL = function(domain) {

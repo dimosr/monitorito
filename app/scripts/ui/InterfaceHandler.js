@@ -111,19 +111,19 @@ InterfaceHandler.prototype.showNodeStatistics = function(node) {
 
 InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
 	var widget = this.edgeWidget;
-	var fromNode = edge.from;
-	var toNode = edge.to;
-	var links = edge.links;
+	var fromNode = edge.getSourceNode();
+	var toNode = edge.getDestinationNode();
+	var requests = edge.getRequests();
 
-	widget.$typeField.html(edge.type.name);
+	widget.$typeField.html(edge.getType().name);
 	widget.$from.html(fromNode.getDomain());
 	widget.$to.html(toNode.getDomain());
-	widget.$requestsNumberField.html(links.length);
+	widget.$requestsNumberField.html(requests.length);
 
 	var contentToAdd = '';
-	for(var i=0; i < links.length; i++) {
-		var fromCol = "<td>" + links[i].from + "</td>";
-		var toCol = "<td>" + links[i].to + "</td>";
+	for(var i=0; i < requests.length; i++) {
+		var fromCol = "<td>" + requests[i].from + "</td>";
+		var toCol = "<td>" + requests[i].to + "</td>";
 		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
 	}
 	widget.$dialogTableBody.append(contentToAdd);

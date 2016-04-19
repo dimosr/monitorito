@@ -5,9 +5,35 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	interfaceHandler.enableWidgetDialogs();
 
     var container = $('#graph')[0];
-    var graph = new Graph(container);
-    var graphController = new GraphController(graph, interfaceHandler);
+    var options = {
+		edges: {
+			smooth: false
+		},
+		interaction: {
+			tooltipDelay: 0,
+			keyboard: true,
+			navigationButtons: true
+		},
+		physics: {
+			barnesHut: {
+				gravitationalConstant: -14000,
+				centralGravity: 0,
+				springLength: 250,
+				springConstant: 0.1,
+				avoidOverlap: 0.5
+			},
+			solver: "barnesHut"
+		}
+	};
+	var data = {
+		nodes: new vis.DataSet([]),
+		edges: new vis.DataSet([])
+	};
+    var visNetwork = new vis.Network(container, data, options);
+    var graph = new Graph(visNetwork);
 
+
+    var graphController = new GraphController(graph, interfaceHandler);
 	graphController.addSelectNodeListener(function(selectedNode) {
 		interfaceHandler.emptyEdgeStatistics();
 		interfaceHandler.showNodeStatistics(selectedNode);

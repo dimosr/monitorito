@@ -20,7 +20,7 @@ GraphController.prototype.addRequest = function(rootRequest, request) {
 		if(!this.graph.existsEdge(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url), Edge.Type.REQUEST)) {
 			this.graph.createEdge(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url), Edge.Type.REQUEST);
 		}
-		this.graph.addLinkToEdge(rootRequest.url, request.url);
+		this.graph.addRequestToEdge(rootRequest.url, request.url);
 	}
 }
 
@@ -30,7 +30,7 @@ GraphController.prototype.addRedirect = function(redirect) {
 	if(!this.graph.existsEdge(fromHostname, toHostname, Edge.Type.REDIRECT)) {
 		this.graph.createEdge(fromHostname, toHostname, Edge.Type.REDIRECT);
 	}
-	this.graph.addLinkToEdge(redirect.getInitialURL(), redirect.getFinalURL());
+	this.graph.addRequestToEdge(redirect.getInitialURL(), redirect.getFinalURL());
 
 }
 

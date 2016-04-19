@@ -8,14 +8,15 @@ QUnit.module( "graph.Node", {
 	}
 });
 
-QUnit.test("getDomain(), getID() methods and translation of type to node size", function(assert) {
+QUnit.test("getters and translation of type to node size", function(assert) {
 	var fromNode = this.fromNode;
 	var toNode = this.toNode;
 
-	assert.equal(1, fromNode.getID(), "node.getID() returns correctly the assigned id");
-	assert.equal("www.example.com", fromNode.getDomain(), "node.getDomain() returns correctly the assigned domain");
-	assert.equal(fromNode.vizNode.size, 40, "Root request nodes get big size (40)");
-	assert.equal(toNode.vizNode.size, 20, "Embedded request nodes get small size (20)");
+	assert.equal(fromNode.getID(), 1, "node.getID() returns correctly the assigned id");
+	assert.equal(fromNode.getType(), HttpRequest.Type.ROOT, "node.getID() returns correctly the assigned id");
+	assert.equal(fromNode.getDomain(), "www.example.com", "node.getDomain() returns correctly the assigned domain");
+	assert.equal(fromNode.getVizNode().size, 40, "Root request nodes get big size (40)");
+	assert.equal(toNode.getVizNode().size, 20, "Embedded request nodes get small size (20)");
 });
 
 QUnit.test("addRequest() method", function(assert) {

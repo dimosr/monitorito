@@ -1,16 +1,11 @@
 "use strict";
 
-function Graph(container) {
+function Graph(visualisationNetwork) {
 	this._nodesAutoIncrement = 0;
 	this._edgesAutoIncrement = 0;
 	this._graph = {};
 
-	var data = {
-		nodes: new vis.DataSet([]),
-		edges: new vis.DataSet([])
-	};
-	var options = Graph.getConfigurationOptions();
-	this._network = new vis.Network(container, data, options);
+	this._network = visualisationNetwork;
 	this._network.nodes = [];
 	this._network.edges = [];
 
@@ -22,18 +17,36 @@ function Graph(container) {
 	this.setupListeners();
 }
 
-Graph.prototype.existsEdge = function(fromHostname, toHostname, edgeType) {
+Graph.prototype.createEdge = function(fromHostname, toHostname, edgeType) {
 	var fromNode = this.getNode(fromHostname);
 	var toNode = this.getNode(toHostname);
-	if(!fromNode.hasEdgeTo(toNode)) return false;
+	var edge = new Edge(this._edgesAutoIncrement, edgeType, fromNode, toNode);
+	this._addEdgeToNetwork(edge);
+	this._edgesAutoIncrement++;
+
+	fromNode.addEdgeTo(toNode, edge);
+}
+
+Graph.prototype.addRequestToEdge = function(fromURL, toURL) {
+	var fromNode = this.getNode(Util.getUrlHostname(fromURL));
+	var toNode = this.getNode(Util.getUrlHostname(toURL));
+	var edge = fromNode.getEdgeTo(toNode);
+	edge.addRequest(fromURL, toURL);
+}
+
+Graph.prototype.getEdge = function(fromHostname, toHostname, edgeType) {
+	var fromNode = this.getNode(fromHostname);
+	var toNode = this.getNode(toHostname);
+	if(!fromNode.hasEdgeTo(toNode)) return null;
 	else {
 		var edge = fromNode.getEdgeTo(toNode);
-		return edge.type == edgeType;
+		if(edge.getType() == edgeType) return edge;
+		else return null;
 	}
 }
 
-Graph.prototype.existsNode = function(hostname) {
-	return hostname in this._graph;
+Graph.prototype.existsEdge = function(fromHostname, toHostname, edgeType) {
+	return this.getEdge(fromHostname, toHostname, edgeType) != null;
 }
 
 Graph.prototype.createNode = function(hostname, requestType) {
@@ -48,25 +61,12 @@ Graph.prototype.addRequestToNode = function(request) {
 	node.addRequest(request);
 }
 
-Graph.prototype.createEdge = function(fromHostname, toHostname, edgeType) {
-	var fromNode = this.getNode(fromHostname);
-	var toNode = this.getNode(toHostname);
-	var edge = new Edge(this._edgesAutoIncrement, edgeType, fromNode, toNode);
-	this._addEdgeToNetwork(edge);
-	this._edgesAutoIncrement++;
-
-	fromNode.addEdgeTo(toNode, edge);
-}
-
-Graph.prototype.addLinkToEdge = function(fromURL, toURL) {
-	var fromNode = this.getNode(Util.getUrlHostname(fromURL));
-	var toNode = this.getNode(Util.getUrlHostname(toURL));
-	var edge = fromNode.getEdgeTo(toNode);
-	edge.addRequest(fromURL, toURL);
-}
-
 Graph.prototype.getNode = function(hostname) {
 	return this._graph[hostname];
+}
+
+Graph.prototype.existsNode = function(hostname) {
+	return hostname in this._graph;
 }
 
 Graph.prototype.onSelectNode = function(callbackFunction) {
@@ -116,12 +116,12 @@ Graph.prototype.setupListeners = function() {
 
 Graph.prototype._addNodeToNetwork = function(node) {
 	this._network.nodes[this._nodesAutoIncrement] = node;
-	this._network.body.data.nodes.add(node.vizNode);
+	this._network.body.data.nodes.add(node.getVizNode());
 }
 
 Graph.prototype._addEdgeToNetwork = function(edge) {
 	this._network.edges[this._edgesAutoIncrement] = edge;
-	this._network.body.data.edges.add(edge.vizEdge)
+	this._network.body.data.edges.add(edge.getVizEdge())
 }
 
 Graph.prototype.filterNodes = function(callbackFunction) {
@@ -131,27 +131,4 @@ Graph.prototype.filterNodes = function(callbackFunction) {
 		if(callbackFunction(node)) filteredNodes.push(node);
 	}
 	return filteredNodes;
-}
-
-Graph.getConfigurationOptions = function() {
-	return {
-		edges: {
-			smooth: false
-		},
-		interaction: {
-			tooltipDelay: 0,
-			keyboard: true,
-			navigationButtons: true
-		},
-		physics: {
-			barnesHut: {
-				gravitationalConstant: -14000,
-				centralGravity: 0,
-				springLength: 250,
-				springConstant: 0.1,
-				avoidOverlap: 0.5
-			},
-			solver: "barnesHut"
-		}
-	};
 }
