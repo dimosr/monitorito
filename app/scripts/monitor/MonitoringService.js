@@ -77,6 +77,7 @@ MonitoringService.prototype.checkForRedirect = function(httpRequest) {
 	if(httpRequest.url in this._redirectedRequests) {
 		var redirect = this._redirectedRequests[httpRequest.url];
 		this.graphController.addRedirect(redirect);
+		delete this._redirectedRequests[httpRequest.url];
 	}
 }
 
