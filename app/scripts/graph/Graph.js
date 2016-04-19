@@ -124,6 +124,15 @@ Graph.prototype._addEdgeToNetwork = function(edge) {
 	this._network.body.data.edges.add(edge.vizEdge)
 }
 
+Graph.prototype.filterNodes = function(callbackFunction) {
+	var filteredNodes = [];
+	for(var hostnameKey in this._graph) {
+		var node = this._graph[hostnameKey];
+		if(callbackFunction(node)) filteredNodes.push(node);
+	}
+	return filteredNodes;
+}
+
 Graph.getConfigurationOptions = function() {
 	return {
 		edges: {

@@ -49,3 +49,9 @@ Node.buildVizNode = function(ID, size, domain) {
 Node.getFaviconURL = function(domain) {
 	return "http://www.google.com/s2/favicons?domain=" + domain;
 }
+
+Node.prototype.getEdges = function() {
+	var edges = [];
+	for(var hostnameKey in this.adjacent) edges.push(this.adjacent[hostnameKey]);
+	return edges;
+}
