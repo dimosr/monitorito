@@ -21,7 +21,7 @@ ChromeEventSource.prototype.buildHttpRequest = function(customRequest) {
 
 ChromeEventSource.prototype.buildRedirect = function(customRequest) {
 	var type = customRequest.type == "main_frame" ? HttpRequest.Type.ROOT : HttpRequest.Type.EMBEDDED;
-	return new Redirect(customRequest.url, customRequest.redirectUrl, type);
+	return new Redirect(customRequest.url, customRequest.redirectUrl, type, customRequest.timeStamp);
 }
 
 ChromeEventSource.prototype.collectRequests = function() {
