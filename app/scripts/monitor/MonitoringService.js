@@ -2,7 +2,7 @@
 
 function MonitoringService(eventSource, graphController) {
 	this._monitorEnabled = true;
-	this._requestsArchive = [];
+	this._sessionsArchive = [];
 	this._redirectsArchive = [];
 	this._excludedUrlPatterns = [];
 	this._tabSessionMap = {};
@@ -42,7 +42,7 @@ MonitoringService.prototype.onRequest = function(httpRequest, tabID) {
 			var session = this._archiveRequest(httpRequest, tabID);
 			this.graphController.addRequest(session.getRootRequest(), httpRequest);
 
-			this.checkForRedirect(httpRequest);
+			this._checkForRedirect(httpRequest);
 		}
 	}
 };
@@ -59,7 +59,7 @@ MonitoringService.prototype.onRedirect = function(redirect, tabID) {
 MonitoringService.prototype._archiveRequest = function(httpRequest, tabID) {
 	if(httpRequest.type == HttpRequest.Type.ROOT) {
 		var session = new Session(httpRequest);
-		this._requestsArchive.push(session);
+		this._sessionsArchive.push(session);
 		this._monitorTabSession(tabID, session);
 	}
 	else {
@@ -73,7 +73,7 @@ MonitoringService.prototype._archiveRedirect = function(redirect) {
 	this._redirectsArchive.push(redirect);
 }
 
-MonitoringService.prototype.checkForRedirect = function(httpRequest) {
+MonitoringService.prototype._checkForRedirect = function(httpRequest) {
 	if(httpRequest.url in this._redirectedRequests) {
 		var redirect = this._redirectedRequests[httpRequest.url];
 		this.graphController.addRedirect(redirect);
@@ -91,4 +91,12 @@ MonitoringService.prototype._monitorTabSession = function(tabID, launchedSession
 
 MonitoringService.prototype._getTabSession = function(tabID) {
 	return this._tabSessionMap[tabID].session;
+}
+
+MonitoringService.prototype.getSessionsArchive = function() {
+	return this._sessionsArchive;
+}
+
+MonitoringService.prototype.getRedirectsArchive = function() {
+	return this._redirectsArchive;
 }

@@ -1,9 +1,9 @@
 "use strict";
 
-function Redirect(fromURL, toURL, type, timestamp) {
+function Redirect(fromURL, toURL, requestType, timestamp) {
 	this._from = fromURL;
 	this._to = toURL;
-	this.type = type;
+	this.type = requestType;
 	this.timestamp = timestamp;
 }
 
