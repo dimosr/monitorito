@@ -1,6 +1,8 @@
 "use strict";
 
-function ChromeEventSource() {
+function ChromeEventSource(browserAPI) {
+	this.browserAPI = browserAPI;
+
 	EventSource.call(this);
 }
 
@@ -26,7 +28,7 @@ ChromeEventSource.prototype.buildRedirect = function(customRequest) {
 
 ChromeEventSource.prototype.collectRequests = function() {
 	var eventSource = this;
-	chrome.webRequest.onBeforeRequest.addListener(
+	this.browserAPI.webRequest.onBeforeRequest.addListener(
 		function(details) {
 			var httpRequest = eventSource.buildHttpRequest(details);
 			eventSource.notifyForRequest(httpRequest, details.tabId);
@@ -38,7 +40,7 @@ ChromeEventSource.prototype.collectRequests = function() {
 
 ChromeEventSource.prototype.collectRedirects = function() {
 	var eventSource = this;
-	chrome.webRequest.onBeforeRedirect.addListener(
+	this.browserAPI.webRequest.onBeforeRedirect.addListener(
 		function(details) {
 			var redirect = eventSource.buildRedirect(details);
 			eventSource.notifyForRedirect(redirect);

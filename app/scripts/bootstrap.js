@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		interfaceHandler.emptyEdgeStatistics();
 	});
 
-	var eventSource = new ChromeEventSource();
+	var eventSource = new ChromeEventSource(chrome);
 	eventSource.collectRequests();
 	eventSource.collectRedirects();
 
