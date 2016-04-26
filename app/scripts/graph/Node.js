@@ -77,8 +77,14 @@ Node.getFaviconURL = function(domain) {
 	return "http://www.google.com/s2/favicons?domain=" + domain;
 }
 
-Node.prototype.getEdges = function() {
+Node.prototype.getOutgoingEdges = function() {
 	var edges = [];
 	for(var hostnameKey in this._outgoing) edges.push(this._outgoing[hostnameKey].edge);
+	return edges;
+}
+
+Node.prototype.getIncomingEdges = function() {
+	var edges = [];
+	for(var hostnameKey in this._incoming) edges.push(this._incoming[hostnameKey].edge);
 	return edges;
 }

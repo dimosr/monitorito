@@ -49,10 +49,13 @@ QUnit.test("addEdgeFrom(), getEdgeFrom() and hasEdgeFrom() methods", function(as
 	assert.notOk(fromNode.hasEdgeFrom(toNode), "fromNode does not have edge from toNode");
 });
 
-QUnit.test("getEdges() method", function(assert) {
+QUnit.test("getOutgoingEdges(), getIncomingEdges() methods", function(assert) {
 	var fromNode = this.fromNode;
+	var toNode = this.toNode;
 	var edge = this.edge;
 
-	assert.equal(fromNode.getEdges().length, 1, "fromNode has only 1 edge");
-	assert.ok(fromNode.getEdges().indexOf(edge) != -1, "the added edge in returned by getEdges");
+	assert.equal(fromNode.getOutgoingEdges().length, 1, "fromNode has only 1 outgoin edge");
+	assert.ok(fromNode.getOutgoingEdges().indexOf(edge) != -1, "the added edge is returned by getOutgoingEdges");
+	assert.equal(toNode.getIncomingEdges().length, 1, "to has only 1 incoming edge");
+	assert.ok(toNode.getIncomingEdges().indexOf(edge) != -1, "the added edge in returned by getIncomingEdges");
 });
