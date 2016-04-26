@@ -26,13 +26,12 @@ html,body {
 	padding: 5px;
 }
 
+#node_widget, #edge_widget {
+	display:none;
+}
 
 #node_requests_dialog a, #edge_requests_dialog a{
 	color: white;
-}
-
-#edge_requests_opener, #node_requests_opener{
-	display: none;
 }
 
 table {

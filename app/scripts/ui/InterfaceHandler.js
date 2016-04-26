@@ -2,6 +2,7 @@
 
 function InterfaceHandler() {
 	this.nodeWidget = {
+		$container: $("#node_widget"),
 		$opener: $("#node_requests_opener"),
 		$dialogContent: $("#node_requests_dialog"),
 		$dialogTableBody: $("#node_requests_dialog tbody"),
@@ -9,6 +10,7 @@ function InterfaceHandler() {
 		$requestsNumberField: $("#node_requests_no")
 	};
 	this.edgeWidget = {
+		$container: $("#edge_widget"),
 		$opener: $("#edge_requests_opener"),
 		$dialogContent: $("#edge_requests_dialog"),
 		$dialogTableBody: $("#edge_requests_dialog tbody"),
@@ -106,7 +108,7 @@ InterfaceHandler.prototype.showNodeStatistics = function(node) {
 	widget.$dialogTableBody.append(requestsRows);
 
 	this.enablePostParamsDialog();
-	widget.$opener.show();
+	widget.$container.show();
 }
 
 InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
@@ -127,7 +129,7 @@ InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
 		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
 	}
 	widget.$dialogTableBody.append(contentToAdd);
-	widget.$opener.show();
+	widget.$container.show();
 }
 
 InterfaceHandler.prototype.emptyNodeStatistics = function() {
@@ -135,7 +137,7 @@ InterfaceHandler.prototype.emptyNodeStatistics = function() {
 	widget.$domainField.html('');
 	widget.$requestsNumberField.html('');
 	widget.$dialogTableBody.html('');
-	widget.$opener.hide();
+	widget.$container.hide();
 }
 
 InterfaceHandler.prototype.emptyEdgeStatistics = function() {
@@ -145,5 +147,5 @@ InterfaceHandler.prototype.emptyEdgeStatistics = function() {
 	widget.$to.html("");
 	widget.$requestsNumberField.html("");
 	widget.$dialogTableBody.html('');
-	widget.$opener.hide();
+	widget.$container.hide();
 }
