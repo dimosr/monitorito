@@ -25,6 +25,7 @@ Graph.prototype.createEdge = function(fromHostname, toHostname, edgeType) {
 	this._edgesAutoIncrement++;
 
 	fromNode.addEdgeTo(toNode, edge);
+	toNode.addEdgeFrom(fromNode, edge);
 }
 
 Graph.prototype.addRequestToEdge = function(fromURL, toURL) {

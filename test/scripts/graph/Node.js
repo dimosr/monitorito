@@ -5,6 +5,7 @@ QUnit.module( "graph.Node", {
 
 		this.edge = new Edge(1, Edge.Type.REQUEST, this.fromNode, this.toNode);
 		this.fromNode.addEdgeTo(this.toNode, this.edge);
+		this.toNode.addEdgeFrom(this.fromNode, this.edge);
 	}
 });
 
@@ -36,6 +37,16 @@ QUnit.test("addEdgeTo(), getEdgeTo() and hasEdgeTo() methods", function(assert) 
 	assert.equal(fromNode.getEdgeTo(toNode), edge, "added edge is successfully returned by getEdgeTo()");
 	assert.ok(fromNode.hasEdgeTo(toNode), "fromNode has edge to toNode");
 	assert.notOk(toNode.hasEdgeTo(fromNode), "toNode does not have edge to fromNode");
+});
+
+QUnit.test("addEdgeFrom(), getEdgeFrom() and hasEdgeFrom() methods", function(assert) {
+	var fromNode = this.fromNode;
+	var toNode = this.toNode;
+	var edge = this.edge;
+
+	assert.equal(toNode.getEdgeFrom(fromNode), edge, "added edge is successfully returned by getEdgeFrom()");
+	assert.ok(toNode.hasEdgeFrom(fromNode), "toNode has edge from fromNode");
+	assert.notOk(fromNode.hasEdgeFrom(toNode), "fromNode does not have edge from toNode");
 });
 
 QUnit.test("getEdges() method", function(assert) {

@@ -2,7 +2,8 @@
 
 function Node(ID, type, domain) {
 	this._type = type;
-	this._adjacent = {};
+	this._outgoing = {};
+	this._incoming = {};
 	this._requests = [];
 
 	var size = type == HttpRequest.Type.ROOT ? 40 : 20;
@@ -29,16 +30,30 @@ Node.prototype.getRequests = function() {
 	return this._requests;
 }
 
-Node.prototype.addEdgeTo = function(adjNode, edge) {
-	this._adjacent[adjNode.getDomain()] = {'edge': edge};
+Node.prototype.addEdgeTo = function(destinationNode, edge) {
+	this._outgoing[destinationNode.getDomain()] = {'edge': edge};
 }
 
-Node.prototype.getEdgeTo = function(adjNode) {
-	return this._adjacent[adjNode.getDomain()].edge;
+Node.prototype.getEdgeTo = function(destinationNode) {
+	return this._outgoing[destinationNode.getDomain()].edge;
 }
 
-Node.prototype.hasEdgeTo = function(adjNode) {
-	return adjNode.getDomain() in this._adjacent;
+Node.prototype.hasEdgeTo = function(destinationNode) {
+	return destinationNode.getDomain() in this._outgoing;
+}
+
+
+
+Node.prototype.addEdgeFrom = function(sourceNode, edge) {
+	this._incoming[sourceNode.getDomain()] = {'edge': edge};
+}
+
+Node.prototype.getEdgeFrom = function(sourceNode) {
+	return this._incoming[sourceNode.getDomain()].edge;
+}
+
+Node.prototype.hasEdgeFrom = function(sourceNode) {
+	return sourceNode.getDomain() in this._incoming;
 }
 
 Node.buildVizNode = function(ID, size, domain) {
@@ -64,6 +79,6 @@ Node.getFaviconURL = function(domain) {
 
 Node.prototype.getEdges = function() {
 	var edges = [];
-	for(var hostnameKey in this._adjacent) edges.push(this._adjacent[hostnameKey].edge);
+	for(var hostnameKey in this._outgoing) edges.push(this._outgoing[hostnameKey].edge);
 	return edges;
 }
