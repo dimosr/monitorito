@@ -47,3 +47,16 @@ QUnit.test("setFirstPartyDomainsToUI(), setThirdPartyDomainsToUI() methods", fun
 
 	mockInterfaceHandler.verify();
 });
+
+QUnit.test("enableMonitoring(), disableMonitoring() methods", function(assert) {
+	var controller = this.controller;
+	var mockMonitoringService = this.mockMonitoringService;
+
+	mockMonitoringService.expects("enable").exactly(1);
+	mockMonitoringService.expects("disable").exactly(1);
+
+	controller.enableMonitoring();
+	controller.disableMonitoring();
+
+	mockMonitoringService.verify();
+});
