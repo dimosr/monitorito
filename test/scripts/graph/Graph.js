@@ -122,3 +122,22 @@ QUnit.test("filterNodes() method returns only filtered nodes", function(assert) 
 });
 
 
+QUnit.test("notifyForNewNode(), notifyForNewEdge() methods", function(assert) {
+	var graphStatsCalculator = new GraphStatsCalculator();
+	var mockGraphStatsCalculator = sinon.mock(graphStatsCalculator);
+	var graph = this.graph;
+
+	graph.register(graphStatsCalculator);
+
+	var srcNode = sinon.createStubInstance(Node);
+	var destinationNode = sinon.createStubInstance(Node);
+	var edge = sinon.createStubInstance(Edge);
+
+	mockGraphStatsCalculator.expects("onNewNode").exactly(1).withArgs(srcNode);
+	mockGraphStatsCalculator.expects("onNewEdge").exactly(1).withArgs(srcNode, destinationNode, edge);
+
+	graph.notifyForNewNode(srcNode);
+	graph.notifyForNewEdge(srcNode, destinationNode, edge);
+
+	mockGraphStatsCalculator.verify();
+});

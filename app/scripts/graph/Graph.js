@@ -14,7 +14,23 @@ function Graph(visualisationNetwork) {
 	this._network._deselectEdgeCallback = function(deselectedEdges){};
 	this._network._deselectNodeCallback = function(deselectedNodes){};
 
+	this._observers = [];
+
 	this.setupListeners();
+}
+
+Graph.prototype.notifyForNewNode = function(node) {
+	for(var i=0; i < this._observers.length; i++) {
+		var observer = this._observers[i];
+		observer.onNewNode(node);
+	}
+}
+
+Graph.prototype.notifyForNewEdge = function(fromNode, toNode, edge) {
+	for(var i=0; i < this._observers.length; i++) {
+		var observer = this._observers[i];
+		observer.onNewEdge(fromNode, toNode, edge);
+	}
 }
 
 Graph.prototype.createEdge = function(fromHostname, toHostname, edgeType) {
@@ -26,6 +42,8 @@ Graph.prototype.createEdge = function(fromHostname, toHostname, edgeType) {
 
 	fromNode.addEdgeTo(toNode, edge);
 	toNode.addEdgeFrom(fromNode, edge);
+
+	this.notifyForNewEdge(fromNode, toNode, edge);
 }
 
 Graph.prototype.addRequestToEdge = function(fromURL, toURL) {
@@ -55,6 +73,8 @@ Graph.prototype.createNode = function(hostname, requestType) {
 	this._addNodeToNetwork(node);
 	this._graph[hostname] = node;
 	this._nodesAutoIncrement++;
+
+	this.notifyForNewNode(node);
 }
 
 Graph.prototype.addRequestToNode = function(request) {
@@ -132,4 +152,8 @@ Graph.prototype.filterNodes = function(callbackFunction) {
 		if(callbackFunction(node)) filteredNodes.push(node);
 	}
 	return filteredNodes;
+}
+
+Graph.prototype.register = function(observer) {
+	this._observers.push(observer);
 }
