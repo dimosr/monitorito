@@ -1,14 +1,17 @@
 "use strict";
 
-function GraphController(graph, interfaceHandler) {
+function GraphHandler(graph) {
 	this.graph = graph;
-	this.interfaceHandler = interfaceHandler;
 
 	this._FirstPartyDomains = 0;
 	this._ThirdPartyDomains = 0;
 }
 
-GraphController.prototype.addRequest = function(rootRequest, request) {
+GraphHandler.prototype.setController = function(controller) {
+	this.controller = controller;
+}
+
+GraphHandler.prototype.addRequest = function(rootRequest, request) {
 	if(!this.graph.existsNode(Util.getUrlHostname(request.url))) {
 		this.graph.createNode(Util.getUrlHostname(request.url), request.type);
 		if(request.type == HttpRequest.Type.ROOT) this.increaseFirstPartyDomains();
@@ -24,7 +27,7 @@ GraphController.prototype.addRequest = function(rootRequest, request) {
 	}
 }
 
-GraphController.prototype.addRedirect = function(redirect) {
+GraphHandler.prototype.addRedirect = function(redirect) {
 	var fromHostname = Util.getUrlHostname(redirect.getInitialURL());
 	var toHostname = Util.getUrlHostname(redirect.getFinalURL());
 	if(!this.graph.existsEdge(fromHostname, toHostname, Edge.Type.REDIRECT)) {
@@ -34,28 +37,28 @@ GraphController.prototype.addRedirect = function(redirect) {
 
 }
 
-GraphController.prototype.addSelectNodeListener = function(callbackFunction) {
+GraphHandler.prototype.addSelectNodeListener = function(callbackFunction) {
 	this.graph.onSelectNode(callbackFunction);
 }
 
-GraphController.prototype.addSelectEdgeListener = function(callbackFunction) {
+GraphHandler.prototype.addSelectEdgeListener = function(callbackFunction) {
 	this.graph.onSelectEdge(callbackFunction);
 }
 
-GraphController.prototype.addDeselectNodeListener = function(callbackFunction) {
+GraphHandler.prototype.addDeselectNodeListener = function(callbackFunction) {
 	this.graph.onDeselectNode(callbackFunction);
 }
 
-GraphController.prototype.addDeselectEdgeListener = function(callbackFunction) {
+GraphHandler.prototype.addDeselectEdgeListener = function(callbackFunction) {
 	this.graph.onDeselectEdge(callbackFunction);
 }
 
-GraphController.prototype.increaseFirstPartyDomains = function() {
+GraphHandler.prototype.increaseFirstPartyDomains = function() {
 	this._FirstPartyDomains++;
-	this.interfaceHandler.setFirstPartyDomains(this._FirstPartyDomains);
+	this.controller.setFirstPartyDomainsToUI(this._FirstPartyDomains);
 }
 
-GraphController.prototype.increaseThirdPartyDomains = function() {
+GraphHandler.prototype.increaseThirdPartyDomains = function() {
 	this._ThirdPartyDomains++;
-	this.interfaceHandler.setThirdPartyDomains(this._ThirdPartyDomains);
+	this.controller.setThirdPartyDomainsToUI(this._ThirdPartyDomains);
 }

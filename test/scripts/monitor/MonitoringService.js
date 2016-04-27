@@ -1,12 +1,11 @@
 QUnit.module( "monitor.MonitoringService", {
 	beforeEach: function() {
 		var eventSource = new EventSource();
-		var graph = sinon.createStubInstance(Graph);
-		var interfaceHandler = sinon.createStubInstance(InterfaceHandler);
-		var graphController = new GraphController(graph, interfaceHandler);
+		this.monitoringService = new MonitoringService(eventSource);
 
-		this.mockedGraphController = sinon.mock(graphController);
-		this.monitoringService = new MonitoringService(eventSource, graphController);
+		this.controller = new CentralController(sinon.createStubInstance(InterfaceHandler), this.monitoringService, sinon.createStubInstance(GraphHandler));
+		this.monitoringService.setController(this.controller);
+		this.mockController = sinon.mock(this.controller);
 	}
 });
 
@@ -35,37 +34,37 @@ QUnit.test("addExcludedUrlPattern(), toBeExcluded() methods", function(assert){
 
 QUnit.test("onRequest(): incoming request with monitoring service disabled", function(assert){
 	var monitoringService = this.monitoringService;
-	var mockedGraphController = this.mockedGraphController;
+	var mockController = this.mockController;
 
-	mockedGraphController.expects("addRequest").never();
+	mockController.expects("addRequestToGraph").never();
 
 	var incomingRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 	var tabId = 1;
 
 	monitoringService.disable();
 	monitoringService.onRequest(incomingRequest, tabId);
-	mockedGraphController.verify();
+	mockController.verify();
 });
 
 QUnit.test("onRequest(): incoming embedded request from not monitored session", function(assert){
 	var monitoringService = this.monitoringService;
-	var mockedGraphController = this.mockedGraphController;
+	var mockController = this.mockController;
 
-	mockedGraphController.expects("addRequest").never();
+	mockController.expects("addRequestToGraph").never();
 
 	var incomingRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.EMBEDDED);
 	var tabId = 1;
 
 	monitoringService.onRequest(incomingRequest, tabId);
-	mockedGraphController.verify();
+	mockController.verify();
 });
 
 QUnit.test("onRequest(): incoming embedded request from monitored session", function(assert){
 	var monitoringService = this.monitoringService;
-	var mockedGraphController = this.mockedGraphController;
+	var mockController = this.mockController;
 
-	mockedGraphController.expects("addRequest").exactly(2);
-	mockedGraphController.expects("addRedirect").never();
+	mockController.expects("addRequestToGraph").exactly(2);
+	mockController.expects("addRedirectToGraph").never();
 
 	var incomingRequest1 = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 	var tabId = 1;
@@ -74,7 +73,7 @@ QUnit.test("onRequest(): incoming embedded request from monitored session", func
 	var incomingRequest2 = new HttpRequest("GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
 	monitoringService.onRequest(incomingRequest2, tabId);
 
-	mockedGraphController.verify();
+	mockController.verify();
 
 	var monitoredSession = monitoringService.getSessionsArchive()[0];
 	assert.ok(monitoredSession.getRootRequest() == incomingRequest1, "First request was archived");
@@ -125,29 +124,27 @@ QUnit.test("onRedirect(): incoming Root redirect", function(assert) {
 
 QUnit.test("onRedirect(): monitored redirect not added to graph without the final request", function(assert) {
 	var monitoringService = this.monitoringService;
-	var mockedGraphController = this.mockedGraphController;
+	var mockController = this.mockController;
 
-	mockedGraphController.expects("addRedirect").never();
+	mockController.expects("addRedirectToGraph").never();
 
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.ROOT, Date.now());
 	monitoringService.onRedirect(redirect);
 
-	mockedGraphController.verify();
+	mockController.verify();
 });
 
 QUnit.test("onRedirect(): monitored redirect added to graph after final request is being received", function(assert) {
 	var monitoringService = this.monitoringService;
-	var mockedGraphController = this.mockedGraphController;
-
-	
+	var mockController = this.mockController;
 
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.ROOT, Date.now());
 	var request = new HttpRequest("GET", "http://www.example2.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 
-	mockedGraphController.expects("addRedirect").exactly(1).withArgs(redirect);
+	mockController.expects("addRedirectToGraph").exactly(1).withArgs(redirect);
 	
 	monitoringService.onRedirect(redirect);
 	monitoringService.onRequest(request);
 
-	mockedGraphController.verify();
+	mockController.verify();
 });

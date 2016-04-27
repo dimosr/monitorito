@@ -1,6 +1,6 @@
 "use strict";
 
-function MonitoringService(eventSource, graphController) {
+function MonitoringService(eventSource) {
 	this._monitorEnabled = true;
 	this._sessionsArchive = [];
 	this._redirectsArchive = [];
@@ -9,7 +9,10 @@ function MonitoringService(eventSource, graphController) {
 	this._redirectedRequests = {};
 
 	eventSource.register(this);
-	this.graphController = graphController;
+}
+
+MonitoringService.prototype.setController = function(controller) {
+	this.controller = controller;
 }
 
 MonitoringService.prototype.disable = function() {
@@ -40,7 +43,7 @@ MonitoringService.prototype.onRequest = function(httpRequest, tabID) {
 	if(this._monitorEnabled && !this.toBeExcluded(httpRequest.url)) {
 		if(this._isTabMonitored(tabID) || httpRequest.type == HttpRequest.Type.ROOT) {
 			var session = this._archiveRequest(httpRequest, tabID);
-			this.graphController.addRequest(session.getRootRequest(), httpRequest);
+			this.controller.addRequestToGraph(session.getRootRequest(), httpRequest);
 
 			this._checkForRedirect(httpRequest);
 		}
@@ -76,7 +79,7 @@ MonitoringService.prototype._archiveRedirect = function(redirect) {
 MonitoringService.prototype._checkForRedirect = function(httpRequest) {
 	if(httpRequest.url in this._redirectedRequests) {
 		var redirect = this._redirectedRequests[httpRequest.url];
-		this.graphController.addRedirect(redirect);
+		this.controller.addRedirectToGraph(redirect);
 		delete this._redirectedRequests[httpRequest.url];
 	}
 }

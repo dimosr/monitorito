@@ -14,14 +14,22 @@ html,body {
 	background-color: white;
 }
 
-#total_stats, #node_widget, #edge_widget{
+#total_stats, #node_widget, #edge_widget, #control_widget{
 	margin-bottom: 10px;
 }
 
-#total_stats, #node_widget, #edge_widget {
+#total_stats, #node_widget, #edge_widget{
 	border: 2px solid black;
 	border-radius: 5%;
 	background-color: #5c85d6;
+	font-family: "Courier New", Courier, monospace;
+	padding: 5px;
+}
+
+#control_widget {
+	border: 2px solid black;
+	border-radius: 5%;
+	background-color: #00cc99;
 	font-family: "Courier New", Courier, monospace;
 	padding: 5px;
 }
