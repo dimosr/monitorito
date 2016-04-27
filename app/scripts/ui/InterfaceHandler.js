@@ -31,16 +31,28 @@ InterfaceHandler.prototype.setController = function(controller) {
 	this.configureControlPanel();
 }
 
-InterfaceHandler.prototype.init = function() {
-	this.enableWidgetDialogs();
-}
-
 InterfaceHandler.prototype.configureControlPanel = function() {
 	$("#monitoring-switch").off("click");
 	$("#monitoring-switch").on("click", {controller: this.controller}, function(event) {
 		var controller = event.data.controller;
 		if(this.checked) controller.enableMonitoring();
 		else controller.disableMonitoring();
+	});
+}
+
+InterfaceHandler.prototype.init = function() {
+	this.enableSideWidget();
+	this.enableWidgetDialogs();
+}
+
+InterfaceHandler.prototype.enableSideWidget = function() {
+	var interfaceHandler = this;
+	$('#side-widget').slideReveal({
+  		trigger: $("#side-widget-trigger"),
+  		push: false,
+  		position: "right",
+  		width: "25%",
+  		show: interfaceHandler.showGraphStatistics()
 	});
 }
 
@@ -153,19 +165,13 @@ InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
 }
 
 InterfaceHandler.prototype.emptyNodeStatistics = function() {
-	var widget = this.nodeWidget;
-	widget.$domainField.html('');
-	widget.$requestsNumberField.html('');
-	widget.$dialogTableBody.html('');
-	widget.$container.hide();
+	this.nodeWidget.$container.hide();
 }
 
 InterfaceHandler.prototype.emptyEdgeStatistics = function() {
-	var widget = this.edgeWidget;
-	widget.$typeField.html("");
-	widget.$from.html("");
-	widget.$to.html("");
-	widget.$requestsNumberField.html("");
-	widget.$dialogTableBody.html('');
-	widget.$container.hide();
+	var widget = this.edgeWidget.$container.hide();
+}
+
+InterfaceHandler.prototype.showGraphStatistics = function() {
+
 }

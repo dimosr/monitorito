@@ -38,6 +38,23 @@ html,body {
 	display:none;
 }
 
+#side-widget{
+	background-color: #CCCCB3;
+	box-shadow: 2px 0 13px 14px #585858;
+}
+
+#side-widget-trigger {
+	background-color: #CCCCB3;
+	border-radius: 5%;
+	height: 25px;
+	width: 25px;
+	position: absolute;
+	left: -25px;
+	top: 0px;
+	right: 0;
+	cursor: pointer;
+}
+
 #node_requests_dialog a, #edge_requests_dialog a{
 	color: white;
 }

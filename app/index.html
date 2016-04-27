@@ -14,6 +14,7 @@
 
 		<!-- Libraries -->
 		<script src="lib/jquery-1.10.2/jquery.js"></script>
+		<script src="lib/jquery-slidereveal/jquery-slidereveal.min.js"></script>
 		<script src="lib/jquery-ui-1.11.4/jquery-ui.min.js"></script>
 		<script src="lib/uri/URI.js"></script>
 		<script src="lib/vis/vis.min.js"></script>
@@ -43,6 +44,7 @@
 		<div id="main-container" class="row" >
 			<div id="graph" class="columns large-9">
 			</div>
+
 			<div class="columns large-3">
 				<div class="row">
 					<div class="columns large-offset-1 large-11">
@@ -50,7 +52,7 @@
 							<div class="columns small-4 large-4">Monitoring</div>
 							<div class="columns small-8 large-8">
 								<div class="switch tiny">
-									<input class="switch-input" id="monitoring-switch" type="checkbox" name="monitor">
+									<input checked class="switch-input" id="monitoring-switch" type="checkbox" name="monitor">
 									<label class="switch-paddle" for="monitoring-switch">
 										<span class="switch-active" aria-hidden="true">Yes</span>
 										<span class="switch-inactive" aria-hidden="true">No</span>
@@ -146,6 +148,11 @@
 						</div>
 					</div>
 				</div>
+			</div>
+
+			<div id="side-widget">
+				<h5> Graph Statistics</h5>
+				<div id="side-widget-trigger"><img src="resources/img/arrow.png"></div>
 			</div>
 		</div>
 		
