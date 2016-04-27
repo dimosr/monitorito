@@ -2,7 +2,6 @@
 
 document.addEventListener("DOMContentLoaded", function(event) {
 	var interfaceHandler = new InterfaceHandler();
-	interfaceHandler.enableWidgetDialogs();
 
     var container = $('#graph')[0];
     var options = {
@@ -59,4 +58,5 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	var controller = new CentralController(interfaceHandler, monitoringService, graphHandler);
 	monitoringService.setController(controller);
 	graphHandler.setController(controller);
+	interfaceHandler.setController(controller);
 });

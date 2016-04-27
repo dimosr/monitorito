@@ -22,6 +22,26 @@ function InterfaceHandler() {
 
 	this.firstPartyContainer = $("#first_party");
 	this.thirdPartyContainer = $("#third_party");
+
+	this.init();
+}
+
+InterfaceHandler.prototype.setController = function(controller) {
+	this.controller = controller;
+	this.configureControlPanel();
+}
+
+InterfaceHandler.prototype.init = function() {
+	this.enableWidgetDialogs();
+}
+
+InterfaceHandler.prototype.configureControlPanel = function() {
+	$("#monitoring-switch").off("click");
+	$("#monitoring-switch").on("click", {controller: this.controller}, function(event) {
+		var controller = event.data.controller;
+		if(this.checked) controller.enableMonitoring();
+		else controller.disableMonitoring();
+	});
 }
 
 InterfaceHandler.prototype.enableWidgetDialogs = function() {

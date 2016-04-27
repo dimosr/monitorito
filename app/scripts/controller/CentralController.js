@@ -21,3 +21,11 @@ CentralController.prototype.setFirstPartyDomainsToUI = function(domainsNumber) {
 CentralController.prototype.setThirdPartyDomainsToUI = function(domainsNumber) {
 	this.interfaceHandler.setThirdPartyDomains(domainsNumber);
 }
+
+CentralController.prototype.enableMonitoring = function() {
+	this.monitoringService.enable();
+}
+
+CentralController.prototype.disableMonitoring = function() {
+	this.monitoringService.disable();
+}
