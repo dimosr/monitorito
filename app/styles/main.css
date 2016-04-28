@@ -45,6 +45,7 @@ html,body {
 
 #side-widget-trigger {
 	background-color: #CCCCB3;
+	box-shadow: -9px 0 8px 0px #585858;
 	border-radius: 5%;
 	height: 25px;
 	width: 25px;
