@@ -3,9 +3,11 @@
 function GraphStatsCalculator(){
 	/* Edges Statistics */
 	this.totalEdges = 0;
+
 	this.maxOutgoingEdges = 0;
 	this.minOutgoingEdges = 0;
 	this._nodesWithMinOutgoingEdges = 0;
+
 	this.maxIncomingEdges = 0;
 	this.minIncomingEdges = 0;
 	this._nodesWithMinIncomingEdges = 0;
@@ -34,7 +36,13 @@ GraphStatsCalculator.prototype.getStatistics = function() {
 }
 
 GraphStatsCalculator.prototype.onNewNode = function(node) {
-	switch(node.getType()) {
+	this.updateNodeTypesRatio(node.getType());
+	this.checkNewNodeForMinOutgoingEdges();
+	this.checkNewNodeForMinIncomingEdges();
+}
+
+GraphStatsCalculator.prototype.updateNodeTypesRatio = function(nodeType) {
+	switch(nodeType) {
 		case HttpRequest.Type.ROOT: 
 			this.rootNodes++;
 			break;
@@ -42,13 +50,17 @@ GraphStatsCalculator.prototype.onNewNode = function(node) {
 			this.embeddedNodes++;
 			break;
 	}
+}
 
+GraphStatsCalculator.prototype.checkNewNodeForMinOutgoingEdges = function() {
 	if(this.minOutgoingEdges == 0) this._nodesWithMinOutgoingEdges++;
 	else {
 		this.minOutgoingEdges = 0;
 		this._nodesWithMinOutgoingEdges = 1;
 	}
+}
 
+GraphStatsCalculator.prototype.checkNewNodeForMinIncomingEdges = function() {
 	if(this.minIncomingEdges == 0) this._nodesWithMinIncomingEdges++;
 	else {
 		this.minIncomingEdges = 0;
@@ -56,20 +68,25 @@ GraphStatsCalculator.prototype.onNewNode = function(node) {
 	}
 }
 
+
 GraphStatsCalculator.prototype.onNewEdge = function(sourceNode, destinationNode, edge) {
-	var outgoingEdges = sourceNode.getOutgoingEdges().length;
-	var incomingEdges = destinationNode.getIncomingEdges().length;
-
 	this.totalEdges++;
-	if(outgoingEdges > this.maxOutgoingEdges) this.maxOutgoingEdges = outgoingEdges;
-	if(incomingEdges > this.maxIncomingEdges) this.maxIncomingEdges = incomingEdges;
+	this.updateMaxMinOutgoingEdges(sourceNode.getOutgoingEdges().length);
+	this.updateMaxMinIncomingEdges(destinationNode.getIncomingEdges().length);	
+}
 
-	if(outgoingEdges == (this.minOutgoingEdges+1) ) {
-		if(this._nodesWithMinOutgoingEdges == 1) this.minOutgoingEdges = outgoingEdges;
+GraphStatsCalculator.prototype.updateMaxMinOutgoingEdges = function(nodeOutgoingEdges) {
+	if(nodeOutgoingEdges > this.maxOutgoingEdges) this.maxOutgoingEdges = nodeOutgoingEdges;
+	if(nodeOutgoingEdges == (this.minOutgoingEdges+1) ) {
+		if(this._nodesWithMinOutgoingEdges == 1) this.minOutgoingEdges = nodeOutgoingEdges;
 		else this._nodesWithMinOutgoingEdges--;
 	}
-	if(incomingEdges == (this.minIncomingEdges+1) ) {
-		if(this._nodesWithMinIncomingEdges == 1) this.minIncomingEdges = incomingEdges;
+}
+
+GraphStatsCalculator.prototype.updateMaxMinIncomingEdges = function(nodeIncomingEdges) {
+	if(nodeIncomingEdges > this.maxIncomingEdges) this.maxIncomingEdges = nodeIncomingEdges;
+	if(nodeIncomingEdges == (this.minIncomingEdges+1) ) {
+		if(this._nodesWithMinIncomingEdges == 1) this.minIncomingEdges = nodeIncomingEdges;
 		else this._nodesWithMinIncomingEdges--;
 	}
 }
