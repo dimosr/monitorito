@@ -43,6 +43,11 @@ html,body {
 	box-shadow: 2px 0 13px 14px #585858;
 }
 
+#statistics{
+	overflow: auto;
+	height: 100%;
+}
+
 #side-widget-trigger {
 	background-color: #CCCCB3;
 	box-shadow: -9px 0 8px 0px #585858;
