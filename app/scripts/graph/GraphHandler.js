@@ -18,8 +18,6 @@ GraphHandler.prototype.setController = function(controller) {
 GraphHandler.prototype.addRequest = function(rootRequest, request) {
 	if(!this.graph.existsNode(Util.getUrlHostname(request.url))) {
 		this.graph.createNode(Util.getUrlHostname(request.url), request.type);
-		if(request.type == HttpRequest.Type.ROOT) this.increaseFirstPartyDomains();
-		else this.increaseThirdPartyDomains();
 	}
 	this.graph.addRequestToNode(request);
 
@@ -55,14 +53,4 @@ GraphHandler.prototype.addDeselectNodeListener = function(callbackFunction) {
 
 GraphHandler.prototype.addDeselectEdgeListener = function(callbackFunction) {
 	this.graph.onDeselectEdge(callbackFunction);
-}
-
-GraphHandler.prototype.increaseFirstPartyDomains = function() {
-	this._FirstPartyDomains++;
-	this.controller.setFirstPartyDomainsToUI(this._FirstPartyDomains);
-}
-
-GraphHandler.prototype.increaseThirdPartyDomains = function() {
-	this._ThirdPartyDomains++;
-	this.controller.setThirdPartyDomainsToUI(this._ThirdPartyDomains);
 }

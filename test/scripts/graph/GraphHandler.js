@@ -121,21 +121,3 @@ QUnit.test("Listeners setup", function(assert) {
 
 	mockGraph.verify();
 });
-
-QUnit.test("increaseFirstPartyDomains(), increaseThirdPartyDomains() methods", function(assert) {
-	var graphHandler = this.graphHandler;
-	var mockController = this.mockController;
-	
-
-	mockController.expects("setFirstPartyDomainsToUI").exactly(1).withArgs(1);
-	mockController.expects("setFirstPartyDomainsToUI").exactly(1).withArgs(2);
-	mockController.expects("setThirdPartyDomainsToUI").exactly(1).withArgs(1);
-	mockController.expects("setThirdPartyDomainsToUI").exactly(1).withArgs(2);
-
-	graphHandler.increaseFirstPartyDomains();
-	graphHandler.increaseFirstPartyDomains();
-	graphHandler.increaseThirdPartyDomains();
-	graphHandler.increaseThirdPartyDomains();
-
-	mockController.verify();
-});

@@ -14,14 +14,6 @@ CentralController.prototype.addRedirectToGraph = function(redirect) {
 	this.graphHandler.addRedirect(redirect);
 }
 
-CentralController.prototype.setFirstPartyDomainsToUI = function(domainsNumber) {
-	this.interfaceHandler.setFirstPartyDomains(domainsNumber);
-}
-
-CentralController.prototype.setThirdPartyDomainsToUI = function(domainsNumber) {
-	this.interfaceHandler.setThirdPartyDomains(domainsNumber);
-}
-
 CentralController.prototype.enableMonitoring = function() {
 	this.monitoringService.enable();
 }

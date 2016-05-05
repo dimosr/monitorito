@@ -32,22 +32,6 @@ QUnit.test("addRequestToGraph(), addRedirectToGraph() methods", function(assert)
 	mockGraphHandler.verify();
 });
 
-QUnit.test("setFirstPartyDomainsToUI(), setThirdPartyDomainsToUI() methods", function(assert) {
-	var controller = this.controller;
-	var mockInterfaceHandler = this.mockInterfaceHandler;
-
-	var firstPartyDomains = Math.floor((Math.random() * 100) + 1);
-	var thirdPartyDomains = Math.floor((Math.random() * 100) + 1);
-
-	mockInterfaceHandler.expects("setFirstPartyDomains").exactly(1).withArgs(firstPartyDomains);
-	mockInterfaceHandler.expects("setThirdPartyDomains").exactly(1).withArgs(thirdPartyDomains);
-
-	controller.setFirstPartyDomainsToUI(firstPartyDomains);
-	controller.setThirdPartyDomainsToUI(thirdPartyDomains);
-
-	mockInterfaceHandler.verify();
-});
-
 QUnit.test("enableMonitoring(), disableMonitoring() methods", function(assert) {
 	var controller = this.controller;
 	var mockMonitoringService = this.mockMonitoringService;

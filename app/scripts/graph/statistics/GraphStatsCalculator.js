@@ -17,6 +17,10 @@ function GraphStatsCalculator(){
 
 GraphStatsCalculator.prototype.getStatistics = function() {
 	return {
+		nodeTypes: {
+			root: this.rootNodes,
+			embedded: this.embeddedNodes
+		},
 		totalEdges: this.totalEdges,
 		inEdges: {
 			max: this.maxIncomingEdges,

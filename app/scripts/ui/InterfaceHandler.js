@@ -20,9 +20,6 @@ function InterfaceHandler() {
 		$requestsNumberField: $("#edge_requests_no")
 	}
 
-	this.firstPartyContainer = $("#first_party");
-	this.thirdPartyContainer = $("#third_party");
-
 	this.init();
 }
 
@@ -87,14 +84,6 @@ InterfaceHandler.prototype.enablePostParamsDialog = function() {
 		$.data(this, 'dialog').dialog('open');
 		return false;  
 	});
-}
-
-InterfaceHandler.prototype.setFirstPartyDomains = function(sitesNumber) {
-	this.firstPartyContainer.html(sitesNumber);
-}
-
-InterfaceHandler.prototype.setThirdPartyDomains = function(sitesNumber) {
-	this.thirdPartyContainer.html(sitesNumber);
 }
 
 InterfaceHandler.prototype.showNodeStatistics = function(node) {

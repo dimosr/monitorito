@@ -56,6 +56,13 @@ html,body {
 	cursor: pointer;
 }
 
+#node-types {
+	width: 95% !important;
+	height: 100px !important;
+	margin: 0 auto;
+	display: block;
+}
+
 #in-edges, #out-edges {
 	width: 95% !important;
 	height: 200px !important;
