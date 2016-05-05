@@ -29,3 +29,7 @@ CentralController.prototype.enableMonitoring = function() {
 CentralController.prototype.disableMonitoring = function() {
 	this.monitoringService.disable();
 }
+
+CentralController.prototype.getGraphStatistics = function() {
+	return this.graphHandler.graphStatsCalculator.getStatistics();
+}

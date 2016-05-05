@@ -56,6 +56,13 @@ html,body {
 	cursor: pointer;
 }
 
+#in-edges, #out-edges {
+	width: 95% !important;
+	height: 200px !important;
+	margin: 0 auto;
+	display: block;
+}
+
 #node_requests_dialog a, #edge_requests_dialog a{
 	color: white;
 }

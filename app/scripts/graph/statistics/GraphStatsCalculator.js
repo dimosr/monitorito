@@ -15,6 +15,20 @@ function GraphStatsCalculator(){
 	this.rootNodes = 0;
 }
 
+GraphStatsCalculator.prototype.getStatistics = function() {
+	return {
+		totalEdges: this.totalEdges,
+		inEdges: {
+			max: this.maxIncomingEdges,
+			min: this.minIncomingEdges
+		},
+		outEdges: {
+			max: this.maxOutgoingEdges,
+			min: this.minOutgoingEdges
+		}
+	}
+}
+
 GraphStatsCalculator.prototype.onNewNode = function(node) {
 	switch(node.getType()) {
 		case HttpRequest.Type.ROOT: 

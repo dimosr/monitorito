@@ -18,10 +18,12 @@
 		<script src="lib/jquery-ui-1.11.4/jquery-ui.min.js"></script>
 		<script src="lib/uri/URI.js"></script>
 		<script src="lib/vis/vis.min.js"></script>
+		<script src="lib/chart/chart.min.js"></script>
 		<!-- Libraries -->
 
 		<script src="scripts/util/Util.js"></script>
 		<script src="scripts/ui/InterfaceHandler.js"></script>
+		<script src="scripts/ui/SideWidgetHandler.js"></script>
 
 		<script src="scripts/network/Session.js"></script>
 		<script src="scripts/network/HttpRequest.js"></script>
@@ -152,6 +154,8 @@
 
 			<div id="side-widget">
 				<h5> Graph Statistics</h5>
+				<canvas id="in-edges" ></canvas>
+				<canvas id="out-edges" ></canvas>
 				<div id="side-widget-trigger"><img src="resources/img/arrow.png"></div>
 			</div>
 		</div>

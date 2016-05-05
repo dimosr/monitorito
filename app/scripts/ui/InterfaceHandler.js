@@ -29,6 +29,8 @@ function InterfaceHandler() {
 InterfaceHandler.prototype.setController = function(controller) {
 	this.controller = controller;
 	this.configureControlPanel();
+
+	this.sideWidgetHandler = new SideWidgetHandler(this.controller);
 }
 
 InterfaceHandler.prototype.configureControlPanel = function() {
@@ -41,19 +43,7 @@ InterfaceHandler.prototype.configureControlPanel = function() {
 }
 
 InterfaceHandler.prototype.init = function() {
-	this.enableSideWidget();
 	this.enableWidgetDialogs();
-}
-
-InterfaceHandler.prototype.enableSideWidget = function() {
-	var interfaceHandler = this;
-	$('#side-widget').slideReveal({
-  		trigger: $("#side-widget-trigger"),
-  		push: false,
-  		position: "right",
-  		width: "25%",
-  		show: interfaceHandler.showGraphStatistics()
-	});
 }
 
 InterfaceHandler.prototype.enableWidgetDialogs = function() {
@@ -170,8 +160,4 @@ InterfaceHandler.prototype.emptyNodeStatistics = function() {
 
 InterfaceHandler.prototype.emptyEdgeStatistics = function() {
 	var widget = this.edgeWidget.$container.hide();
-}
-
-InterfaceHandler.prototype.showGraphStatistics = function() {
-
 }
