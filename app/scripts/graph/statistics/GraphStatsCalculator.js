@@ -93,11 +93,11 @@ GraphStatsCalculator.prototype.checkNewNodeForMinIncomingEdges = function() {
 GraphStatsCalculator.prototype.onNewEdge = function(sourceNode, destinationNode, edge) {
 	this.totalEdges++;
 	var srcOutgoingEdges = sourceNode.getOutgoingEdges().length;
-	var dstIngoingEdges = destinationNode.getIncomingEdges().length;
+	var dstIncomingEdges = destinationNode.getIncomingEdges().length;
 	this.updateMaxMinOutgoingEdges(srcOutgoingEdges);
-	this.updateMaxMinIncomingEdges(dstIngoingEdges);
+	this.updateMaxMinIncomingEdges(dstIncomingEdges);
 	this.updateAvg();
-	this.updateStdDevMetrics(srcOutgoingEdges, dstIngoingEdges);
+	this.updateStdDevMetrics(srcOutgoingEdges, dstIncomingEdges);
 }
 
 GraphStatsCalculator.prototype.updateMaxMinOutgoingEdges = function(nodeOutgoingEdges) {
