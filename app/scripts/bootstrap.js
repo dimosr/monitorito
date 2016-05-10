@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	eventSource.collectRedirects();
 
 	var monitoringService = new MonitoringService(eventSource);
-	monitoringService.addExcludedUrlPattern("https://www.google.gr/_/chrome/newtab");
+	monitoringService.addExcludedUrlPattern("/_/chrome/newtab");
 
 	var controller = new CentralController(interfaceHandler, monitoringService, graphHandler);
 	monitoringService.setController(controller);
