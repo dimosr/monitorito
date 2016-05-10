@@ -44,7 +44,7 @@ SideWidgetHandler.prototype.initialiseStatisticsGraphs = function() {
 	});
 
 	var data = {
-		labels: ["Max.", "Min."],
+		labels: ["Max.", "Avg.+S.D.", "Avg.", "Avg.-S.D.", "Min.", "Selected"],
 		datasets: [
 			{
 				label: "Incoming Edges",
@@ -53,7 +53,7 @@ SideWidgetHandler.prototype.initialiseStatisticsGraphs = function() {
 				borderWidth: 1,
 				hoverBackgroundColor: "rgba(255,117,26,0.4)",
 				hoverBorderColor: "rgba(255,117,26,1)",
-				data: [0, 0],
+				data: [0, 0, 0, 0, 0, 0],
 			}
 		]
 	};
@@ -66,7 +66,7 @@ SideWidgetHandler.prototype.initialiseStatisticsGraphs = function() {
 	});
 
 	var data = {
-		labels: ["Max.", "Min."],
+		labels: ["Max.", "Avg.+S.D.", "Avg.", "Avg.-S.D.", "Min.", "Selected"],
 		datasets: [
 			{
 				label: "Outgoing Edges",
@@ -75,7 +75,7 @@ SideWidgetHandler.prototype.initialiseStatisticsGraphs = function() {
 				borderWidth: 1,
 				hoverBackgroundColor: "rgba(230,230,0,0.4)",
 				hoverBorderColor: "rgba(230,230,0,1)",
-				data: [0, 0],
+				data: [0, 0, 0, 0, 0, 0],
 			}
 		]
 	};
@@ -102,13 +102,24 @@ SideWidgetHandler.prototype.showNodeTypesStatistics = function(graphStatistics) 
 }
 
 SideWidgetHandler.prototype.showIncomingEdgesStatistics = function(graphStatistics) {
-	var data = [graphStatistics.inEdges.max, graphStatistics.inEdges.min];
+	var stats = graphStatistics.inEdges;
+	var data = [stats.max, stats.avg+stats.stdDev, stats.avg, stats.avg-stats.stdDev, stats.min];
 	this.incomingEdgesGraph.data.datasets[0].data = data;
 	this.incomingEdgesGraph.update();
 }
 
 SideWidgetHandler.prototype.showOutgoingEdgesStatistics = function(graphStatistics) {
-	var data = [graphStatistics.outEdges.max, graphStatistics.outEdges.min];
+	var stats = graphStatistics.outEdges;
+	var data = [stats.max, stats.avg+stats.stdDev, stats.avg, stats.avg-stats.stdDev, stats.min];
 	this.outgoingEdgesGraph.data.datasets[0].data = data;
 	this.outgoingEdgesGraph.update();
 }
+
+SideWidgetHandler.prototype.updateSelectedNodeStats = function(outgoingEdges, incomingEdges) {
+	this.outgoingEdgesGraph.data.datasets[0].data[5] = outgoingEdges;
+	this.incomingEdgesGraph.data.datasets[0].data[5] = incomingEdges;
+
+	this.outgoingEdgesGraph.update();
+	this.incomingEdgesGraph.update();
+}
+
