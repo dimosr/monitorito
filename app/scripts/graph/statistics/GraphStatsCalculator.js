@@ -39,14 +39,14 @@ GraphStatsCalculator.prototype.getStatistics = function() {
 		},
 		totalEdges: this.totalEdges,
 		inEdges: {
-			avg: this.avgIncomingEdgesPerNode,
-			stdDev: this.getStdDevFromWelfordMetrics(this._M_incoming_edges, this._S_incoming_edges, this.totalNodes),
+			avg: this.roundDecimal(this.avgIncomingEdgesPerNode),
+			stdDev: this.roundDecimal(this.getStdDevFromWelfordMetrics(this._M_incoming_edges, this._S_incoming_edges, this.totalNodes)),
 			max: this.maxIncomingEdges,
 			min: this.minIncomingEdges
 		},
 		outEdges: {
-			avg: this.avgOutgoingEdgesPerNode,
-			stdDev: this.getStdDevFromWelfordMetrics(this._M_outgoing_edges, this._S_outgoing_edges, this.totalNodes),
+			avg: this.roundDecimal(this.avgOutgoingEdgesPerNode),
+			stdDev: this.roundDecimal(this.getStdDevFromWelfordMetrics(this._M_outgoing_edges, this._S_outgoing_edges, this.totalNodes)),
 			max: this.maxOutgoingEdges,
 			min: this.minOutgoingEdges
 		}
@@ -157,4 +157,8 @@ GraphStatsCalculator.prototype.executeDoubleWelfordIteration = function(M, S, va
 GraphStatsCalculator.prototype.getStdDevFromWelfordMetrics = function(M, S, n) {
 	var variance = (n > 1) ? (S/n) : 0;
 	return Math.sqrt(variance);
+}
+
+GraphStatsCalculator.prototype.roundDecimal = function(number) {
+	return Math.round(number * 1000) / 1000;
 }
