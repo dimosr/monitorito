@@ -147,9 +147,11 @@ InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
 
 InterfaceHandler.prototype.emptyNodeStatistics = function() {
 	this.nodeWidget.$container.hide();
+	this.nodeWidget.$dialogTableBody.empty();
 	this.sideWidgetHandler.updateSelectedNodeStats(0, 0);
 }
 
 InterfaceHandler.prototype.emptyEdgeStatistics = function() {
-	var widget = this.edgeWidget.$container.hide();
+	this.edgeWidget.$container.hide();
+	this.edgeWidget.$dialogTableBody.empty();
 }
