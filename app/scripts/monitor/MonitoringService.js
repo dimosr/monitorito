@@ -27,14 +27,14 @@ MonitoringService.prototype.isEnabled = function() {
 	return this._monitorEnabled;
 };
 
-MonitoringService.prototype.addExcludedUrlPattern = function(url) {
-	this._excludedUrlPatterns.push(url);
+MonitoringService.prototype.addExcludedUrlPattern = function(regExp) {
+	this._excludedUrlPatterns.push(regExp);
 }
 
 MonitoringService.prototype.toBeExcluded = function(url) {
 	for(var i=0; i < this._excludedUrlPatterns.length; i++) {
 		var excludedPattern = this._excludedUrlPatterns[i];
-		if(url.toLowerCase().search(excludedPattern.toLowerCase()) >= 0) return true;
+		if(url.search(excludedPattern) >= 0) return true;
 	}
 	return false;
 }
