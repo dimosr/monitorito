@@ -133,14 +133,16 @@ SideWidgetHandler.prototype.showNodeTypesStatistics = function(graphStatistics) 
 
 SideWidgetHandler.prototype.showIncomingEdgesStatistics = function(graphStatistics) {
 	var stats = graphStatistics.inEdges;
-	var data = [stats.max, stats.avg+stats.stdDev, stats.avg, stats.avg-stats.stdDev, stats.min];
+	var selectedNodeInEdges = this.incomingEdgesPlot.data.datasets[0].data[5];
+	var data = [stats.max, stats.avg+stats.stdDev, stats.avg, stats.avg-stats.stdDev, stats.min, selectedNodeInEdges];
 	this.incomingEdgesPlot.data.datasets[0].data = data;
 	this.incomingEdgesPlot.update();
 }
 
 SideWidgetHandler.prototype.showOutgoingEdgesStatistics = function(graphStatistics) {
 	var stats = graphStatistics.outEdges;
-	var data = [stats.max, stats.avg+stats.stdDev, stats.avg, stats.avg-stats.stdDev, stats.min];
+	var selectedNodeOutEdges = this.outgoingEdgesPlot.data.datasets[0].data[5];
+	var data = [stats.max, stats.avg+stats.stdDev, stats.avg, stats.avg-stats.stdDev, stats.min, selectedNodeOutEdges];
 	this.outgoingEdgesPlot.data.datasets[0].data = data;
 	this.outgoingEdgesPlot.update();
 }
