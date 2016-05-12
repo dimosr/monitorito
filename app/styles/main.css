@@ -61,14 +61,7 @@ html,body {
 	cursor: pointer;
 }
 
-#node-types {
-	width: 95% !important;
-	height: 100px !important;
-	margin: 0 auto;
-	display: block;
-}
-
-#in-edges, #out-edges {
+#node-types, #in-edges, #out-edges, #node-metrics {
 	width: 95% !important;
 	height: 200px !important;
 	margin: 0 auto;
