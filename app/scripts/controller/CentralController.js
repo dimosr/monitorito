@@ -27,9 +27,5 @@ CentralController.prototype.getGraphStatistics = function() {
 }
 
 CentralController.prototype.getNodeMetrics = function(node) {
-	return {
-		phishing: this.graphHandler.graphStatsCalculator.getPhishingMetric(node),
-		tracking: this.graphHandler.graphStatsCalculator.getTrackingMetric(node),
-		leaking: this.graphHandler.graphStatsCalculator.getLeakingMetric(node)
-	};
+	return this.graphHandler.graphStatsCalculator.getNodeMetrics(node);
 }

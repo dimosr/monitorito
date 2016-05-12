@@ -1,6 +1,8 @@
 "use strict";
 
 function GraphStatsCalculator(){
+	this.nodeMetricsCalculator = new NodeMetricsCalculator();
+
 	this.totalEdges = 0;
 
 	/*Outgoing Edges */
@@ -29,6 +31,10 @@ function GraphStatsCalculator(){
 	this.embeddedNodes = 0;
 	this.rootNodes = 0;
 	this.totalNodes = 0;
+}
+
+GraphStatsCalculator.prototype.getNodeMetrics = function(node) {
+	return this.nodeMetricsCalculator.getNodeMetrics(node, this.getStatistics());
 }
 
 GraphStatsCalculator.prototype.getStatistics = function() {
@@ -161,26 +167,4 @@ GraphStatsCalculator.prototype.getStdDevFromWelfordMetrics = function(M, S, n) {
 
 GraphStatsCalculator.prototype.roundDecimal = function(number) {
 	return Math.round(number * 1000) / 1000;
-}
-
-GraphStatsCalculator.prototype.getPhishingMetric = function(node) {
-	var outEdges = node.getOutgoingEdges().length; 
-	var inEdges = node.getIncomingEdges().length;
-	return (1/(1+inEdges+outEdges))*100;
-}
-
-GraphStatsCalculator.prototype.getTrackingMetric = function(node) {
-	var inEdges = node.getIncomingEdges().length;
-	return (inEdges/this.maxIncomingEdges)*100;
-}
-
-GraphStatsCalculator.prototype.getLeakingMetric = function(node) {
-	var outEdges = node.getOutgoingEdges();
-	var sum = 0;
-	for(var i = 0; i < outEdges.length; i++) {
-		var neighbourIncomingEdges = outEdges[i].getDestinationNode().getIncomingEdges().length;
-		sum += Math.pow(neighbourIncomingEdges / this.maxIncomingEdges,2)
-	}
-	sum = (sum/outEdges.length)*100;
-	return sum;
 }
