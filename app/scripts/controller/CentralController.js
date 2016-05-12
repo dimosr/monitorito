@@ -25,3 +25,11 @@ CentralController.prototype.disableMonitoring = function() {
 CentralController.prototype.getGraphStatistics = function() {
 	return this.graphHandler.graphStatsCalculator.getStatistics();
 }
+
+CentralController.prototype.getNodeMetrics = function(node) {
+	return {
+		phishing: this.graphHandler.graphStatsCalculator.getPhishingMetric(node),
+		tracking: this.graphHandler.graphStatsCalculator.getTrackingMetric(node),
+		leaking: this.graphHandler.graphStatsCalculator.getLeakingMetric(node)
+	};
+}

@@ -121,7 +121,7 @@ InterfaceHandler.prototype.showNodeStatistics = function(node) {
 	this.enablePostParamsDialog();
 	widget.$container.show();
 
-	this.sideWidgetHandler.updateSelectedNodeStats(node.getOutgoingEdges().length, node.getIncomingEdges().length);
+	this.sideWidgetHandler.updateSelectedNodeStats(node);
 }
 
 InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
@@ -148,7 +148,7 @@ InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
 InterfaceHandler.prototype.emptyNodeStatistics = function() {
 	this.nodeWidget.$container.hide();
 	this.nodeWidget.$dialogTableBody.empty();
-	this.sideWidgetHandler.updateSelectedNodeStats(0, 0);
+	this.sideWidgetHandler.updateSelectedNodeStats(null);
 }
 
 InterfaceHandler.prototype.emptyEdgeStatistics = function() {

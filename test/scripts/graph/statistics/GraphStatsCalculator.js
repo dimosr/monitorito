@@ -97,3 +97,11 @@ QUnit.test("validate calculations of average & Standard deviation", function(ass
 	assert.ok(Math.abs(statistics.inEdges.stdDev - 0.4) < 0.001, "Standard deviation of incoming Edges calculated with good precision");
 	assert.ok(Math.abs(statistics.outEdges.stdDev - 0.7483) < 0.001, "Standard deviation of outgoing Edges calculated with good precision");
 });
+
+QUnit.test("rounding", function(assert) {
+	var graphStatsCalculator = this.graphStatsCalculator;
+
+	assert.equal(graphStatsCalculator.roundDecimal(3.4566), 3.457, "Floating point number rounded to 3 decimal points correctly");
+	assert.equal(graphStatsCalculator.roundDecimal(3), 3, "Rounding for integers works correctly");
+	assert.equal(graphStatsCalculator.roundDecimal(3.1), 3.1, "Rounding for floats with few decimal points works correctly");
+});
