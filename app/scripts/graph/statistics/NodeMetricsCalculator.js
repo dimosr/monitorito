@@ -29,7 +29,8 @@ NodeMetricsCalculator.prototype.getLeakingMetric = function(node, graphStatistic
 	var outEdges = node.getOutgoingEdges();
 	var sum = 0;
 	for(var i = 0; i < outEdges.length; i++) {
-		var neighbourIncomingEdges = outEdges[i].getDestinationNode().getIncomingEdges().length;
+		var neighbourNode = outEdges[i].getDestinationNode();
+		var neighbourIncomingEdges = neighbourNode.getIncomingEdges().length;
 		sum += Math.pow(neighbourIncomingEdges / maxIncomingEdges,2)
 	}
 	sum = (sum/outEdges.length)*100;
