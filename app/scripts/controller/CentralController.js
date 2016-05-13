@@ -23,11 +23,11 @@ CentralController.prototype.disableMonitoring = function() {
 }
 
 CentralController.prototype.getGraphStatistics = function() {
-	return this.graphHandler.graphStatsCalculator.getStatistics();
+	return this.graphHandler.getGraphStatistics();
 }
 
-CentralController.prototype.getNodeMetrics = function(node) {
-	return this.graphHandler.graphStatsCalculator.getNodeMetrics(node);
+CentralController.prototype.getGraphNodeMetrics = function(node) {
+	return this.graphHandler.getGraphNodeMetrics(node);
 }
 
 CentralController.prototype.disableGraphPhysics = function() {

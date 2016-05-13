@@ -121,3 +121,16 @@ QUnit.test("Listeners setup", function(assert) {
 
 	mockGraph.verify();
 });
+
+QUnit.test("enableGraphPhysics(), disableGraphPhysics() methods", function(assert) {
+	var mockGraph = this.mockGraph;
+	var graphHandler = this.graphHandler;
+
+	mockGraph.expects("enablePhysics").exactly(1);
+	mockGraph.expects("disablePhysics").exactly(1);
+
+	graphHandler.enableGraphPhysics();
+	graphHandler.disableGraphPhysics();
+
+	mockGraph.verify();
+});

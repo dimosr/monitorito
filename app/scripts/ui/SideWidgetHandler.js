@@ -160,7 +160,7 @@ SideWidgetHandler.prototype.updateSelectedNodeStats = function(node) {
 		this.nodeMetricsPlot.data.datasets[0].data = [0, 0, 0];
 	}
 	else {
-		var metrics = this.controller.getNodeMetrics(node);
+		var metrics = this.controller.getGraphNodeMetrics(node);
 		this.nodeMetricsPlot.data.datasets[0].data[0] = metrics.phishing;
 		this.nodeMetricsPlot.data.datasets[0].data[1] = metrics.tracking;
 		this.nodeMetricsPlot.data.datasets[0].data[2] = metrics.leaking;

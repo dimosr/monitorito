@@ -15,6 +15,14 @@ GraphHandler.prototype.setController = function(controller) {
 	this.controller = controller;
 }
 
+GraphHandler.prototype.getGraphStatistics = function() {
+	return this.graphStatsCalculator.getStatistics();
+}
+
+GraphHandler.prototype.getGraphNodeMetrics = function(node) {
+	return this.graphStatsCalculator.getNodeMetrics(node);
+}
+
 GraphHandler.prototype.disableGraphPhysics = function() {
 	this.graph.disablePhysics();
 }

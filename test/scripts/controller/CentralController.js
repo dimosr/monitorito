@@ -45,6 +45,20 @@ QUnit.test("enableMonitoring(), disableMonitoring() methods", function(assert) {
 	mockMonitoringService.verify();
 });
 
+QUnit.test("getGraphStatistics(), getGraphNodeMetrics() methods", function(assert) {
+	var mockGraphHandler = this.mockGraphHandler;
+	var controller = this.controller;
+	var stubNode = sinon.createStubInstance(Node);
+
+	mockGraphHandler.expects("getGraphStatistics").exactly(1);
+	mockGraphHandler.expects("getGraphNodeMetrics").exactly(1).withArgs(stubNode);
+
+	controller.getGraphStatistics();
+	controller.getGraphNodeMetrics(stubNode);
+
+	mockGraphHandler.verify();
+});
+
 QUnit.test("enableGraphPhysics(), disableGraphPhysics() methods", function(assert) {
 	var mockGraphHandler = this.mockGraphHandler;
 	var controller = this.controller;
