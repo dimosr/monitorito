@@ -80,3 +80,7 @@ table {
 .param_key{
 	cursor: pointer;
 }
+
+.button {
+	border: groove grey 2px;
+}

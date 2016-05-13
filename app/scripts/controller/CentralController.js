@@ -22,6 +22,13 @@ CentralController.prototype.disableMonitoring = function() {
 	this.monitoringService.disable();
 }
 
+CentralController.prototype.getMonitoredData = function() {
+	return {
+		sessions: this.monitoringService.getSessionsArchive(),
+		redirects: this.monitoringService.getRedirectsArchive()
+	};
+}
+
 CentralController.prototype.getGraphStatistics = function() {
 	return this.graphHandler.getGraphStatistics();
 }

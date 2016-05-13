@@ -42,6 +42,11 @@ InterfaceHandler.prototype.configureControlPanel = function() {
 		if(this.checked) controller.enableGraphPhysics();
 		else controller.disableGraphPhysics();
 	});
+
+	$("#export-button").on("click", {controller: this.controller}, function(event) {
+		var controller = event.data.controller;
+		console.log(controller.getMonitoredData());
+	});
 }
 
 InterfaceHandler.prototype.init = function() {

@@ -45,6 +45,23 @@ QUnit.test("enableMonitoring(), disableMonitoring() methods", function(assert) {
 	mockMonitoringService.verify();
 });
 
+QUnit.test("getMonitoredData()", function(assert) {
+	var controller = this.controller;
+	var mockMonitoringService = this.mockMonitoringService;
+
+	var mockSessions = new Object();
+	var mockRedirects = new Object();
+
+	mockMonitoringService.expects("getSessionsArchive").exactly(1).returns(mockSessions);
+	mockMonitoringService.expects("getRedirectsArchive").exactly(1).returns(mockRedirects);
+
+	var monitoredData = controller.getMonitoredData();
+	assert.equal(monitoredData.sessions, mockSessions, "monitored Sessions are returned successfully");
+	assert.equal(monitoredData.redirects, mockRedirects, "monitored Redirects are returned successfully");
+
+	mockMonitoringService.verify();
+});
+
 QUnit.test("getGraphStatistics(), getGraphNodeMetrics() methods", function(assert) {
 	var mockGraphHandler = this.mockGraphHandler;
 	var controller = this.controller;
