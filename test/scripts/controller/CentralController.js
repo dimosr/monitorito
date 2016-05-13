@@ -44,3 +44,16 @@ QUnit.test("enableMonitoring(), disableMonitoring() methods", function(assert) {
 
 	mockMonitoringService.verify();
 });
+
+QUnit.test("enableGraphPhysics(), disableGraphPhysics() methods", function(assert) {
+	var mockGraphHandler = this.mockGraphHandler;
+	var controller = this.controller;
+
+	mockGraphHandler.expects("enableGraphPhysics").exactly(1);
+	mockGraphHandler.expects("disableGraphPhysics").exactly(1);
+
+	controller.enableGraphPhysics();
+	controller.disableGraphPhysics();
+
+	mockGraphHandler.verify();
+});

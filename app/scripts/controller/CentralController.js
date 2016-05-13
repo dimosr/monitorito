@@ -29,3 +29,11 @@ CentralController.prototype.getGraphStatistics = function() {
 CentralController.prototype.getNodeMetrics = function(node) {
 	return this.graphHandler.graphStatsCalculator.getNodeMetrics(node);
 }
+
+CentralController.prototype.disableGraphPhysics = function() {
+	this.graphHandler.disableGraphPhysics();
+}
+
+CentralController.prototype.enableGraphPhysics = function() {
+	this.graphHandler.enableGraphPhysics();
+}

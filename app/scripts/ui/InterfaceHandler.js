@@ -31,11 +31,16 @@ InterfaceHandler.prototype.setController = function(controller) {
 }
 
 InterfaceHandler.prototype.configureControlPanel = function() {
-	$("#monitoring-switch").off("click");
 	$("#monitoring-switch").on("click", {controller: this.controller}, function(event) {
 		var controller = event.data.controller;
 		if(this.checked) controller.enableMonitoring();
 		else controller.disableMonitoring();
+	});
+
+	$("#physics-switch").on("click", {controller: this.controller}, function(event) {
+		var controller = event.data.controller;
+		if(this.checked) controller.enableGraphPhysics();
+		else controller.disableGraphPhysics();
 	});
 }
 

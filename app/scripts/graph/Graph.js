@@ -19,6 +19,14 @@ function Graph(visualisationNetwork) {
 	this.setupListeners();
 }
 
+Graph.prototype.disablePhysics = function() {
+	this._network.setOptions({physics: {enabled: false}});
+}
+
+Graph.prototype.enablePhysics = function() {
+	this._network.setOptions({physics: {enabled: true}});
+}
+
 Graph.prototype.notifyForNewNode = function(node) {
 	for(var i=0; i < this._observers.length; i++) {
 		var observer = this._observers[i];

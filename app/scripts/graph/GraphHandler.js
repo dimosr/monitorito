@@ -15,6 +15,14 @@ GraphHandler.prototype.setController = function(controller) {
 	this.controller = controller;
 }
 
+GraphHandler.prototype.disableGraphPhysics = function() {
+	this.graph.disablePhysics();
+}
+
+GraphHandler.prototype.enableGraphPhysics = function() {
+	this.graph.enablePhysics();
+}
+
 GraphHandler.prototype.addRequest = function(rootRequest, request) {
 	if(!this.graph.existsNode(Util.getUrlHostname(request.url))) {
 		this.graph.createNode(Util.getUrlHostname(request.url), request.type);
