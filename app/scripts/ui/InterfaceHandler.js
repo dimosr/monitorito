@@ -7,7 +7,10 @@ function InterfaceHandler() {
 		$dialogContent: $("#node_requests_dialog"),
 		$dialogTableBody: $("#node_requests_dialog tbody"),
 		$domainField: $("#node_domain"),
-		$requestsNumberField: $("#node_requests_no")
+		$requestsNumberField: $("#node_requests_no"),
+		selectedNode: null,
+		requestsLoaded: false
+
 	};
 	this.edgeWidget = {
 		$container: $("#edge_widget"),
@@ -17,7 +20,9 @@ function InterfaceHandler() {
 		$typeField: $("#edge_type"),
 		$from: $("#edge_from"),
 		$to: $("#edge_to"),
-		$requestsNumberField: $("#edge_requests_no")
+		$requestsNumberField: $("#edge_requests_no"),
+		selectedEdge: null,
+		requestsLoaded: false
 	}
 
 	this.init();
@@ -63,11 +68,24 @@ InterfaceHandler.prototype.enableWidgetDialogs = function() {
 	this.nodeWidget.$dialogContent.dialog(dialogOptions);
 	this.edgeWidget.$dialogContent.dialog(dialogOptions);
  
-	this.nodeWidget.$opener.click({content: this.nodeWidget.$dialogContent}, function(event) {
-		event.data.content.dialog( "open" );
+	this.nodeWidget.$opener.click({handler: this}, function(event) {
+		var handler = event.data.handler;
+		var widget = handler.nodeWidget;
+		if(!widget.requestsLoaded) {
+			handler.loadNodeRequests(widget.selectedNode);
+			widget.requestsLoaded = true;
+		}
+		widget.$dialogContent.dialog( "open" );
 	});
-	this.edgeWidget.$opener.click({content: this.edgeWidget.$dialogContent}, function(event) {
-		event.data.content.dialog( "open" );
+
+	this.edgeWidget.$opener.click({handler: this}, function(event) {
+		var handler = event.data.handler;
+		var widget = handler.edgeWidget;
+		if(!widget.requestsLoaded) {
+			handler.loadEdgeRequests(widget.selectedEdge);
+			widget.requestsLoaded = false;
+		}
+		widget.$dialogContent.dialog( "open" );
 	});
 };
 
@@ -101,6 +119,16 @@ InterfaceHandler.prototype.showNodeStatistics = function(node) {
 	var requests = node.getRequests();
 	widget.$domainField.html(node.getDomain());
 	widget.$requestsNumberField.html(requests.length);
+	
+	widget.selectedNode = node;
+
+	widget.$container.show();
+	this.sideWidgetHandler.updateSelectedNodeStats(node);
+}
+
+InterfaceHandler.prototype.loadNodeRequests = function(node) {
+	var widget = this.nodeWidget;
+	var requests = node.getRequests();
 
 	var requestsRows = "";
 	for(var i=0; i < requests.length; i++) {
@@ -127,11 +155,7 @@ InterfaceHandler.prototype.showNodeStatistics = function(node) {
 		requestsRows += "<tr>" + typeColumn + methodColumn + urlColumn + bodyColumn + "</tr>";
 	}
 	widget.$dialogTableBody.append(requestsRows);
-
 	this.enablePostParamsDialog();
-	widget.$container.show();
-
-	this.sideWidgetHandler.updateSelectedNodeStats(node);
 }
 
 InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
@@ -144,6 +168,14 @@ InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
 	widget.$from.html(fromNode.getDomain());
 	widget.$to.html(toNode.getDomain());
 	widget.$requestsNumberField.html(requests.length);
+	widget.selectedEdge = edge;
+
+	widget.$container.show();
+}
+
+InterfaceHandler.prototype.loadEdgeRequests = function(edge) {
+	var widget = this.edgeWidget;
+	var requests = edge.getRequests();
 
 	var contentToAdd = '';
 	for(var i=0; i < requests.length; i++) {
@@ -152,16 +184,19 @@ InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
 		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
 	}
 	widget.$dialogTableBody.append(contentToAdd);
-	widget.$container.show();
 }
 
 InterfaceHandler.prototype.emptyNodeStatistics = function() {
 	this.nodeWidget.$container.hide();
+	this.nodeWidget.selectedNode = null;
+	this.nodeWidget.requestsLoaded = false;
 	this.nodeWidget.$dialogTableBody.empty();
 	this.sideWidgetHandler.updateSelectedNodeStats(null);
 }
 
 InterfaceHandler.prototype.emptyEdgeStatistics = function() {
 	this.edgeWidget.$container.hide();
+	this.edgeWidget.selectedEdge = null;
+	this.edgeWidget.requestsLoaded = false;
 	this.edgeWidget.$dialogTableBody.empty();
 }
