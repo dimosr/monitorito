@@ -9,6 +9,8 @@ function ChromeStorageService(storageEndpoint) {
 
 	this.storageEndpoint = storageEndpoint;
 
+	this.maxBatchSize = 200000000;		/* 400 MB limit (for UTF-16 encoded strings) */
+
 	this.clearStorage();
 }
 
@@ -42,38 +44,20 @@ ChromeStorageService.prototype.storeRedirect = function(redirect) {
 	this.redirectsNo++;
 }
 
-ChromeStorageService.prototype.extractData = function(callbackFunction) {
-	var storageService = this;
+ChromeStorageService.prototype.extractData = function() {
 	if(this.redirectsNo > 0) {
-		var redirectsData = Converter.createCSVRow(["From", "To", "Type", "Timestamp"]);
-		for(var i = 0; i < this.redirectsNo-1; i++) {
-			storageService.storageEndpoint.get((this.redirectID + i), function(result) {
-				var redirect = result[Object.keys(result)[0]];
-				redirectsData += Converter.redirectToCSV(redirect);
-			});
-		}
-		storageService.storageEndpoint.get((this.redirectID + (this.redirectsNo-1)), function(result) {
-			var redirect = result[Object.keys(result)[0]];
-			redirectsData += Converter.redirectToCSV(redirect);
-			saveAs(new Blob([redirectsData], {type: "text/csv"}), "redirects.csv");
-		});
+		this.extractRedirect(0, this.redirectsNo, Converter.getRedirectColumnValuesCSV(), 1);
 	}
-
 	if(this.sessionsNo > 0) {
-		var requestsData = Converter.createCSVRow(["SessionID", "Method", "URL", "Timestamp", "Body Parameters", "Type"]);
-		for(var i = 0; i < this.sessionsNo-1; i++) {
-			storageService.storageEndpoint.get((this.sessionID + i), function(result) {
-				var session = result[Object.keys(result)[0]];
-				var sessionID = Object.keys(result)[0].replace(storageService.sessionID, "");
+		this.extractSession(0, this.sessionsNo, Converter.getRequestsColumnValuesCSV(), 1);
+	}
+}
 
-				var rootRequest = session._rootRequest;
-				requestsData += Converter.requestToCSV(sessionID, rootRequest);
-				for(var j = 0; j < session._embeddedRequests.length; j++) {
-					requestsData += Converter.requestToCSV(sessionID, session._embeddedRequests[j]);
-				}
-			});
-		}
-		storageService.storageEndpoint.get((this.sessionID + (this.sessionsNo-1)), function(result) {
+ChromeStorageService.prototype.extractSession = function(index, topLimit, requestsData, batch) {
+	var fileName = "requests." + batch + ".csv";
+	var storageService = this;
+	if(index < topLimit) {
+		this.storageEndpoint.get((this.sessionID + index), function(result) {
 			var session = result[Object.keys(result)[0]];
 			var sessionID = Object.keys(result)[0].replace(storageService.sessionID, "");
 
@@ -82,8 +66,32 @@ ChromeStorageService.prototype.extractData = function(callbackFunction) {
 			for(var j = 0; j < session._embeddedRequests.length; j++) {
 				requestsData += Converter.requestToCSV(sessionID, session._embeddedRequests[j]);
 			}
-			saveAs(new Blob([requestsData], {type: "text/csv"}), "requests.csv");
+
+			if(requestsData.length < storageService.maxBatchSize) storageService.extractSession(index+1, topLimit, requestsData, batch);
+			else {
+				saveAs(new Blob([requestsData], {type: "text/csv"}), fileName);
+				if((index+1) < topLimit) storageService.extractSession(index+1, topLimit, Converter.getRequestsColumnValuesCSV(), batch+1);
+			}
+			
 		});
 	}
+	else saveAs(new Blob([requestsData], {type: "text/csv"}), fileName);
 }
 
+ChromeStorageService.prototype.extractRedirect = function(index, topLimit, redirectsData, batch) {
+	var fileName = "redirects." + batch + ".csv";
+	var storageService = this;
+	if(index < topLimit) {
+		this.storageEndpoint.get((this.redirectID + index), function(result) {
+			var redirect = result[Object.keys(result)[0]];
+			redirectsData += Converter.redirectToCSV(redirect);
+
+			if(redirectsData.length < storageService.maxBatchSize) storageService.extractRedirect(index+1, topLimit, redirectsData, batch);
+			else {
+				saveAs(new Blob([redirectsData], {type: "text/csv"}), fileName);
+				if((index+1) < topLimit) storageService.extractRedirect(index+1, topLimit, Converter.getRedirectColumnValuesCSV(), batch+1);
+			}
+		});
+	}
+	else saveAs(new Blob([redirectsData], {type: "text/csv"}), fileName);
+}

@@ -2,6 +2,14 @@
 
 function Converter() {}
 
+Converter.getRedirectColumnValuesCSV = function() {
+	return Converter.createCSVRow(["From", "To", "Type", "Timestamp"]);
+}
+
+Converter.getRequestsColumnValuesCSV = function() {
+	return Converter.createCSVRow(["SessionID", "Method", "URL", "Timestamp", "Body Parameters", "Type"]);
+}
+
 Converter.redirectToCSV = function(redirect) {
 	return Converter.createCSVRow([redirect._from, redirect._to, redirect.type, redirect.timestamp]);
 }
