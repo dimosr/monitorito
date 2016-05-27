@@ -55,7 +55,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	var monitoringService = new MonitoringService(eventSource);
 	monitoringService.addExcludedUrlPattern(new RegExp("google\.(.+)/_/chrome/newtab", "i"));
 
-	var controller = new CentralController(interfaceHandler, monitoringService, graphHandler);
+	var storageService = new ChromeStorageService(chrome.storage.local);
+
+	var controller = new CentralController(interfaceHandler, monitoringService, graphHandler, storageService);
 	monitoringService.setController(controller);
 	graphHandler.setController(controller);
 	interfaceHandler.setController(controller);

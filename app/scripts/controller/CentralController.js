@@ -1,9 +1,10 @@
 "use strict";
 
-function CentralController(interfaceHandler, monitoringService, graphHandler) {
+function CentralController(interfaceHandler, monitoringService, graphHandler, storageService) {
 	this.interfaceHandler = interfaceHandler;
 	this.monitoringService = monitoringService;
 	this.graphHandler = graphHandler;
+	this.storageService = storageService;
 }
 
 CentralController.prototype.addRequestToGraph = function(httpRootRequest, httpCurrentRequest) {
@@ -22,11 +23,9 @@ CentralController.prototype.disableMonitoring = function() {
 	this.monitoringService.disable();
 }
 
-CentralController.prototype.getMonitoredData = function() {
-	return {
-		sessions: this.monitoringService.getSessionsArchive(),
-		redirects: this.monitoringService.getRedirectsArchive()
-	};
+CentralController.prototype.extractMonitoredData = function() {
+	this.monitoringService.archiveRemainingData();
+	this.storageService.extractData();
 }
 
 CentralController.prototype.getGraphStatistics = function() {
@@ -43,4 +42,12 @@ CentralController.prototype.disableGraphPhysics = function() {
 
 CentralController.prototype.enableGraphPhysics = function() {
 	this.graphHandler.enableGraphPhysics();
+}
+
+CentralController.prototype.storeSession = function(session) {
+	this.storageService.storeSession(session);
+}
+
+CentralController.prototype.storeRedirect = function(redirect) {
+	this.storageService.storeRedirect(redirect);
 }

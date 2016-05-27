@@ -50,7 +50,7 @@ InterfaceHandler.prototype.configureControlPanel = function() {
 
 	$("#export-button").on("click", {controller: this.controller}, function(event) {
 		var controller = event.data.controller;
-		console.log(controller.getMonitoredData());
+		controller.extractMonitoredData();
 	});
 }
 

@@ -61,6 +61,9 @@ MonitoringService.prototype.onRedirect = function(redirect, tabID) {
 
 MonitoringService.prototype._archiveRequest = function(httpRequest, tabID) {
 	if(httpRequest.type == HttpRequest.Type.ROOT) {
+		var previousClosedSession = this._getTabSession(tabID);
+		if(previousClosedSession != null) this.controller.storeSession(previousClosedSession);
+
 		var session = new Session(httpRequest);
 		this._sessionsArchive.push(session);
 		this._monitorTabSession(tabID, session);
@@ -74,6 +77,7 @@ MonitoringService.prototype._archiveRequest = function(httpRequest, tabID) {
 
 MonitoringService.prototype._archiveRedirect = function(redirect) {
 	this._redirectsArchive.push(redirect);
+	this.controller.storeRedirect(redirect);
 }
 
 MonitoringService.prototype._checkForRedirect = function(httpRequest) {
@@ -82,6 +86,14 @@ MonitoringService.prototype._checkForRedirect = function(httpRequest) {
 		this.controller.addRedirectToGraph(redirect);
 		delete this._redirectedRequests[httpRequest.url];
 	}
+}
+
+MonitoringService.prototype.archiveRemainingData = function() {
+	for (var tabID in this._tabSessionMap) {
+  		var session = this._getTabSession(tabID);
+    	this.controller.storeSession(session);
+	}
+	this._tabSessionMap = {};
 }
 
 MonitoringService.prototype._isTabMonitored = function(tabID) {
@@ -93,7 +105,8 @@ MonitoringService.prototype._monitorTabSession = function(tabID, launchedSession
 }
 
 MonitoringService.prototype._getTabSession = function(tabID) {
-	return this._tabSessionMap[tabID].session;
+	if(tabID in this._tabSessionMap) return this._tabSessionMap[tabID].session;
+	else return null;
 }
 
 MonitoringService.prototype.getSessionsArchive = function() {

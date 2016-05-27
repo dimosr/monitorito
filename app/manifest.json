@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Getting started example",
-  "description": "This extension shows a Google Image search result for the current page",
+  "name": "Monitorito",
+  "description": "This extension creates a real-time visualisation of your browsing activity",
   "version": "1.0",
   "browser_action": {
     "default_icon": "icon.png"
@@ -15,6 +15,8 @@
     "webRequest",
     "http://*/",
     "https://*/",
-    "webRequestBlocking"
+    "webRequestBlocking",
+    "storage",
+    "unlimitedStorage"
   ]
 }
