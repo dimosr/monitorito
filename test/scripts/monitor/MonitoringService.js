@@ -3,7 +3,7 @@ QUnit.module( "monitor.MonitoringService", {
 		var eventSource = new EventSource();
 		this.monitoringService = new MonitoringService(eventSource);
 
-		this.controller = new CentralController(sinon.createStubInstance(InterfaceHandler), this.monitoringService, sinon.createStubInstance(GraphHandler));
+		this.controller = new CentralController(sinon.createStubInstance(InterfaceHandler), this.monitoringService, sinon.createStubInstance(GraphHandler), sinon.createStubInstance(ChromeStorageService));
 		this.monitoringService.setController(this.controller);
 		this.mockController = sinon.mock(this.controller);
 	}
@@ -63,63 +63,75 @@ QUnit.test("onRequest(): incoming embedded request from monitored session", func
 	var monitoringService = this.monitoringService;
 	var mockController = this.mockController;
 
-	mockController.expects("addRequestToGraph").exactly(2);
-	mockController.expects("addRedirectToGraph").never();
-
 	var incomingRequest1 = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 	var tabId = 1;
-	monitoringService.onRequest(incomingRequest1, tabId);
-
 	var incomingRequest2 = new HttpRequest("GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
+
+	mockController.expects("addRequestToGraph").exactly(2);
+	mockController.expects("addRedirectToGraph").never();
+	mockController.expects("storeSession").never();		//session archived only on close
+
+	monitoringService.onRequest(incomingRequest1, tabId);
 	monitoringService.onRequest(incomingRequest2, tabId);
 
 	mockController.verify();
-
-	var monitoredSession = monitoringService.getSessionsArchive()[0];
-	assert.ok(monitoredSession.getRootRequest() == incomingRequest1, "First request was archived");
-	assert.ok(monitoredSession.getEmbeddedRequests().indexOf(incomingRequest2) != -1, "Second request was archived");
 });
 
 QUnit.test("onRedirect(): incoming redirect with monitoring service disabled", function(assert) {
 	var monitoringService = this.monitoringService;
+	var mockController = this.mockController;
 
 	monitoringService.disable();
+	mockController.expects("storeRedirect").never();
 
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.ROOT, Date.now());
-	monitoringService.onRedirect(redirect);
+	var tabId = 1;
+	monitoringService.onRedirect(redirect, tabId);
 
-	assert.ok(monitoringService.getRedirectsArchive().length == 0, "No redirect has been monitored");
+	mockController.verify();
 });
 
 QUnit.test("onRedirect(): incoming redirect from not monitored session", function(assert) {
 	var monitoringService = this.monitoringService;
+	var mockController = this.mockController;
+
+	mockController.expects("storeRedirect").never();
 
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.EMBEDDED, Date.now());
-	monitoringService.onRedirect(redirect);
+	var tabId = 1;
+	monitoringService.onRedirect(redirect, tabId);
 
-	assert.ok(monitoringService.getRedirectsArchive().length == 0, "No redirect has been monitored");
+	mockController.verify();
 });
 
 QUnit.test("onRedirect(): incoming redirect from monitored session", function(assert) {
 	var monitoringService = this.monitoringService;
+	var mockController = this.mockController;
 
 	var request = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.EMBEDDED, Date.now());
-	monitoringService.onRequest(request);
-	monitoringService.onRedirect(redirect);
+	var tabId = 1;
 
-	assert.notOk(monitoringService.getRedirectsArchive().length == 0, "Redirects are being monitored");
-	assert.ok(monitoringService.getRedirectsArchive().indexOf(redirect) != -1, "Monitored redirect is being archived")
+	mockController.expects("storeRedirect").withExactArgs(redirect);
+
+	monitoringService.onRequest(request, tabId);
+	monitoringService.onRedirect(redirect, tabId);
+
+	mockController.verify();
 });
 
 QUnit.test("onRedirect(): incoming Root redirect", function(assert) {
 	var monitoringService = this.monitoringService;
+	var mockController = this.mockController;
 
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.ROOT, Date.now());
-	monitoringService.onRedirect(redirect);
+	var tabId = 1;
+	
+	mockController.expects("storeRedirect").withExactArgs(redirect);
 
-	assert.notOk(monitoringService.getRedirectsArchive().length == 0, "Redirects are being monitored");
-	assert.ok(monitoringService.getRedirectsArchive().indexOf(redirect) != -1, "Monitored redirect is being archived")
+	monitoringService.onRedirect(redirect, tabId);
+
+	mockController.verify();
 });
 
 QUnit.test("onRedirect(): monitored redirect not added to graph without the final request", function(assert) {
@@ -129,7 +141,8 @@ QUnit.test("onRedirect(): monitored redirect not added to graph without the fina
 	mockController.expects("addRedirectToGraph").never();
 
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.ROOT, Date.now());
-	monitoringService.onRedirect(redirect);
+	var tabId = 1;
+	monitoringService.onRedirect(redirect, tabId);
 
 	mockController.verify();
 });
@@ -140,11 +153,40 @@ QUnit.test("onRedirect(): monitored redirect added to graph after final request 
 
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.ROOT, Date.now());
 	var request = new HttpRequest("GET", "http://www.example2.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+	var tabId = 1;
 
 	mockController.expects("addRedirectToGraph").exactly(1).withArgs(redirect);
 	
-	monitoringService.onRedirect(redirect);
-	monitoringService.onRequest(request);
+	monitoringService.onRedirect(redirect, tabId);
+	monitoringService.onRequest(request, tabId);
+
+	mockController.verify();
+});
+
+QUnit.test("_isTabMonitored(), _getTabSession() method", function(assert) {
+	var monitoringService = this.monitoringService;
+
+	var request = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+	var tabId = 1;
+	monitoringService.onRequest(request, tabId);
+
+	assert.ok(monitoringService._isTabMonitored(1), "Tab with id 1 is monitored, since at least one request has been triggered from it");
+	assert.notOk(monitoringService._isTabMonitored(2), "Tab with id 2 is not monitored, since no request has been triggered from it");
+	assert.ok(monitoringService._getTabSession(1) != null, "a session has been created for tab 1");
+	assert.ok(monitoringService._getTabSession(2) == null, "no session has been created for tab 2");
+});
+
+QUnit.test("archiveRemainingData() method", function(assert) {
+	var monitoringService = this.monitoringService;
+	var mockController = this.mockController;
+
+	var request = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+	var tabId = 1;
+	monitoringService.onRequest(request, tabId);
+
+	mockController.expects("storeSession").once();
+
+	monitoringService.archiveRemainingData();
 
 	mockController.verify();
 });

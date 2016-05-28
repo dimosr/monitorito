@@ -2,8 +2,6 @@
 
 function MonitoringService(eventSource) {
 	this._monitorEnabled = true;
-	this._sessionsArchive = [];
-	this._redirectsArchive = [];
 	this._excludedUrlPatterns = [];
 	this._tabSessionMap = {};
 	this._redirectedRequests = {};
@@ -61,11 +59,8 @@ MonitoringService.prototype.onRedirect = function(redirect, tabID) {
 
 MonitoringService.prototype._archiveRequest = function(httpRequest, tabID) {
 	if(httpRequest.type == HttpRequest.Type.ROOT) {
-		var previousClosedSession = this._getTabSession(tabID);
-		if(previousClosedSession != null) this.controller.storeSession(previousClosedSession);
-
+		if(this._isTabMonitored(tabID)) this.controller.storeSession(this._getTabSession(tabID));	//store previous closed session
 		var session = new Session(httpRequest);
-		this._sessionsArchive.push(session);
 		this._monitorTabSession(tabID, session);
 	}
 	else {
@@ -76,7 +71,6 @@ MonitoringService.prototype._archiveRequest = function(httpRequest, tabID) {
 }
 
 MonitoringService.prototype._archiveRedirect = function(redirect) {
-	this._redirectsArchive.push(redirect);
 	this.controller.storeRedirect(redirect);
 }
 
@@ -107,12 +101,4 @@ MonitoringService.prototype._monitorTabSession = function(tabID, launchedSession
 MonitoringService.prototype._getTabSession = function(tabID) {
 	if(tabID in this._tabSessionMap) return this._tabSessionMap[tabID].session;
 	else return null;
-}
-
-MonitoringService.prototype.getSessionsArchive = function() {
-	return this._sessionsArchive;
-}
-
-MonitoringService.prototype.getRedirectsArchive = function() {
-	return this._redirectsArchive;
 }

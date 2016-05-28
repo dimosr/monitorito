@@ -11,7 +11,10 @@ QUnit.module( "controller.CentralController", {
 		var graphHandler = new GraphHandler(graph);
 		this.mockGraphHandler = sinon.mock(graphHandler);
 
-		this.controller = new CentralController(interfaceHandler, monitoringService, graphHandler);
+		var storageService = new ChromeStorageService({clear: function(){}, get: function(){}, set: function(){}});
+		this.mockStorageService = sinon.mock(storageService);
+
+		this.controller = new CentralController(interfaceHandler, monitoringService, graphHandler, storageService);
 	}
 });
 
@@ -45,21 +48,21 @@ QUnit.test("enableMonitoring(), disableMonitoring() methods", function(assert) {
 	mockMonitoringService.verify();
 });
 
-QUnit.test("getMonitoredData()", function(assert) {
+QUnit.test("extractMonitoredData()", function(assert) {
 	var controller = this.controller;
 	var mockMonitoringService = this.mockMonitoringService;
+	var mockStorageService = this.mockStorageService;
 
 	var mockSessions = new Object();
 	var mockRedirects = new Object();
 
-	mockMonitoringService.expects("getSessionsArchive").exactly(1).returns(mockSessions);
-	mockMonitoringService.expects("getRedirectsArchive").exactly(1).returns(mockRedirects);
+	mockMonitoringService.expects("archiveRemainingData").once();
+	mockStorageService.expects("extractData").once();
 
-	var monitoredData = controller.getMonitoredData();
-	assert.equal(monitoredData.sessions, mockSessions, "monitored Sessions are returned successfully");
-	assert.equal(monitoredData.redirects, mockRedirects, "monitored Redirects are returned successfully");
+	var monitoredData = controller.extractMonitoredData();
 
 	mockMonitoringService.verify();
+	mockStorageService.verify();
 });
 
 QUnit.test("getGraphStatistics(), getGraphNodeMetrics() methods", function(assert) {
@@ -87,4 +90,20 @@ QUnit.test("enableGraphPhysics(), disableGraphPhysics() methods", function(asser
 	controller.disableGraphPhysics();
 
 	mockGraphHandler.verify();
+});
+
+QUnit.test("storeSession(), storeRedirect() methods", function(assert) {
+	var mockStorageService = this.mockStorageService;
+	var controller = this.controller;
+
+	var session = sinon.createStubInstance(Session);
+	var redirect = sinon.createStubInstance(Redirect);
+
+	mockStorageService.expects("storeSession").once().withExactArgs(session);
+	mockStorageService.expects("storeRedirect").once().withExactArgs(redirect);
+
+	controller.storeSession(session);
+	controller.storeRedirect(redirect);
+
+	mockStorageService.verify();
 });
