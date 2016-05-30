@@ -1,9 +1,14 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function(event) {
+	var bootstrapper = new Bootstrapper();
+	bootstrapper.showMenu();
+});
+
+function Bootstrapper() {
 	var interfaceHandler = new InterfaceHandler();
 
-    var container = $('#graph')[0];
+	var container = $('#graph')[0];
     var options = {
 		edges: {
 			smooth: false
@@ -61,4 +66,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	monitoringService.setController(controller);
 	graphHandler.setController(controller);
 	interfaceHandler.setController(controller);
-});
+
+	this.interfaceHandler = interfaceHandler;
+	this.graph = graph;
+	this.graphHandler = graphHandler;
+	this.storageService = storageService;
+	this.monitoringService = monitoringService;
+	this.controller = controller;
+}
+
+Bootstrapper.prototype.showMenu = function() {
+	this.interfaceHandler.showModeMenu(this);
+}
+
+Bootstrapper.prototype.setMode = function(onlineModeEnabled) {
+	if(onlineModeEnabled) console.log("online");
+	else console.log("offline");
+}

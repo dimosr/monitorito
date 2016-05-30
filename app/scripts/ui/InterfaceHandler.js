@@ -23,7 +23,8 @@ function InterfaceHandler() {
 		$requestsNumberField: $("#edge_requests_no"),
 		selectedEdge: null,
 		requestsLoaded: false
-	}
+	};
+	this.modeMenu = $("#mode-dialog");
 
 	this.init();
 }
@@ -87,7 +88,29 @@ InterfaceHandler.prototype.enableWidgetDialogs = function() {
 		}
 		widget.$dialogContent.dialog( "open" );
 	});
-};
+}
+
+InterfaceHandler.prototype.showModeMenu = function(bootstrapper) {
+	var interfaceHandler = this;
+	$("#online-mode").click({callback: bootstrapper}, function(event){
+		event.data.callback.setMode(true);
+		interfaceHandler.modeMenu.dialog("close");
+	});
+	$("#offline-mode").click({callback: bootstrapper}, function(event){
+		event.data.callback.setMode(false);
+		interfaceHandler.modeMenu.dialog("close");
+	});
+
+	this.modeMenu.dialog({
+		autoOpen: true,
+		draggable: false,
+		modal: true,
+		title: "Select Mode",
+		width: $(window).width()*0.7,
+		closeOnEscape: false,
+    	dialogClass: "noclose"
+	});
+}
 
 InterfaceHandler.prototype.enablePostParamsDialog = function() {
 	$('.param_key').each(function() {  

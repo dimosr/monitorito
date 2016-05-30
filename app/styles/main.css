@@ -72,6 +72,25 @@ html,body {
 	color: white;
 }
 
+#mode-dialog .header{
+	text-align: center;
+	font-weight: bold;
+}
+
+#mode-dialog img{
+	border-radius: 3%;
+}
+
+#mode-dialog .option{
+	border: groove grey 3px;
+	border-radius: 2%;
+	cursor: pointer;
+}
+
+#mode-dialog .option:hover{
+	border: groove white 3px;
+}
+
 table {
     table-layout: fixed;
     word-wrap:break-word;
@@ -83,4 +102,8 @@ table {
 
 .button {
 	border: groove grey 2px;
+}
+
+.noclose .ui-dialog-titlebar-close{
+    display:none;
 }
