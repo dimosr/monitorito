@@ -2,7 +2,6 @@ QUnit.module( "graph.Graph", {
 	/* Testing Graph with-without visualisation enabled
 	   Stubbed visualisation network is used when enabled*/
 	beforeEach: function() {
-		eventHandlers = {};
 		var visNetwork = {
 			body: {
 				data: {
@@ -11,12 +10,13 @@ QUnit.module( "graph.Graph", {
 				}
 			},
 			on: function(event, callback){
-				eventHandlers[event] = callback;
+				this.eventHandlers[event] = callback;
 			},
 			triggerEvent: function(event, eventParams) {
-				eventHandlers[event].call(this, eventParams);
+				this.eventHandlers[event].call(this, eventParams);
 			},
-			setOptions: function(options) {}
+			setOptions: function(options) {},
+			eventHandlers : {}
 		};
 		this.graph = new Graph(visNetwork);
 

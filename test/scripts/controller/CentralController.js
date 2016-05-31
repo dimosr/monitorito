@@ -7,8 +7,7 @@ QUnit.module( "controller.CentralController", {
 		this.mockMonitoringService = sinon.mock(monitoringService);
 
 		var visNetwork = sinon.createStubInstance(vis.Network);
-		var graph = new Graph(visNetwork);
-		var graphHandler = new GraphHandler(graph);
+		var graphHandler = new GraphHandler();
 		this.mockGraphHandler = sinon.mock(graphHandler);
 
 		var storageService = new ChromeStorageService({clear: function(){}, get: function(){}, set: function(){}});
@@ -106,4 +105,52 @@ QUnit.test("storeSession(), storeRedirect() methods", function(assert) {
 	controller.storeRedirect(redirect);
 
 	mockStorageService.verify();
+});
+
+QUnit.test("setGraphMode(Graph.Mode.ONLINE) test", function(assert) {
+	var controller = this.controller;
+	var mockGraphHandler = this.mockGraphHandler;
+	var mockInterfaceHandler = this.mockInterfaceHandler;
+
+	mockInterfaceHandler.expects("getGraphDomElement").returns(jQuery("<div>")[0]);
+	mockGraphHandler.expects("setGraph").exactly(1);
+	mockGraphHandler.expects("addSelectNodeListener").exactly(1);
+	mockGraphHandler.expects("addSelectEdgeListener").exactly(1);
+	mockGraphHandler.expects("addDeselectNodeListener").exactly(1);
+	mockGraphHandler.expects("addDeselectEdgeListener").exactly(1);
+
+	controller.setGraphMode(Graph.Mode.ONLINE);
+
+	mockGraphHandler.verify();
+});
+
+QUnit.test("setGraphMode(Graph.Mode.OFFLINE) test", function(assert) {
+	var controller = this.controller;
+	var mockGraphHandler = this.mockGraphHandler;
+	var mockInterfaceHandler = this.mockInterfaceHandler;
+
+	mockInterfaceHandler.expects("disableVisualisation").exactly(1);
+	mockGraphHandler.expects("setGraph").exactly(1);
+
+	controller.setGraphMode(Graph.Mode.OFFLINE);
+
+	mockGraphHandler.verify();
+});
+
+QUnit.test("setGraphMode(Graph.Mode.ONLINE) test with non-compliant parameters", function(assert) {
+	var controller = this.controller;
+
+	assert.throws(
+	function() {
+		controller.setGraphMode(Graph.Mode.ONLINE)
+	}, "ONLINE mode should be provided with the corresponding DOM element for the vis Graph");
+});
+
+QUnit.test("setGraphMode(mode) with mode not belonging in Graph.Mode values", function(assert) {
+	var controller = this.controller;
+
+	assert.throws(
+	function() {
+		controller.setGraphMode(new Object())
+	}, "Exception is raised, if provided mode is not valid");
 });

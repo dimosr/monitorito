@@ -233,3 +233,7 @@ InterfaceHandler.prototype.emptyEdgeStatistics = function() {
 	this.edgeWidget.requestsLoaded = false;
 	this.edgeWidget.$dialogTableBody.empty();
 }
+
+InterfaceHandler.prototype.getGraphDomElement = function() {
+	return this.graphContainer[0];
+}

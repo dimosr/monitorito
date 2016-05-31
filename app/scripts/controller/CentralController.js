@@ -55,34 +55,9 @@ CentralController.prototype.storeRedirect = function(redirect) {
 CentralController.prototype.setGraphMode = function(mode) {
 	var graphHandler = this.graphHandler;
 	var interfaceHandler = this.interfaceHandler;
+	var factory = new GraphFactory();
 	if(mode == Graph.Mode.ONLINE) {
-		var container = $('#graph')[0];
-	    var options = {
-			edges: {
-				smooth: false
-			},
-			interaction: {
-				tooltipDelay: 0,
-				keyboard: true,
-				navigationButtons: true
-			},
-			physics: {
-				barnesHut: {
-					gravitationalConstant: -14000,
-					centralGravity: 0,
-					springLength: 250,
-					springConstant: 0.1,
-					avoidOverlap: 0.5
-				},
-				solver: "barnesHut"
-			}
-		};
-		var data = {
-			nodes: new vis.DataSet([]),
-			edges: new vis.DataSet([])
-		};
-	    var visNetwork = new vis.Network(container, data, options);
-	    var graph = new Graph(visNetwork);
+	    var graph = factory.buildGraph(Graph.Mode.ONLINE, interfaceHandler.getGraphDomElement());
 
 	    graphHandler.setGraph(graph);
 	    graphHandler.addSelectNodeListener(function(selectedNode) {
@@ -102,7 +77,10 @@ CentralController.prototype.setGraphMode = function(mode) {
 	}
 	else if(mode == Graph.Mode.OFFLINE){
 		interfaceHandler.disableVisualisation();
-		var graph = new Graph(null);
+		var graph = factory.buildGraph(Graph.Mode.OFFLINE, null);
 		graphHandler.setGraph(graph);
+	}
+	else {
+		throw new Error("Provided mode invalid: not a Graph.Mode value");
 	}
 }

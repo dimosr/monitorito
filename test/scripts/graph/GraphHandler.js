@@ -3,7 +3,8 @@ QUnit.module( "graph.GraphHandler", {
 	   Behaviour of GraphHandler should be the same, no matter if
 	   graph with visualisation is enabled */
 	beforeEach: function() {
-		var graph = new Graph(null);
+		var factory = new GraphFactory();
+		var graph = factory.buildGraph(Graph.Mode.OFFLINE, null);
 		var graphStatsCalculator = new GraphStatsCalculator();
 		this.graphHandler = new GraphHandler(graphStatsCalculator);
 		this.graphHandler.setGraph(graph);
