@@ -1,14 +1,15 @@
 "use strict";
 
-function GraphHandler(graph) {
-	this.graphStatsCalculator = new GraphStatsCalculator();
-
-	this.graph = graph;
-	this.graph.register(this.graphStatsCalculator);
-
+function GraphHandler(graphStatsCalculator) {
+	this.graphStatsCalculator = graphStatsCalculator;
 
 	this._FirstPartyDomains = 0;
 	this._ThirdPartyDomains = 0;
+}
+
+GraphHandler.prototype.setGraph = function(graph) {
+	this.graph = graph;
+	this.graph.register(this.graphStatsCalculator);
 }
 
 GraphHandler.prototype.setController = function(controller) {

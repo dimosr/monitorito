@@ -1,7 +1,9 @@
 QUnit.module( "graph.Graph", {
+	/* Testing Graph with-without visualisation enabled
+	   Stubbed visualisation network is used when enabled*/
 	beforeEach: function() {
 		eventHandlers = {};
-		this.visNetwork = {
+		var visNetwork = {
 			body: {
 				data: {
 					edges: {add: function(){}},
@@ -11,12 +13,15 @@ QUnit.module( "graph.Graph", {
 			on: function(event, callback){
 				eventHandlers[event] = callback;
 			},
-			_selectEdgeCallback: function(){},
-			_selectNodeCallback: function(){},
-			_deselectEdgeCallback: function(){},
-			_deselectNodeCallback: function(){}
+			triggerEvent: function(event, eventParams) {
+				eventHandlers[event].call(this, eventParams);
+			},
+			setOptions: function(options) {}
 		};
-		this.graph = new Graph(this.visNetwork);
+		this.graph = new Graph(visNetwork);
+
+		this.network = visNetwork;
+		this.mockNetwork = sinon.mock(visNetwork);
 	}
 });
 
@@ -46,35 +51,50 @@ QUnit.test("createNode(), existsNode(), addRequestToNode() methods", function(as
 	assert.ok(graph.getNode("www.example.com").getRequests().indexOf(request) != -1, "Added request exists in node");
 });
 
-QUnit.test("setup listeners", function(assert) {
-	var network = this.visNetwork;
+QUnit.test("Testing setupListeners() method, checking if assigned callback function is called properly", function(assert) {
+	var network = this.network;
+	var mockNetwork = this.mockNetwork;
 	var graph = this.graph;
+	var callback = sinon.spy();
 
-	var fromNode = new Node(1, HttpRequest.Type.ROOT, "www.example.com");
-	var toNode = new Node(2, HttpRequest.Type.EMBEDDED, "www.dependency.com");
-	var edge = new Edge(1, Edge.Type.REQUEST, fromNode, toNode);
+	graph.createNode("www.example.com", HttpRequest.Type.ROOT);
+	graph.createNode("www.dependency.com", HttpRequest.Type.EMBEDDED);
+	graph.createEdge("www.dependency.com", "www.example.com", Edge.Type.REQUEST);
 
-	var mockedNetwork = sinon.mock(network);
 
-	mockedNetwork.expects("_selectNodeCallback").exactly(1);
-	eventHandlers["select"].call(network, {nodes: [fromNode], edges: []});
-	mockedNetwork.verify();
+	network.triggerEvent("select", {nodes: [1], edges: []});
+	sinon.assert.notCalled(callback);
+	graph.onSelectNode(callback);
+	network.triggerEvent("select", {nodes: [1], edges: []});
+	sinon.assert.calledOnce(callback);
+	
+	callback.reset();
 
-	mockedNetwork.expects("_selectEdgeCallback").exactly(1);
-	eventHandlers["select"].call(network, {nodes: [], edges: [edge]});
-	mockedNetwork.verify();
+	network.triggerEvent("select", {nodes: [], edges: [1]});
+	sinon.assert.notCalled(callback);
+	graph.onSelectEdge(callback);
+	network.triggerEvent("select", {nodes: [], edges: [1]});
+	sinon.assert.calledOnce(callback);
 
-	mockedNetwork.expects("_deselectNodeCallback").exactly(1);
-	eventHandlers["deselectNode"].call(network, {previousSelection: {nodes: [fromNode], edges: []}});
-	mockedNetwork.verify();
+	callback.reset();
 
-	mockedNetwork.expects("_deselectEdgeCallback").exactly(1);
-	eventHandlers["deselectEdge"].call(network, {previousSelection: {nodes: [], edges: [edge]}});
-	mockedNetwork.verify();
+	network.triggerEvent("deselectNode", {previousSelection: {nodes: [1], edges: []}});
+	sinon.assert.notCalled(callback);
+	graph.onDeselectNode(callback);
+	network.triggerEvent("deselectNode", {previousSelection: {nodes: [1], edges: []}});
+	sinon.assert.calledOnce(callback);
+
+	callback.reset();
+
+	network.triggerEvent("deselectEdge", {previousSelection: {nodes: [], edges: [1]}});
+	sinon.assert.notCalled(callback);
+	graph.onDeselectEdge(callback);
+	network.triggerEvent("deselectEdge", {previousSelection: {nodes: [], edges: [1]}});
+	sinon.assert.calledOnce(callback);
 });
 
 QUnit.test("_addNodeToNetwork() method calls method body.data.nodes.add() of visNetwork", function(assert) {
-	var network = this.visNetwork;
+	var network = this.network;
 	var graph = this.graph;
 
 	var mockedNetworkNodes = sinon.mock(network.body.data.nodes);
@@ -87,7 +107,7 @@ QUnit.test("_addNodeToNetwork() method calls method body.data.nodes.add() of vis
 });
 
 QUnit.test("_addEdgeToNetwork() method calls method body.data.edges.add() of visNetwork", function(assert) {
-	var network = this.visNetwork;
+	var network = this.network;
 	var graph = this.graph;
 
 	var mockedNetworkEdges = sinon.mock(network.body.data.edges);
@@ -140,4 +160,18 @@ QUnit.test("notifyForNewNode(), notifyForNewEdge() methods", function(assert) {
 	graph.notifyForNewEdge(srcNode, destinationNode, edge);
 
 	mockGraphStatsCalculator.verify();
+});
+
+QUnit.test("disablePhysics(), enablePhysics() methods", function(assert) {
+	var graph = this.graph;
+	var network = this.visNetwork;
+	var mockNetwork = this.mockNetwork;
+
+	mockNetwork.expects("setOptions").exactly(1).withArgs(sinon.match({physics: {enabled: false}}));
+	mockNetwork.expects("setOptions").exactly(1).withArgs(sinon.match({physics: {enabled: true}}));
+
+	graph.enablePhysics();
+	graph.disablePhysics();
+
+	mockNetwork.verify();
 });

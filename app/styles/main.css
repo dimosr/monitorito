@@ -12,6 +12,13 @@ html,body {
 	border: 2px solid black;
 	border-radius: 5%;
 	background-color: white;
+	height: 100%;
+	padding: 0px;
+}
+
+.disabled {
+	background-image: url("/resources/img/disabled_grid.jpg");
+	background-size: 25% auto;
 }
 
 #total_stats, #node_widget, #edge_widget, #control_widget{

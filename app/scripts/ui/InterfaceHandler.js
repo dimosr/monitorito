@@ -25,6 +25,9 @@ function InterfaceHandler() {
 		requestsLoaded: false
 	};
 	this.modeMenu = $("#mode-dialog");
+	this.graphContainer = $("#graph");
+
+	this.physicsSwitchContainer = $("#physics-switch-container");
 
 	this.init();
 }
@@ -34,6 +37,7 @@ InterfaceHandler.prototype.setController = function(controller) {
 	this.configureControlPanel();
 
 	this.sideWidgetHandler = new SideWidgetHandler(this.controller);
+	this.showModeMenu();
 }
 
 InterfaceHandler.prototype.configureControlPanel = function() {
@@ -90,14 +94,15 @@ InterfaceHandler.prototype.enableWidgetDialogs = function() {
 	});
 }
 
-InterfaceHandler.prototype.showModeMenu = function(bootstrapper) {
-	var interfaceHandler = this;
-	$("#online-mode").click({callback: bootstrapper}, function(event){
-		event.data.callback.setMode(true);
+InterfaceHandler.prototype.showModeMenu = function() {
+	$("#online-mode").click({interfaceHandler: this}, function(event){
+		var interfaceHandler = event.data.interfaceHandler;
+		interfaceHandler.controller.setGraphMode(Graph.Mode.ONLINE);
 		interfaceHandler.modeMenu.dialog("close");
 	});
-	$("#offline-mode").click({callback: bootstrapper}, function(event){
-		event.data.callback.setMode(false);
+	$("#offline-mode").click({interfaceHandler: this}, function(event){
+		var interfaceHandler = event.data.interfaceHandler;
+		interfaceHandler.controller.setGraphMode(Graph.Mode.OFFLINE);
 		interfaceHandler.modeMenu.dialog("close");
 	});
 
@@ -110,6 +115,11 @@ InterfaceHandler.prototype.showModeMenu = function(bootstrapper) {
 		closeOnEscape: false,
     	dialogClass: "noclose"
 	});
+}
+
+InterfaceHandler.prototype.disableVisualisation = function() {
+	this.graphContainer.addClass("disabled");
+	this.physicsSwitchContainer.hide();
 }
 
 InterfaceHandler.prototype.enablePostParamsDialog = function() {

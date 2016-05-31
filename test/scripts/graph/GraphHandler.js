@@ -1,28 +1,30 @@
 QUnit.module( "graph.GraphHandler", {
+	/* Unit tests for the case of graph with visualisation enabled 
+	   Behaviour of GraphHandler should be the same, no matter if
+	   graph with visualisation is enabled */
 	beforeEach: function() {
-		var visNetwork = sinon.createStubInstance(vis.Network);
-		this.graph = new Graph(visNetwork);
-		this.mockGraph = sinon.mock(this.graph);
-
-		this.graphHandler = new GraphHandler(this.graph);
+		var graph = new Graph(null);
+		var graphStatsCalculator = new GraphStatsCalculator();
+		this.graphHandler = new GraphHandler(graphStatsCalculator);
+		this.graphHandler.setGraph(graph);
 		this.controller = new CentralController(sinon.createStubInstance(InterfaceHandler), sinon.createStubInstance(MonitoringService), this.graphHandler);
 		this.graphHandler.setController(this.controller);
+		
+		this.mockGraph = sinon.mock(graph);
+		this.mockGraphStatsCalculator = sinon.mock(graphStatsCalculator);
 		this.mockController = sinon.mock(this.controller);
 	}
 });
 
 QUnit.test("addRequest() with existing node, between different domains and with existing edge", function(assert) {
-	var graph = this.graph;
 	var mockGraph = this.mockGraph;
 	var graphHandler = this.graphHandler;
-	var existsEdge = sinon.stub(graph, "existsEdge");
-	var existsNode = sinon.stub(graph, "existsNode");
 	
 	var rootRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 	var request = new HttpRequest("GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
 
-	existsEdge.onCall(0).returns(true);
-	existsNode.onCall(0).returns(true);
+	mockGraph.expects("existsEdge").onCall(0).returns(true);
+	mockGraph.expects("existsNode").onCall(0).returns(true);
 	mockGraph.expects("addRequestToNode").exactly(1).withArgs(request);
 	mockGraph.expects("addRequestToEdge").exactly(1).withArgs(rootRequest.url, request.url);
 	mockGraph.expects("createEdge").never();
@@ -32,15 +34,13 @@ QUnit.test("addRequest() with existing node, between different domains and with 
 });
 
 QUnit.test("addRequest() without existing node, between same domains", function(assert) {
-	var graph = this.graph;
 	var mockGraph = this.mockGraph;
 	var graphHandler = this.graphHandler;
-	var existsNode = sinon.stub(graph, "existsNode");
 	
 	var rootRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 	var request = new HttpRequest("GET", "http://www.example.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
 
-	existsNode.onCall(0).returns(false);
+	mockGraph.expects("existsNode").onCall(0).returns(false);
 	mockGraph.expects("createNode").exactly(1).withArgs(Util.getUrlHostname(request.url), request.type);
 	mockGraph.expects("addRequestToNode").exactly(1).withArgs(request);
 	mockGraph.expects("createEdge").never();
@@ -50,17 +50,14 @@ QUnit.test("addRequest() without existing node, between same domains", function(
 });
 
 QUnit.test("addRequest() with existing node, between different domains without existing edge", function(assert) {
-	var graph = this.graph;
 	var mockGraph = this.mockGraph;
 	var graphHandler = this.graphHandler;
-	var existsNode = sinon.stub(graph, "existsNode");
-	var existsEdge = sinon.stub(graph, "existsEdge");
 	
 	var rootRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 	var request = new HttpRequest("GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
 
-	existsNode.onCall(0).returns(true);
-	existsEdge.onCall(0).returns(false);
+	mockGraph.expects("existsNode").onCall(0).returns(true);
+	mockGraph.expects("existsEdge").onCall(0).returns(false);
 	mockGraph.expects("createNode").never();
 	mockGraph.expects("addRequestToNode").exactly(1);
 	mockGraph.expects("createEdge").exactly(1);
@@ -72,12 +69,10 @@ QUnit.test("addRequest() with existing node, between different domains without e
 
 
 QUnit.test("addRedirect() without existing edge", function(assert){
-	var graph = this.graph;
 	var mockGraph = this.mockGraph;
 	var graphHandler = this.graphHandler;
-	var existsEdge = sinon.stub(graph, "existsEdge");
 	
-	existsEdge.onCall(0).returns(false);
+	mockGraph.expects("existsEdge").onCall(0).returns(false);
 	mockGraph.expects("createEdge").exactly(1);
 	mockGraph.expects("addRequestToEdge").exactly(1);
 
@@ -87,12 +82,10 @@ QUnit.test("addRedirect() without existing edge", function(assert){
 });
 
 QUnit.test("addRedirect() with existing edge", function(assert){
-	var graph = this.graph;
 	var mockGraph = this.mockGraph;
 	var graphHandler = this.graphHandler;
-	var existsEdge = sinon.stub(graph, "existsEdge");
 	
-	existsEdge.onCall(0).returns(true);
+	mockGraph.expects("existsEdge").onCall(0).returns(true);
 	mockGraph.expects("createEdge").never();
 	mockGraph.expects("addRequestToEdge").exactly(1);
 
@@ -133,4 +126,18 @@ QUnit.test("enableGraphPhysics(), disableGraphPhysics() methods", function(asser
 	graphHandler.disableGraphPhysics();
 
 	mockGraph.verify();
+});
+
+QUnit.test("getGraphStatistics(), getGraphNodeMetrics() methods", function(assert) {
+	var graphHandler = this.graphHandler;
+	var mockGraphStatsCalculator = this.mockGraphStatsCalculator;
+	var node = sinon.createStubInstance(Node);
+
+	mockGraphStatsCalculator.expects("getStatistics").exactly(1);
+	mockGraphStatsCalculator.expects("getNodeMetrics").exactly(1).withArgs(node);
+
+	graphHandler.getGraphStatistics();
+	graphHandler.getGraphNodeMetrics(node);
+
+	mockGraphStatsCalculator.verify();
 });
