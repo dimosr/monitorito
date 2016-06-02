@@ -14,17 +14,6 @@ Converter.redirectToCSV = function(redirect) {
 	return Converter.createCSVRow([redirect._from, redirect._to, redirect.type, redirect.timestamp]);
 }
 
-Converter.sessionToCSV = function(sessionID, session) {
-	var sessionCSV = "";
-
-	var rootRequest = session._rootRequest;
-	sessionCSV += Converter.requestToCSV(sessionID, rootRequest);
-	for(var i = 0; i < session._embeddedRequests.length; i++) {
-		sessionCSV += Converter.requestToCSV(sessionID, session._embeddedRequests[i]);
-	}
-	return sessionCSV;
-}
-
 Converter.requestToCSV = function(sessionID, request) {
 	return Converter.createCSVRow([sessionID, request.method, request.url, request.timestamp, this.mapToCSVCell(request.bodyParams), request.type]);
 }

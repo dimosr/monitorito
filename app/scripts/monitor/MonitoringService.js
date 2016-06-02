@@ -7,6 +7,8 @@ function MonitoringService(eventSource) {
 	this._redirectedRequests = {};
 
 	eventSource.register(this);
+
+	this.sessionIncrement = 1;
 }
 
 MonitoringService.prototype.setController = function(controller) {
@@ -59,14 +61,14 @@ MonitoringService.prototype.onRedirect = function(redirect, tabID) {
 
 MonitoringService.prototype._archiveRequest = function(httpRequest, tabID) {
 	if(httpRequest.type == HttpRequest.Type.ROOT) {
-		if(this._isTabMonitored(tabID)) this.controller.storeSession(this._getTabSession(tabID));	//store previous closed session
-		var session = new Session(httpRequest);
+		var session = new Session(this.sessionIncrement++, httpRequest);
 		this._monitorTabSession(tabID, session);
 	}
 	else {
 		var session = this._getTabSession(tabID);
 		session.addEmbeddedRequest(httpRequest);
 	}
+	this.controller.storeRequest(session.id, httpRequest);
 	return session;
 }
 
@@ -80,14 +82,6 @@ MonitoringService.prototype._checkForRedirect = function(httpRequest) {
 		this.controller.addRedirectToGraph(redirect);
 		delete this._redirectedRequests[httpRequest.url];
 	}
-}
-
-MonitoringService.prototype.archiveRemainingData = function() {
-	for (var tabID in this._tabSessionMap) {
-  		var session = this._getTabSession(tabID);
-    	this.controller.storeSession(session);
-	}
-	this._tabSessionMap = {};
 }
 
 MonitoringService.prototype._isTabMonitored = function(tabID) {

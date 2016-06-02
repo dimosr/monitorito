@@ -1,7 +1,7 @@
 QUnit.module( "network.Session", {
 	beforeEach: function() {
 		this.rootRequest = new HttpRequest("POST", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
-		this.session = new Session(this.rootRequest);
+		this.session = new Session(1, this.rootRequest);
 	}
 });
 

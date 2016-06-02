@@ -1,6 +1,7 @@
 "use strict";
 
-function Session(rootRequest) {
+function Session(ID, rootRequest) {
+	this.id = ID;
 
 	this._embeddedRequests = [];
 	this._rootRequest = rootRequest;

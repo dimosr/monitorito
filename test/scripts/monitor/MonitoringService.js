@@ -69,7 +69,7 @@ QUnit.test("onRequest(): incoming embedded request from monitored session", func
 
 	mockController.expects("addRequestToGraph").exactly(2);
 	mockController.expects("addRedirectToGraph").never();
-	mockController.expects("storeSession").never();		//session archived only on close
+	mockController.expects("storeRequest").exactly(2);
 
 	monitoringService.onRequest(incomingRequest1, tabId);
 	monitoringService.onRequest(incomingRequest2, tabId);
@@ -174,19 +174,4 @@ QUnit.test("_isTabMonitored(), _getTabSession() method", function(assert) {
 	assert.notOk(monitoringService._isTabMonitored(2), "Tab with id 2 is not monitored, since no request has been triggered from it");
 	assert.ok(monitoringService._getTabSession(1) != null, "a session has been created for tab 1");
 	assert.ok(monitoringService._getTabSession(2) == null, "no session has been created for tab 2");
-});
-
-QUnit.test("archiveRemainingData() method", function(assert) {
-	var monitoringService = this.monitoringService;
-	var mockController = this.mockController;
-
-	var request = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
-	var tabId = 1;
-	monitoringService.onRequest(request, tabId);
-
-	mockController.expects("storeSession").once();
-
-	monitoringService.archiveRemainingData();
-
-	mockController.verify();
 });

@@ -27,15 +27,16 @@ QUnit.test("clearStorage() method", function(assert) {
 	mockStorageEndpoint.verify();
 });
 
-QUnit.test("storeSession() method, calling persistence storage successfully", function(assert) {
+QUnit.test("storeRequest() method, calling persistence storage successfully", function(assert) {
 	var storageService = this.storageService;
 	var mockStorageEndpoint = this.mockStorageEndpoint;
 
-	var session = sinon.createStubInstance(Session);
+	var sessionID = 1;
+	var request = sinon.createStubInstance(HttpRequest);
 
 	mockStorageEndpoint.expects("set").once();
 
-	storageService.storeSession(session);
+	storageService.storeRequest(sessionID, request);
 	mockStorageEndpoint.verify();
 });
 
@@ -68,10 +69,10 @@ QUnit.test("extractData() with stored data calles Downloader with correct format
 
 	mockStorageEndpoint.expects("get").atLeast(1);
 
+	var sessionID = 1;
 	var request = new HttpRequest("GET", "http://www.example.com", 0, {}, HttpRequest.Type.ROOT);
-	var session = new Session(request);
 	var redirect = new Redirect("http://www.example.com", "https://www.example.com", HttpRequest.Type.ROOT, 0);
-	storageService.storeSession(session);
+	storageService.storeRequest(sessionID, request);
 	storageService.storeRedirect(redirect);
 
 	storageService.extractData();

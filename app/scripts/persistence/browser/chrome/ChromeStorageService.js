@@ -1,10 +1,10 @@
 "use strict";
 
 function ChromeStorageService(storageEndpoint, downloader) {
-	this.sessionsNo = 0;
+	this.requestsNo = 0;
 	this.redirectsNo = 0;
 
-	this.sessionID = "session-";
+	this.requestID = "request-";
 	this.redirectID = "redirect-";
 
 	this.storageEndpoint = storageEndpoint;
@@ -19,17 +19,17 @@ ChromeStorageService.prototype.clearStorage = function() {
 	this.storageEndpoint.clear();
 }
 
-ChromeStorageService.prototype.storeSession = function(session) {
-	var id = this.sessionID + this.sessionsNo;
-	var sessionToStore = {};
-	sessionToStore[id] = session;
-	this.storageEndpoint.set(sessionToStore, function() {
+ChromeStorageService.prototype.storeRequest = function(sessionID, request) {
+	var id = this.requestID + this.requestsNo;
+	var requestToStore = {};
+	requestToStore[id] = {'sessionID': sessionID, 'request': request};
+	this.storageEndpoint.set(requestToStore, function() {
 		if (chrome.runtime.lastError) {
 			console.log("Error while trying to write to Chrome storage:" + id);
 			console.log(chrome.runtime.lastError.message);
 		}
 	});
-	this.sessionsNo++;
+	this.requestsNo++;
 }
 
 ChromeStorageService.prototype.storeRedirect = function(redirect) {
@@ -49,25 +49,26 @@ ChromeStorageService.prototype.extractData = function() {
 	if(this.redirectsNo > 0) {
 		this._extractRedirect(0, this.redirectsNo, Converter.getRedirectColumnValuesCSV(), 1);
 	}
-	if(this.sessionsNo > 0) {
-		this._extractSession(0, this.sessionsNo, Converter.getRequestsColumnValuesCSV(), 1);
+	if(this.requestsNo > 0) {
+		this._extractRequest(0, this.requestsNo, Converter.getRequestsColumnValuesCSV(), 1);
 	}
 }
 
-ChromeStorageService.prototype._extractSession = function(index, topLimit, requestsData, batch) {
+ChromeStorageService.prototype._extractRequest = function(index, topLimit, requestData, batch) {
 	var fileName = "requests." + batch + ".csv";
 	var storageService = this;
-	if(index < topLimit && requestsData.length < storageService.maxBatchSize) {
-		this.storageEndpoint.get((this.sessionID + index), function(result) {
-			var session = result[Object.keys(result)[0]];
-			var sessionID = Object.keys(result)[0].replace(storageService.sessionID, "");
-			requestsData += Converter.sessionToCSV(sessionID, session); 
-			storageService._extractSession(index+1, topLimit, requestsData, batch);
+	if(index < topLimit && requestData.length < storageService.maxBatchSize) {
+		this.storageEndpoint.get((this.requestID + index), function(result) {
+			var data = result[Object.keys(result)[0]];
+			//var requestID = Object.keys(result)[0].replace(storageService.requestID, "");
+			//requestData += Converter.sessionToCSV(sessionID, session);
+			requestData += Converter.requestToCSV(data.sessionID, data.request); 
+			storageService._extractRequest(index+1, topLimit, requestData, batch);
 		});
 	}
 	else {
-		this.downloader.saveFileAs(requestsData, "text/csv", fileName);
-		if((index+1) < topLimit) this._extractSession(index+1, topLimit, Converter.getRequestsColumnValuesCSV(), batch+1);
+		this.downloader.saveFileAs(requestData, "text/csv", fileName);
+		if((index+1) < topLimit) this._extractRequest(index+1, topLimit, Converter.getRequestsColumnValuesCSV(), batch+1);
 	}
 }
 

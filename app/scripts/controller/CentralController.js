@@ -24,7 +24,6 @@ CentralController.prototype.disableMonitoring = function() {
 }
 
 CentralController.prototype.extractMonitoredData = function() {
-	this.monitoringService.archiveRemainingData();
 	this.storageService.extractData();
 }
 
@@ -44,8 +43,8 @@ CentralController.prototype.enableGraphPhysics = function() {
 	this.graphHandler.enableGraphPhysics();
 }
 
-CentralController.prototype.storeSession = function(session) {
-	this.storageService.storeSession(session);
+CentralController.prototype.storeRequest = function(sesssionID, request) {
+	this.storageService.storeRequest(sesssionID, request);
 }
 
 CentralController.prototype.storeRedirect = function(redirect) {

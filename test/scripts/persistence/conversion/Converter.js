@@ -30,19 +30,6 @@ QUnit.test("redirectToCSV() method", function(assert) {
 	assert.equal(actualCSV, expectedCSV, "Redirect is converted correctly.");
 });
 
-QUnit.test("sessionToCSV() method", function(assert) {
-	var rootRequest = new HttpRequest("GET", "http://www.example.com", 0, {}, HttpRequest.Type.ROOT);
-	var embeddedRequest = new HttpRequest("GET", "http://www.library.com", 5, {}, HttpRequest.Type.EMBEDDED);
-	var session = new Session(rootRequest);
-	session.addEmbeddedRequest(embeddedRequest);
-	var sessionID = 1;
-
-	var actualCSV = Converter.sessionToCSV(sessionID, session);
-	var expectedCSV = Converter.requestToCSV(sessionID, rootRequest) + Converter.requestToCSV(sessionID, embeddedRequest);
-
-	assert.equal(actualCSV, expectedCSV, "Session is converted correctly.");
-});
-
 QUnit.test("requestToCSV() method", function(assert) {
 	var request = new HttpRequest("GET", "http://www.example.com", 0, {}, HttpRequest.Type.ROOT);
 	var sessionID = 1;

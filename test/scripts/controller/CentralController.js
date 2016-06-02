@@ -55,7 +55,6 @@ QUnit.test("extractMonitoredData()", function(assert) {
 	var mockSessions = new Object();
 	var mockRedirects = new Object();
 
-	mockMonitoringService.expects("archiveRemainingData").once();
 	mockStorageService.expects("extractData").once();
 
 	var monitoredData = controller.extractMonitoredData();
@@ -91,17 +90,18 @@ QUnit.test("enableGraphPhysics(), disableGraphPhysics() methods", function(asser
 	mockGraphHandler.verify();
 });
 
-QUnit.test("storeSession(), storeRedirect() methods", function(assert) {
+QUnit.test("storeRequest(), storeRedirect() methods", function(assert) {
 	var mockStorageService = this.mockStorageService;
 	var controller = this.controller;
 
-	var session = sinon.createStubInstance(Session);
+	var sessionID = 1;
+	var request = sinon.createStubInstance(HttpRequest);
 	var redirect = sinon.createStubInstance(Redirect);
 
-	mockStorageService.expects("storeSession").once().withExactArgs(session);
+	mockStorageService.expects("storeRequest").once().withExactArgs(sessionID, request);
 	mockStorageService.expects("storeRedirect").once().withExactArgs(redirect);
 
-	controller.storeSession(session);
+	controller.storeRequest(sessionID, request);
 	controller.storeRedirect(redirect);
 
 	mockStorageService.verify();
