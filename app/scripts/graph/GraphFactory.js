@@ -17,10 +17,10 @@ GraphFactory.prototype.buildGraph = function(mode, graphElement) {
 			},
 			physics: {
 				barnesHut: {
-					gravitationalConstant: -14000,
+					gravitationalConstant: -80000,
 					centralGravity: 0.1,
-					springLength: 400,
-					springConstant: 0.1,
+					springLength: 200,
+					springConstant: 0.001,
 					avoidOverlap: 0.5,
 				},
 				solver: "barnesHut"

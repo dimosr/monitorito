@@ -13,8 +13,8 @@
   "permissions": [
     "tabs",
     "webRequest",
-    "http://*/",
-    "https://*/",
+    "http://*/*",
+    "https://*/*",
     "webRequestBlocking",
     "storage",
     "unlimitedStorage"

@@ -6,6 +6,11 @@ function HttpRequest(method, url, timestamp, bodyParams, type) {
 	this.timestamp = timestamp;
 	this.bodyParams = bodyParams;
 	this.type = type;
+	this.headers = {};
+}
+
+HttpRequest.prototype.setHeaders = function(headers) {
+	this.headers = headers;
 }
 
 HttpRequest.Type = {

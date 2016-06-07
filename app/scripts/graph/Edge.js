@@ -1,52 +1,46 @@
 "use strict";
 
-function Edge(ID, type, fromNode, toNode) {
-	this._type = type;
-	this._from = fromNode;
-	this._to = toNode;
-	this._links = [];
-
-	this._vizEdge = Edge.buildVizEdge(ID, type, fromNode, toNode);
-}
+function Edge() {}
 
 Edge.Type = {
-	REQUEST: {name: "Request", dashes: false},
-	REDIRECT: {name: "Redirect", dashes: true},
+	REQUEST: {
+		name: "Request Edge", 
+		color: 'grey', 
+		width: 4, 
+		dashes: false,
+		arrows: {to: true, from: false}
+	},
+	REFERRAL: {
+		name: "Referrer Edge", 
+		color: 'red', 
+		width: 4, 
+		dashes: false,
+		arrows: {to: true, from: false}
+	},
+	REDIRECT: {
+		name: "Redirect Edge", 
+		color: 'grey', 
+		width: 2, 
+		dashes: true,
+		arrows: {to: true, from: false}
+	},
+	DOMAIN: {
+		name: "Belongs (to domain) Edge", 
+		color: 'blue', 
+		width: 3, 
+		dashes: true,
+		arrows: {to: true, from: true}
+	}
 }
 
-Edge.prototype.addRequest = function(fromURL, toURL) {
-	this._links.push({from: fromURL, to: toURL});
-}
-
-Edge.prototype.getRequests = function() {
-	return this._links;
-}
-
-Edge.prototype.getSourceNode = function() {
-	return this._from;
-}
-
-Edge.prototype.getDestinationNode = function() {
-	return this._to;
-}
-
-Edge.prototype.getType = function() {
-	return this._type;
-}
-
-Edge.prototype.getVizEdge = function() {
-	return this._vizEdge
-}
-
-Edge.buildVizEdge = function(ID, type, fromNode, toNode){
+Edge.getVisSettings = function(fromNode, toNode, edgeType, edgeID){
 	return {
-		id: ID,
-		arrows: {
-			to: {scaleFactor: 1}
-		},
+		id: edgeID,
+		arrows: edgeType.arrows,
 		from: fromNode.getID(),
 		to: toNode.getID(),
-		width: 3,
-		dashes: type.dashes
+		color: edgeType.color,
+		width: edgeType.width,
+		dashes: edgeType.dashes
 	}
 }

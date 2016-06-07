@@ -7,12 +7,16 @@ function CentralController(interfaceHandler, monitoringService, graphHandler, st
 	this.storageService = storageService;
 }
 
-CentralController.prototype.addRequestToGraph = function(httpRootRequest, httpCurrentRequest) {
-	this.graphHandler.addRequest(httpRootRequest, httpCurrentRequest);
+CentralController.prototype.addResourceToGraph = function(httpRootRequest, httpCurrentRequest) {
+	this.graphHandler.addResource(httpRootRequest, httpCurrentRequest);
 }
 
 CentralController.prototype.addRedirectToGraph = function(redirect) {
 	this.graphHandler.addRedirect(redirect);
+}
+
+CentralController.prototype.addReferralToGraph = function(sourceURL, destinationURL, rootURL) {
+	this.graphHandler.addReferral(sourceURL, destinationURL, rootURL);
 }
 
 CentralController.prototype.enableMonitoring = function() {

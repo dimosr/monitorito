@@ -32,28 +32,42 @@ GraphHandler.prototype.enableGraphPhysics = function() {
 	this.graph.enablePhysics();
 }
 
-GraphHandler.prototype.addRequest = function(rootRequest, request) {
-	if(!this.graph.existsNode(Util.getUrlHostname(request.url))) {
-		this.graph.createNode(Util.getUrlHostname(request.url), request.type);
+GraphHandler.prototype.addResource = function(rootRequest, request) {
+	if(!this.graph.existsResourceNode(request.url)) {
+		this.graph.createResourceNode(request.url);
+		this.addResourceToDomain(request.url, Util.getUrlHostname(request.url));
 	}
-	this.graph.addRequestToNode(request);
+	this.graph.addRequestToResourceNode(request);
+	if(request.type == HttpRequest.Type.EMBEDDED) this.graph.createResourcesEdge(rootRequest.url, request.url, Edge.Type.REQUEST);
+}
 
-	if( Util.getUrlHostname(rootRequest.url) != Util.getUrlHostname(request.url) ) {
-		if(!this.graph.existsEdge(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url), Edge.Type.REQUEST)) {
-			this.graph.createEdge(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url), Edge.Type.REQUEST);
-		}
-		this.graph.addRequestToEdge(rootRequest.url, request.url);
-	}
+GraphHandler.prototype.addResourceToDomain = function(URL, domain) {
+	if(!this.graph.existsDomainNode(domain)) this.graph.createDomainNode(domain);
+	this.graph.createDomainEdge(URL, domain);
 }
 
 GraphHandler.prototype.addRedirect = function(redirect) {
-	var fromHostname = Util.getUrlHostname(redirect.getInitialURL());
+	if(!this.graph.existsResourceNode(redirect.getFinalURL()) ) {
+		this.graph.createResourceNode(redirect.getFinalURL());
+		this.addResourceToDomain(redirect.getFinalURL(), Util.getUrlHostname(redirect.getFinalURL()));
+	}
+	this.graph.createResourcesEdge(redirect.getInitialURL(), redirect.getFinalURL(), Edge.Type.REDIRECT);
+	/*var fromHostname = Util.getUrlHostname(redirect.getInitialURL());
 	var toHostname = Util.getUrlHostname(redirect.getFinalURL());
 	if(!this.graph.existsEdge(fromHostname, toHostname, Edge.Type.REDIRECT)) {
 		this.graph.createEdge(fromHostname, toHostname, Edge.Type.REDIRECT);
 	}
 	this.graph.addRequestToEdge(redirect.getInitialURL(), redirect.getFinalURL());
+	*/
+}
 
+GraphHandler.prototype.addReferral = function(sourceURL, destinationURL, rootURL) {
+	if(!this.graph.existsResourceNode(sourceURL) ) {
+		this.graph.createResourceNode(sourceURL);
+		this.addResourceToDomain(sourceURL, Util.getUrlHostname(sourceURL));
+	}
+	this.graph.createResourcesEdge(sourceURL, destinationURL, Edge.Type.REFERRAL);
+	this.graph.removeResourcesEdge(rootURL, destinationURL, Edge.Type.REQUEST)
 }
 
 GraphHandler.prototype.addSelectNodeListener = function(callbackFunction) {

@@ -149,14 +149,11 @@ InterfaceHandler.prototype.enablePostParamsDialog = function() {
 
 InterfaceHandler.prototype.showNodeStatistics = function(node) {
 	var widget = this.nodeWidget;
-	var requests = node.getRequests();
-	widget.$domainField.html(node.getDomain());
-	widget.$requestsNumberField.html(requests.length);
+	widget.$domainField.html(node.id);
 	
 	widget.selectedNode = node;
 
 	widget.$container.show();
-	this.sideWidgetHandler.updateSelectedNodeStats(node);
 }
 
 InterfaceHandler.prototype.loadNodeRequests = function(node) {
@@ -192,18 +189,6 @@ InterfaceHandler.prototype.loadNodeRequests = function(node) {
 }
 
 InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
-	var widget = this.edgeWidget;
-	var fromNode = edge.getSourceNode();
-	var toNode = edge.getDestinationNode();
-	var requests = edge.getRequests();
-
-	widget.$typeField.html(edge.getType().name);
-	widget.$from.html(fromNode.getDomain());
-	widget.$to.html(toNode.getDomain());
-	widget.$requestsNumberField.html(requests.length);
-	widget.selectedEdge = edge;
-
-	widget.$container.show();
 }
 
 InterfaceHandler.prototype.loadEdgeRequests = function(edge) {

@@ -1,10 +1,11 @@
 "use strict";
 
 function Graph(visualisationNetwork) {
-	this._nodesAutoIncrement = 0;
-	this._edgesAutoIncrement = 0;
-	this._graph = {};
+	this.edgesIncrement = 1;
 	this._observers = [];
+
+	this.domainNodes = {};
+	this.resourceNodes = {};
 
 	if(visualisationNetwork != null) {
 		this.buildGraphWithVisualisation(visualisationNetwork);
@@ -15,8 +16,8 @@ function Graph(visualisationNetwork) {
 
 Graph.prototype.buildGraphWithVisualisation = function(visualisationNetwork) {
 	this._network = visualisationNetwork;
-	this._network.nodes = [];
-	this._network.edges = [];
+	this._network.nodes = this._network.body.data.nodes._data;
+	this._network.edges = this._network.body.data.edges._data;
 
 	this._setupListeners();
 	this._network._selectEdgeCallback = function(selectedEdge){};
@@ -37,6 +38,10 @@ Graph.prototype.enablePhysics = function() {
 	else this._network.setOptions({physics: {enabled: true}});
 }
 
+Graph.prototype.register = function(observer) {
+	this._observers.push(observer);
+}
+
 Graph.prototype.notifyForNewNode = function(node) {
 	for(var i=0; i < this._observers.length; i++) {
 		var observer = this._observers[i];
@@ -49,63 +54,6 @@ Graph.prototype.notifyForNewEdge = function(fromNode, toNode, edge) {
 		var observer = this._observers[i];
 		observer.onNewEdge(fromNode, toNode, edge);
 	}
-}
-
-Graph.prototype.createEdge = function(fromHostname, toHostname, edgeType) {
-	var fromNode = this.getNode(fromHostname);
-	var toNode = this.getNode(toHostname);
-	var edge = new Edge(this._edgesAutoIncrement, edgeType, fromNode, toNode);
-	this._edgesAutoIncrement++;
-	if(this.mode == Graph.Mode.ONLINE) this._addEdgeToNetwork(edge);
-
-	fromNode.addEdgeTo(toNode, edge);
-	toNode.addEdgeFrom(fromNode, edge);
-
-	this.notifyForNewEdge(fromNode, toNode, edge);
-}
-
-Graph.prototype.addRequestToEdge = function(fromURL, toURL) {
-	var fromNode = this.getNode(Util.getUrlHostname(fromURL));
-	var toNode = this.getNode(Util.getUrlHostname(toURL));
-	var edge = fromNode.getEdgeTo(toNode);
-	edge.addRequest(fromURL, toURL);
-}
-
-Graph.prototype.getEdge = function(fromHostname, toHostname, edgeType) {
-	var fromNode = this.getNode(fromHostname);
-	var toNode = this.getNode(toHostname);
-	if(!fromNode.hasEdgeTo(toNode)) return null;
-	else {
-		var edge = fromNode.getEdgeTo(toNode);
-		if(edge.getType() == edgeType) return edge;
-		else return null;
-	}
-}
-
-Graph.prototype.existsEdge = function(fromHostname, toHostname, edgeType) {
-	return this.getEdge(fromHostname, toHostname, edgeType) != null;
-}
-
-Graph.prototype.createNode = function(hostname, requestType) {
-	var node = new Node(this._nodesAutoIncrement, requestType, hostname);
-	this._graph[hostname] = node;
-	this._nodesAutoIncrement++;
-	if(this.mode == Graph.Mode.ONLINE) this._addNodeToNetwork(node);
-
-	this.notifyForNewNode(node);
-}
-
-Graph.prototype.addRequestToNode = function(request) {
-	var node = this._graph[Util.getUrlHostname(request.url)];
-	node.addRequest(request);
-}
-
-Graph.prototype.getNode = function(hostname) {
-	return this._graph[hostname];
-}
-
-Graph.prototype.existsNode = function(hostname) {
-	return hostname in this._graph;
 }
 
 Graph.prototype.onSelectNode = function(callbackFunction) {
@@ -160,16 +108,6 @@ Graph.prototype._setupListeners = function() {
 	}
 }
 
-Graph.prototype._addNodeToNetwork = function(node) {
-	this._network.nodes[this._nodesAutoIncrement] = node;
-	this._network.body.data.nodes.add(node.getVizNode());
-}
-
-Graph.prototype._addEdgeToNetwork = function(edge) {
-	this._network.edges[this._edgesAutoIncrement] = edge;
-	this._network.body.data.edges.add(edge.getVizEdge())
-}
-
 Graph.prototype.filterNodes = function(callbackFunction) {
 	var filteredNodes = [];
 	for(var hostnameKey in this._graph) {
@@ -179,11 +117,84 @@ Graph.prototype.filterNodes = function(callbackFunction) {
 	return filteredNodes;
 }
 
-Graph.prototype.register = function(observer) {
-	this._observers.push(observer);
-}
-
 Graph.Mode = {
 	ONLINE: "Online",
 	OFFLINE: "Offline"
+}
+
+/* ----- */
+
+Graph.prototype.createResourceNode = function(url) {
+	if(!(url in this.resourceNodes)) {
+		var node = new ResourceNode(url)
+		this.resourceNodes[url] = node;
+		this._addNodeToNetwork(node);
+	}
+}
+
+Graph.prototype.addRequestToResourceNode = function(request) {
+	var resourceNode = this.resourceNodes[request.url];
+	resourceNode.addRequest(request);
+}
+
+Graph.prototype.existsResourceNode = function(url) {
+	return url in this.resourceNodes;
+}
+
+Graph.prototype.createDomainNode = function(domain) {
+	if(!(domain in this.domainNodes)) {
+		var node = new DomainNode(domain);
+		this.domainNodes[domain] = node;
+		this._addNodeToNetwork(node);
+	}
+}
+
+Graph.prototype.existsDomainNode = function(domain) {
+	return domain in this.domainNodes;
+}
+
+Graph.prototype.createDomainEdge = function(URL, domain) {
+	var domainNode = this.domainNodes[domain];
+	var resourceNode = this.resourceNodes[URL];
+
+	domainNode.addInEdge(resourceNode, this.edgesIncrement);
+	resourceNode.addOutEdge(domainNode, Edge.Type.DOMAIN, this.edgesIncrement);
+
+	this._addEdgeToNetwork(domainNode, resourceNode, Edge.Type.DOMAIN, this.edgesIncrement++);
+}
+
+Graph.prototype.createResourcesEdge = function(sourceURL, destinationURL, edgeType) {
+	var sourceNode = this.resourceNodes[sourceURL];
+	var destinationNode = this.resourceNodes[destinationURL];
+
+	if(sourceNode === undefined) {
+		console.log("source: " + sourceURL + ", destination: " + destinationURL + ", type: " + edgeType.name)
+		console.log(this.resourceNodes);
+	}
+	sourceNode.addOutEdge(destinationNode, edgeType, this.edgesIncrement);
+	destinationNode.addInEdge(sourceNode, edgeType, this.edgesIncrement);
+
+	this._addEdgeToNetwork(sourceNode, destinationNode, edgeType, this.edgesIncrement++);		
+}
+
+Graph.prototype.removeResourcesEdge = function(sourceURL, destinationURL, edgeType) {
+	var sourceNode = this.resourceNodes[sourceURL];
+	var destinationNode = this.resourceNodes[destinationURL];
+
+	var edgeID = sourceNode.removeOutEdge(destinationNode, edgeType);
+	destinationNode.removeInEdge(sourceNode, edgeType);
+
+	this._removeEdgeFromNetwork(sourceNode, destinationNode, edgeType, edgeID);	
+}
+
+Graph.prototype._addNodeToNetwork = function(node) {
+	if(this.mode == Graph.Mode.ONLINE) this._network.body.data.nodes.add(node.getVisSettings());
+}
+
+Graph.prototype._addEdgeToNetwork = function(fromNode, toNode, edgeType, edgeID) {
+	if(this.mode == Graph.Mode.ONLINE) this._network.body.data.edges.add(Edge.getVisSettings(fromNode, toNode, edgeType, edgeID));
+}
+
+Graph.prototype._removeEdgeFromNetwork = function(edgeID) {
+	this._network.body.data.edges.remove({id: edgeID});
 }

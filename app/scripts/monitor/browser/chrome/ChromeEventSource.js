@@ -31,10 +31,21 @@ ChromeEventSource.prototype.collectRequests = function() {
 	this.browserAPI.webRequest.onBeforeRequest.addListener(
 		function(details) {
 			var httpRequest = eventSource.buildHttpRequest(details);
-			eventSource.notifyForRequest(httpRequest, details.tabId);
+			eventSource.notifyForRequest(details.requestId, httpRequest, details.tabId);
 		},
 		{urls: ["<all_urls>"]},
 		['requestBody']
+	);
+}
+
+ChromeEventSource.prototype.collectHeaders = function() {
+	var eventSource = this;
+	this.browserAPI.webRequest.onSendHeaders.addListener(
+		function(details) {
+			eventSource.notifyForHeaders(details.requestId, details.requestHeaders);
+		},
+		{urls: ["<all_urls>"]},
+		['requestHeaders']
 	);
 }
 
@@ -43,7 +54,27 @@ ChromeEventSource.prototype.collectRedirects = function() {
 	this.browserAPI.webRequest.onBeforeRedirect.addListener(
 		function(details) {
 			var redirect = eventSource.buildRedirect(details);
-			eventSource.notifyForRedirect(redirect);
+			eventSource.notifyForRedirect(details.requestId, redirect);
+		},
+		{urls: ["<all_urls>"]}
+	);
+}
+
+ChromeEventSource.prototype.collectRequestCompletions = function() {
+	var eventSource = this;
+	this.browserAPI.webRequest.onCompleted.addListener(
+		function(details) {
+			eventSource.notifyForRequestComplete(details.requestId);
+		},
+		{urls: ["<all_urls>"]}
+	);
+}
+
+ChromeEventSource.prototype.collectRequestErrors = function() {
+	var eventSource = this;
+	this.browserAPI.webRequest.onErrorOccurred.addListener(
+		function(details) {
+			eventSource.notifyForRequestError(details.requestId);
 		},
 		{urls: ["<all_urls>"]}
 	);

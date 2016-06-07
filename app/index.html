@@ -38,6 +38,8 @@
 		<script src="scripts/monitor/MonitoringService.js"></script>
 
 		<script src="scripts/graph/Node.js"></script>
+		<script src="scripts/graph/ResourceNode.js"></script>
+		<script src="scripts/graph/DomainNode.js"></script>
 		<script src="scripts/graph/Edge.js"></script>
 		<script src="scripts/graph/Graph.js"></script>
 		<script src="scripts/graph/GraphFactory.js"></script>
@@ -100,79 +102,10 @@
 							</div>
 
 							<div class="row">
-								<div class="columns large-3 name">Domain</div>
-								<div id="node_domain" class="columns large-9 value"></div>
-							</div>
-
-							<div class="row">
-								<div class="columns large-3 name">Requests </div>
-								<div class="columns large-9 value" id="node_requests_no"></div>
-								<div id="node_requests_dialog" title="Requests URL">
-									<table>
-										<thead>
-											<tr>
-												<th style="width: 15%">Type</th>
-												<th style="width: 10%">Method</th>
-												<th style="width: 55%">URL</th>
-												<th style="width: 20%">Body</th>
-											</tr>
-										</thead>
-										<tbody>
-										</tbody>
-									</table>
-								</div>
-							</div>
-							<div class="row">
-								<div class="columns large-12">
-								<div id="node_requests_opener" class="button small secondary">
-									Show Requests
-								</div>
-								</div>
+								<div class="columns large-4 name">URL/Domain: </div>
+								<div id="node_domain" class="columns large-8 value"></div>
 							</div>
 						</div>
-
-						<div id="edge_widget" class="row">
-							<div class="row">
-								<div class="columns large-12">Selected Edge</div>
-							</div>
-
-							<div class="row">
-								<div class="columns large-3 name">Type</div>
-								<div id="edge_type" class="columns large-9 value"></div>
-							</div>
-
-							<div class="row">
-								<div class="columns large-3 name">From</div>
-								<div id="edge_from" class="columns large-9 value"></div>
-							</div>
-							<div class="row">
-								<div class="columns large-3 name">To</div>
-								<div id="edge_to" class="columns large-9 value"></div>
-							</div>
-
-							<div class="row">
-								<div class="columns large-3 name">Requests </div>
-								<div class="columns large-9 value" id="edge_requests_no"></div>
-								<div id="edge_requests_dialog" title="Requests URL">
-									<table>
-										<thead>
-											<tr>
-												<th style="width: 50%">FROM</th>
-												<th style="width: 50%">TO</th>
-											</tr>
-										</thead>
-										<tbody>
-										</tbody>
-									</table>
-								</div>
-							</div>
-							<div class="row">
-								<div class="columns large-12">
-								<div id="edge_requests_opener" class="button small secondary">Show Requests</div>
-								</div>
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
 

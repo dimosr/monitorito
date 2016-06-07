@@ -10,7 +10,10 @@ function Bootstrapper() {
 
 	var eventSource = new ChromeEventSource(chrome);
 	eventSource.collectRequests();
+	eventSource.collectHeaders();
 	eventSource.collectRedirects();
+	eventSource.collectRequestCompletions();
+	eventSource.collectRequestErrors();
 
 	var monitoringService = new MonitoringService(eventSource);
 	monitoringService.addExcludedUrlPattern(new RegExp("google\.(.+)/_/chrome/newtab", "i"));

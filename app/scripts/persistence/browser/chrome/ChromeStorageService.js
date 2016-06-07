@@ -32,10 +32,10 @@ ChromeStorageService.prototype.storeRequest = function(sessionID, request) {
 	this.requestsNo++;
 }
 
-ChromeStorageService.prototype.storeRedirect = function(redirect) {
+ChromeStorageService.prototype.storeRedirect = function(sessionID, redirect) {
 	var id = this.redirectID + this.redirectsNo;
 	var redirectToStore = {};
-	redirectToStore[id] = redirect;
+	redirectToStore[id] = {'sessionID': sessionID, 'redirect': redirect};
 	this.storageEndpoint.set(redirectToStore, function() {
 		if (chrome.runtime.lastError) {
 			console.log("Error while trying to write to Chrome storage:" + id);
@@ -60,10 +60,8 @@ ChromeStorageService.prototype._extractRequest = function(index, topLimit, reque
 	if(index < topLimit && requestData.length < storageService.maxBatchSize) {
 		this.storageEndpoint.get((this.requestID + index), function(result) {
 			var data = result[Object.keys(result)[0]];
-			//var requestID = Object.keys(result)[0].replace(storageService.requestID, "");
-			//requestData += Converter.sessionToCSV(sessionID, session);
 			requestData += Converter.requestToCSV(data.sessionID, data.request); 
-			storageService._extractRequest(index+1, topLimit, requestData, batch);
+			return storageService._extractRequest(index+1, topLimit, requestData, batch);
 		});
 	}
 	else {
@@ -77,8 +75,8 @@ ChromeStorageService.prototype._extractRedirect = function(index, topLimit, redi
 	var storageService = this;
 	if(index < topLimit && redirectsData.length < storageService.maxBatchSize) {
 		this.storageEndpoint.get((this.redirectID + index), function(result) {
-			var redirect = result[Object.keys(result)[0]];
-			redirectsData += Converter.redirectToCSV(redirect);
+			var data = result[Object.keys(result)[0]];
+			redirectsData += Converter.redirectToCSV(data.sessionID, data.redirect);
 			storageService._extractRedirect(index+1, topLimit, redirectsData, batch);
 		});
 	}
