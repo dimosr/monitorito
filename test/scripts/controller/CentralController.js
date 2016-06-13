@@ -99,10 +99,10 @@ QUnit.test("storeRequest(), storeRedirect() methods", function(assert) {
 	var redirect = sinon.createStubInstance(Redirect);
 
 	mockStorageService.expects("storeRequest").once().withExactArgs(sessionID, request);
-	mockStorageService.expects("storeRedirect").once().withExactArgs(redirect);
+	mockStorageService.expects("storeRedirect").once().withExactArgs(sessionID, redirect);
 
 	controller.storeRequest(sessionID, request);
-	controller.storeRedirect(redirect);
+	controller.storeRedirect(sessionID, redirect);
 
 	mockStorageService.verify();
 });

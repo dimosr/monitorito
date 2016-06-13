@@ -4,33 +4,49 @@ function GraphStatsCalculator(){
 	this.nodeMetricsCalculator = new NodeMetricsCalculator();
 
 	this.totalEdges = 0;
-
-	/*Outgoing Edges */
-	this.maxOutgoingEdges = 0;
-	this.minOutgoingEdges = 0;
-	this._nodesWithMinOutgoingEdges = 0;
-
-	this.sumOutgoingEdges = 0;
-	this.avgOutgoingEdgesPerNode = 0;
-
-	this._M_outgoing_edges = 0;
-	this._S_outgoing_edges = 0;
-
-	/*Incoming Edges */
-	this.maxIncomingEdges = 0;
-	this.minIncomingEdges = 0;
-	this._nodesWithMinIncomingEdges = 0;
-
-	this.sumIncomingEdges = 0;
-	this.avgIncomingEdgesPerNode = 0;
-
-	this._M_incoming_edges = 0;
-	this._S_incoming_edges = 0;
+	this.incomingEdges = {
+		referral: {
+			max: 0,
+			min: Number.MAX_SAFE_INTEGER,
+			_occ: {},
+			M: 0,
+			S: 0
+		},
+		nonReferral: {
+			max: 0,
+			min: Number.MAX_SAFE_INTEGER,
+			_occ: {},
+			M: 0,
+			S: 0
+		},
+	};
+	this.outgoingEdges = {
+		referral: {
+			max: 0,
+			min: Number.MAX_SAFE_INTEGER,
+			_occ: {},
+			M: 0,
+			S: 0
+		},
+		nonReferral: {
+			max: 0,
+			min: Number.MAX_SAFE_INTEGER,
+			_occ: {},
+			M: 0,
+			S: 0
+		},
+	}
 
 	/* Nodes Statistics */
-	this.embeddedNodes = 0;
-	this.rootNodes = 0;
-	this.totalNodes = 0;
+	this.nodes = {
+		firstParty: 0,
+		thirdParty: 0,
+		total: 0
+	};
+}
+
+GraphStatsCalculator.prototype.getTotalNodes = function() {
+	return this.nodes.firstParty + this.nodes.thirdParty;
 }
 
 GraphStatsCalculator.prototype.getNodeMetrics = function(node) {
@@ -40,131 +56,175 @@ GraphStatsCalculator.prototype.getNodeMetrics = function(node) {
 GraphStatsCalculator.prototype.getStatistics = function() {
 	return {
 		nodeTypes: {
-			root: this.rootNodes,
-			embedded: this.embeddedNodes
+			firstParty: this.nodes.firstParty,
+			thirdParty: this.nodes.thirdParty
 		},
 		totalEdges: this.totalEdges,
 		inEdges: {
-			avg: this.roundDecimal(this.avgIncomingEdgesPerNode),
-			stdDev: this.roundDecimal(this.getStdDevFromWelfordMetrics(this._M_incoming_edges, this._S_incoming_edges, this.totalNodes)),
-			max: this.maxIncomingEdges,
-			min: this.minIncomingEdges
+			referral: {
+				avg: this.incomingEdges.referral.M,
+				stdDev: this.getStdDevFromS(this.incomingEdges.referral.S, this.nodes.total),
+				max: this.incomingEdges.referral.max,
+				min: this.incomingEdges.referral.min
+			},
+			nonReferral: {
+				avg: this.incomingEdges.nonReferral.M,
+				stdDev: this.getStdDevFromS(this.incomingEdges.nonReferral.S, this.nodes.total),
+				max: this.incomingEdges.nonReferral.max,
+				min: this.incomingEdges.nonReferral.min
+			}
 		},
 		outEdges: {
-			avg: this.roundDecimal(this.avgOutgoingEdgesPerNode),
-			stdDev: this.roundDecimal(this.getStdDevFromWelfordMetrics(this._M_outgoing_edges, this._S_outgoing_edges, this.totalNodes)),
-			max: this.maxOutgoingEdges,
-			min: this.minOutgoingEdges
+			referral: {
+				avg: this.outgoingEdges.referral.M,
+				stdDev: this.getStdDevFromS(this.outgoingEdges.referral.S, this.nodes.total),
+				max: this.outgoingEdges.referral.max,
+				min: this.outgoingEdges.referral.min
+			},
+			nonReferral: {
+				avg: this.outgoingEdges.nonReferral.M,
+				stdDev: this.getStdDevFromS(this.outgoingEdges.nonReferral.S, this.nodes.total),
+				max: this.outgoingEdges.nonReferral.max,
+				min: this.outgoingEdges.nonReferral.min
+			}
+		}
+	};
+}
+
+GraphStatsCalculator.prototype.updateMinAndMax = function(statsHolder, newValue, previousValue) {
+	if(!(newValue in statsHolder._occ)) {
+		statsHolder.min = Math.min(statsHolder.min, newValue);
+		statsHolder.max = Math.max(statsHolder.max, newValue);
+		statsHolder._occ[newValue] = 1;
+	}
+	else statsHolder._occ[newValue]++;
+
+	statsHolder._occ[previousValue]--;
+	if(statsHolder._occ[previousValue] == 0) {
+		delete statsHolder._occ[previousValue];
+		var val = previousValue;
+		if(statsHolder.min == previousValue) {
+			while(!(val in statsHolder._occ)) val++;
+			statsHolder.min = val;
+		}
+		if(statsHolder.max == previousValue) {
+			while(!(val in statsHolder._occ)) val--;
+			statsHolder.max = val;
 		}
 	}
 }
 
+GraphStatsCalculator.prototype.addMember = function(statsHolder, value, sampleSize) {
+	var updatedMetrics = this.executeWelfordIteration(statsHolder.M, statsHolder.S, value, sampleSize);
+	statsHolder.M = updatedMetrics.new_M;
+	statsHolder.S = updatedMetrics.new_S;
+}
+
+GraphStatsCalculator.prototype.removeMember = function(statsHolder, value, sampleSize) {
+	var updatedMetrics = this.executeReverseWelfordIteration(statsHolder.M, statsHolder.S, value, sampleSize);
+	statsHolder.M = updatedMetrics.new_M;
+	statsHolder.S = updatedMetrics.new_S;
+}
+
 GraphStatsCalculator.prototype.onNewNode = function(node) {
-	this.updateNodeTypesRatio(node.getType());
-	this.checkNewNodeForMinOutgoingEdges();
-	this.checkNewNodeForMinIncomingEdges();
+	this.nodes.total++;
+	this.updateMinAndMax(this.incomingEdges.referral, 0);
+	this.updateMinAndMax(this.incomingEdges.nonReferral, 0);
+	this.updateMinAndMax(this.outgoingEdges.referral, 0);
+	this.updateMinAndMax(this.outgoingEdges.nonReferral, 0);
 
-	this.updateStdDevMetrics(0,0);
+	this.addMember(this.incomingEdges.referral, 0, this.nodes.total);
+	this.addMember(this.incomingEdges.nonReferral, 0, this.nodes.total);
+	this.addMember(this.outgoingEdges.referral, 0, this.nodes.total);
+	this.addMember(this.outgoingEdges.nonReferral, 0, this.nodes.total);
 }
 
-GraphStatsCalculator.prototype.updateNodeTypesRatio = function(nodeType) {
-	switch(nodeType) {
-		case HttpRequest.Type.ROOT: 
-			this.rootNodes++;
-			break;
-		case HttpRequest.Type.EMBEDDED: 
-			this.embeddedNodes++;
-			break;
-	}
-	this.totalNodes++;
+GraphStatsCalculator.prototype.onNodeChange = function(fromType, toType, node) {
+	if(fromType == Node.Type[HttpRequest.Type.ROOT]) this.nodes.firstParty -= 1;
+	else if(fromType == Node.Type[HttpRequest.Type.EMBEDDED]) this.nodes.thirdParty -= 1;
+
+	if(toType == Node.Type[HttpRequest.Type.ROOT]) this.nodes.firstParty += 1;
+	else if(toType == Node.Type[HttpRequest.Type.EMBEDDED]) this.nodes.thirdParty += 1;
 }
 
-GraphStatsCalculator.prototype.checkNewNodeForMinOutgoingEdges = function() {
-	if(this.minOutgoingEdges == 0) this._nodesWithMinOutgoingEdges++;
-	else {
-		this.minOutgoingEdges = 0;
-		this._nodesWithMinOutgoingEdges = 1;
-	}
-}
+GraphStatsCalculator.prototype.onNewEdge = function(edge) {
+	var srcOutgoingEdges = edge.getSourceNode().getOutgoingEdgesByType(), dstIncomingEdges = edge.getDestinationNode().getIncomingEdgesByType();
+	var srcOutgoingNonReferralEdges = srcOutgoingEdges[Edge.Type.DEFAULT.name].length + srcOutgoingEdges[Edge.Type.REQUEST.name].length + srcOutgoingEdges[Edge.Type.REDIRECT.name].length;
+	var dstIncomingNonReferralEdges = dstIncomingEdges[Edge.Type.DEFAULT.name].length + dstIncomingEdges[Edge.Type.REQUEST.name].length + dstIncomingEdges[Edge.Type.REDIRECT.name].length;
 
-GraphStatsCalculator.prototype.checkNewNodeForMinIncomingEdges = function() {
-	if(this.minIncomingEdges == 0) this._nodesWithMinIncomingEdges++;
-	else {
-		this.minIncomingEdges = 0;
-		this._nodesWithMinIncomingEdges = 1;
-	}
-}
-
-
-GraphStatsCalculator.prototype.onNewEdge = function(sourceNode, destinationNode, edge) {
 	this.totalEdges++;
-	var srcOutgoingEdges = sourceNode.getOutgoingEdges().length;
-	var dstIncomingEdges = destinationNode.getIncomingEdges().length;
-	this.updateMaxMinOutgoingEdges(srcOutgoingEdges);
-	this.updateMaxMinIncomingEdges(dstIncomingEdges);
-	this.updateAvg();
-	this.updateStdDevMetrics(srcOutgoingEdges, dstIncomingEdges);
+	//console.log("onNewEdge from: "  + edge.getSourceNode().id + ", to: " + edge.getDestinationNode().id);
+	//console.log("dstIncomingNonReferralEdges: "  + dstIncomingNonReferralEdges);
+	//console.log(JSON.stringify(this.incomingEdges.nonReferral));
+	this.updateMinAndMax(this.incomingEdges.nonReferral, dstIncomingNonReferralEdges, dstIncomingNonReferralEdges-1);
+	//console.log(JSON.stringify(this.incomingEdges.nonReferral));
+	this.updateMinAndMax(this.outgoingEdges.nonReferral, srcOutgoingNonReferralEdges, srcOutgoingNonReferralEdges-1);
+
+	this.removeMember(this.incomingEdges.nonReferral, dstIncomingNonReferralEdges-1, this.nodes.total);
+	this.addMember(this.incomingEdges.nonReferral, dstIncomingNonReferralEdges, this.nodes.total);
+
+	this.removeMember(this.outgoingEdges.nonReferral, srcOutgoingNonReferralEdges-1, this.nodes.total);
+	this.addMember(this.outgoingEdges.nonReferral, srcOutgoingNonReferralEdges, this.nodes.total);
 }
 
-GraphStatsCalculator.prototype.updateMaxMinOutgoingEdges = function(nodeOutgoingEdges) {
-	if(nodeOutgoingEdges > this.maxOutgoingEdges) this.maxOutgoingEdges = nodeOutgoingEdges;
-	if(nodeOutgoingEdges == (this.minOutgoingEdges+1) ) {
-		if(this._nodesWithMinOutgoingEdges == 1) this.minOutgoingEdges = nodeOutgoingEdges;
-		else this._nodesWithMinOutgoingEdges--;
+GraphStatsCalculator.prototype.onEdgeChange = function(fromType, toType, edge) {
+	if(fromType != Edge.Type.REFERRAL && toType == Edge.Type.REFERRAL) {
+		var srcOutgoingEdges = edge.getSourceNode().getOutgoingEdgesByType(), dstIncomingEdges = edge.getDestinationNode().getIncomingEdgesByType();
+		var srcOutgoingReferralEdges = srcOutgoingEdges[Edge.Type.REFERRAL.name].length;
+		var srcOutgoingNonReferralEdges = srcOutgoingEdges[Edge.Type.DEFAULT.name].length + srcOutgoingEdges[Edge.Type.REQUEST.name].length + srcOutgoingEdges[Edge.Type.REDIRECT.name].length;
+		var dstIncomingReferralEdges = dstIncomingEdges[Edge.Type.REFERRAL.name].length;
+		var dstIncomingNonReferralEdges = dstIncomingEdges[Edge.Type.DEFAULT.name].length + dstIncomingEdges[Edge.Type.REQUEST.name].length + dstIncomingEdges[Edge.Type.REDIRECT.name].length;
+
+		//console.log("onEdgeChange from: "  + edge.getSourceNode().id + ", to: " + edge.getDestinationNode().id);
+		//console.log("dstIncomingNonReferralEdges: "  + dstIncomingNonReferralEdges);
+		//console.log(JSON.stringify(this.incomingEdges.nonReferral));
+		this.updateMinAndMax(this.incomingEdges.nonReferral, dstIncomingNonReferralEdges, dstIncomingNonReferralEdges+1);
+		//console.log(JSON.stringify(this.incomingEdges.nonReferral));
+		this.updateMinAndMax(this.outgoingEdges.nonReferral, srcOutgoingNonReferralEdges, srcOutgoingNonReferralEdges+1);
+		this.updateMinAndMax(this.incomingEdges.referral, dstIncomingReferralEdges, dstIncomingReferralEdges-1);
+		this.updateMinAndMax(this.outgoingEdges.referral, srcOutgoingReferralEdges, srcOutgoingReferralEdges-1);
+
+		this.removeMember(this.incomingEdges.nonReferral, dstIncomingNonReferralEdges+1, this.nodes.total);
+		this.addMember(this.incomingEdges.nonReferral, dstIncomingNonReferralEdges, this.nodes.total);
+		this.removeMember(this.outgoingEdges.nonReferral, srcOutgoingNonReferralEdges+1, this.nodes.total);
+		this.addMember(this.outgoingEdges.nonReferral, srcOutgoingNonReferralEdges, this.nodes.total);
+
+		this.removeMember(this.incomingEdges.referral, dstIncomingReferralEdges-1, this.nodes.total);
+		this.addMember(this.incomingEdges.referral, dstIncomingReferralEdges, this.nodes.total);
+		this.removeMember(this.outgoingEdges.referral, srcOutgoingReferralEdges-1, this.nodes.total);
+		this.addMember(this.outgoingEdges.referral, srcOutgoingReferralEdges, this.nodes.total);
 	}
 }
 
-GraphStatsCalculator.prototype.updateMaxMinIncomingEdges = function(nodeIncomingEdges) {
-	if(nodeIncomingEdges > this.maxIncomingEdges) this.maxIncomingEdges = nodeIncomingEdges;
-	if(nodeIncomingEdges == (this.minIncomingEdges+1) ) {
-		if(this._nodesWithMinIncomingEdges == 1) this.minIncomingEdges = nodeIncomingEdges;
-		else this._nodesWithMinIncomingEdges--;
-	}
-}
-
-GraphStatsCalculator.prototype.updateAvg = function() {
-	this.sumOutgoingEdges++;
-	this.sumIncomingEdges++;
-	this.avgOutgoingEdgesPerNode = this.sumOutgoingEdges/this.totalNodes;
-	this.avgIncomingEdgesPerNode = this.sumIncomingEdges/this.totalNodes;
-}
-
-GraphStatsCalculator.prototype.updateStdDevMetrics = function(srcNodeOutgoingEdges, dstNodeIncomingEdges) {
-	var updatedMetrics = this.executeDoubleWelfordIteration(this._M_outgoing_edges, this._S_outgoing_edges, srcNodeOutgoingEdges, this.totalNodes);
-	this._M_outgoing_edges = updatedMetrics.new_M;
-	this._S_outgoing_edges = updatedMetrics.new_S;
-
-	var updatedMetrics = this.executeDoubleWelfordIteration(this._M_incoming_edges, this._S_incoming_edges, dstNodeIncomingEdges, this.totalNodes);
-	this._M_incoming_edges = updatedMetrics.new_M;
-	this._S_incoming_edges = updatedMetrics.new_S;
-}
-
-GraphStatsCalculator.prototype.executeDoubleWelfordIteration = function(M, S, val, n) {
+/* Adding a member in the population */
+GraphStatsCalculator.prototype.executeWelfordIteration = function(M, S, val, n) {
 	if(n == 1) {
 		M = val;
 		S = 0;
 	}
 	else {
-		if(val > 0) {
-			var last_M = M;
-			var old_val = val-1;
-			M = (last_M*n - old_val)/(n-1);
-			S = S - (old_val - M)*(old_val - last_M);
-		}
-
 		var old_M = M;
 		M = old_M + (val - old_M)/n;
 		S = S + (val - old_M)*(val - M);
 	}
-
 	return {new_M: M, new_S: S};
 }
 
-GraphStatsCalculator.prototype.getStdDevFromWelfordMetrics = function(M, S, n) {
-	var variance = (n > 1) ? (S/n) : 0;
-	return Math.sqrt(variance);
+/* Removing a member from the population */
+GraphStatsCalculator.prototype.executeReverseWelfordIteration = function(M, S, val, n) {
+	if(n == 1) {
+		M = val;
+		S = 0;
+	}
+	else {
+		var last_M = M;
+		M = (last_M*n - val)/(n-1);
+		S = S - (val - M)*(val - last_M);
+	}
+	return {new_M: M, new_S: S};
 }
 
-GraphStatsCalculator.prototype.roundDecimal = function(number) {
-	return Math.round(number * 1000) / 1000;
+GraphStatsCalculator.prototype.getStdDevFromS = function(S, n) {
+	var variance = (n > 1) ? (S/n) : 0;
+	return Math.sqrt(variance);
 }

@@ -53,9 +53,11 @@ QUnit.test("onRequest(): incoming embedded request from not monitored session", 
 	mockController.expects("addRequestToGraph").never();
 
 	var incomingRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.EMBEDDED);
+	var requestId = 1;
 	var tabId = 1;
 
-	monitoringService.onRequest(incomingRequest, tabId);
+	monitoringService.onRequest(requestId, incomingRequest, tabId);
+	monitoringService.onRequestCompleted(requestId);
 	mockController.verify();
 });
 
@@ -63,16 +65,20 @@ QUnit.test("onRequest(): incoming embedded request from monitored session", func
 	var monitoringService = this.monitoringService;
 	var mockController = this.mockController;
 
-	var incomingRequest1 = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 	var tabId = 1;
+	var requestId1 = 1;
+	var incomingRequest1 = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+	var requestId2 = 2;
 	var incomingRequest2 = new HttpRequest("GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
 
 	mockController.expects("addRequestToGraph").exactly(2);
 	mockController.expects("addRedirectToGraph").never();
 	mockController.expects("storeRequest").exactly(2);
 
-	monitoringService.onRequest(incomingRequest1, tabId);
-	monitoringService.onRequest(incomingRequest2, tabId);
+	monitoringService.onRequest(requestId1, incomingRequest1, tabId);
+	monitoringService.onRequest(requestId2, incomingRequest2, tabId);
+	monitoringService.onRequestCompleted(requestId1);
+	monitoringService.onRequestCompleted(requestId2);
 
 	mockController.verify();
 });
@@ -82,6 +88,7 @@ QUnit.test("onRedirect(): incoming redirect with monitoring service disabled", f
 	var mockController = this.mockController;
 
 	monitoringService.disable();
+	mockController.expects("addRedirectToGraph").never();
 	mockController.expects("storeRedirect").never();
 
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.ROOT, Date.now());
@@ -95,6 +102,7 @@ QUnit.test("onRedirect(): incoming redirect from not monitored session", functio
 	var monitoringService = this.monitoringService;
 	var mockController = this.mockController;
 
+	mockController.expects("addRedirectToGraph").never();
 	mockController.expects("storeRedirect").never();
 
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.EMBEDDED, Date.now());
@@ -108,28 +116,16 @@ QUnit.test("onRedirect(): incoming redirect from monitored session", function(as
 	var monitoringService = this.monitoringService;
 	var mockController = this.mockController;
 
+	var requestId = 1;
 	var request = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.EMBEDDED, Date.now());
 	var tabId = 1;
 
-	mockController.expects("storeRedirect").withExactArgs(redirect);
+	mockController.expects("addRedirectToGraph").exactly(1).withArgs(redirect);
+	mockController.expects("storeRedirect").exactly(1).withArgs(1, redirect);
 
-	monitoringService.onRequest(request, tabId);
-	monitoringService.onRedirect(redirect, tabId);
-
-	mockController.verify();
-});
-
-QUnit.test("onRedirect(): incoming Root redirect", function(assert) {
-	var monitoringService = this.monitoringService;
-	var mockController = this.mockController;
-
-	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.ROOT, Date.now());
-	var tabId = 1;
-	
-	mockController.expects("storeRedirect").withExactArgs(redirect);
-
-	monitoringService.onRedirect(redirect, tabId);
+	monitoringService.onRequest(requestId, request, tabId);
+	monitoringService.onRedirect(requestId, redirect, tabId);
 
 	mockController.verify();
 });
@@ -147,28 +143,13 @@ QUnit.test("onRedirect(): monitored redirect not added to graph without the fina
 	mockController.verify();
 });
 
-QUnit.test("onRedirect(): monitored redirect added to graph after final request is being received", function(assert) {
-	var monitoringService = this.monitoringService;
-	var mockController = this.mockController;
-
-	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.ROOT, Date.now());
-	var request = new HttpRequest("GET", "http://www.example2.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
-	var tabId = 1;
-
-	mockController.expects("addRedirectToGraph").exactly(1).withArgs(redirect);
-	
-	monitoringService.onRedirect(redirect, tabId);
-	monitoringService.onRequest(request, tabId);
-
-	mockController.verify();
-});
-
 QUnit.test("_isTabMonitored(), _getTabSession() method", function(assert) {
 	var monitoringService = this.monitoringService;
 
+	var requestId = 1;
 	var request = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
 	var tabId = 1;
-	monitoringService.onRequest(request, tabId);
+	monitoringService.onRequest(requestId, request, tabId);
 
 	assert.ok(monitoringService._isTabMonitored(1), "Tab with id 1 is monitored, since at least one request has been triggered from it");
 	assert.notOk(monitoringService._isTabMonitored(2), "Tab with id 2 is not monitored, since no request has been triggered from it");

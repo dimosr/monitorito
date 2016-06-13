@@ -1,12 +1,18 @@
 QUnit.module( "graph.Edge", {
 	beforeEach: function() {
-		this.fromNode = new Node(1, HttpRequest.ROOT, "www.example.com");
-		this.toNode = new Node(2, HttpRequest.EMBEDDED, "www.dependency.com");
+		var networkNodes = sinon.createStubInstance(vis.DataSet);
+		var network = sinon.createStubInstance(vis.Network);
+		var graph = new Graph(network);
+		this.mockGraph = sinon.mock(graph);
+		this.mockNetworkNodes = sinon.mock(networkNodes);
 
-		this.edge = new Edge(1, Edge.Type.REQUEST, this.fromNode, this.toNode);
+		this.fromNode = new Node("www.example.com", graph, networkNodes);
+		this.toNode = new Node("www.dependency.com", graph, networkNodes);
 
-		var redirectToNode = new Node(3, HttpRequest.ROOT, "www.example2.com");
-		this.edge2 = new Edge(2, Edge.Type.REDIRECT, this.fromNode, redirectToNode);
+		this.edge = new Edge(1, this.fromNode, this.toNode, graph, networkNodes);
+
+		var redirectToNode = new Node( "www.example2.com", graph, networkNodes);
+		this.edge2 = new Edge(2, this.fromNode, redirectToNode, graph, networkNodes);
 	}
 });
 
@@ -28,10 +34,9 @@ QUnit.test("addRequest() to edge method", function(assert) {
 	assert.equal(requests[0].to, "http://www.dependency.com/library", "to Url of link added correctly");
 });
 
-QUnit.test("Contructor of Edge transforms Edge.Type to style", function(assert) {
-	var requestEdge = this.edge;
-	var redirectEdge = this.edge2;
+QUnit.test("Edge type updated, depending on added links", function(assert) {
+	var edge = this.edge;
 
-	assert.equal(requestEdge.getVizEdge().dashes, requestEdge.getType().dashes, "vizEdge's style of requestEdge correctly translated");
-	assert.equal(redirectEdge.getVizEdge().dashes, redirectEdge.getType().dashes, "vizEdge's style of redirectEdge correctly translated");
+	edge.addReferral("www.example.com/resource1", "www.dependency.com/resource2");
+	assert.equal(edge.getType(), Edge.Type.REFERRAL, "Edge type converted to REFERRAL");
 });

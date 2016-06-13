@@ -47,8 +47,8 @@ CentralController.prototype.storeRequest = function(sesssionID, request) {
 	this.storageService.storeRequest(sesssionID, request);
 }
 
-CentralController.prototype.storeRedirect = function(redirect) {
-	this.storageService.storeRedirect(redirect);
+CentralController.prototype.storeRedirect = function(sessionID, redirect) {
+	this.storageService.storeRedirect(sessionID, redirect);
 }
 
 CentralController.prototype.setGraphMode = function(mode) {

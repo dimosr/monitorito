@@ -14,15 +14,31 @@ function InterfaceHandler() {
 	};
 	this.edgeWidget = {
 		$container: $("#edge_widget"),
-		$opener: $("#edge_requests_opener"),
-		$dialogContent: $("#edge_requests_dialog"),
-		$dialogTableBody: $("#edge_requests_dialog tbody"),
+		requests : {
+			$numberField: $("#edge_requests_no"),
+			$opener: $("#edge_requests_opener"),
+			$dialogContent: $("#edge_requests_dialog"),
+			$dialogTableBody: $("#edge_requests_dialog tbody"),
+			loaded: false
+		},
+		redirects: {
+			$numberField: $("#edge_redirects_no"),
+			$opener: $("#edge_redirects_opener"),
+			$dialogContent: $("#edge_redirects_dialog"),
+			$dialogTableBody: $("#edge_redirects_dialog tbody"),
+			loaded: false
+		},
+		referrals: {
+			$numberField: $("#edge_referrals_no"),
+			$opener: $("#edge_referrals_opener"),
+			$dialogContent: $("#edge_referrals_dialog"),
+			$dialogTableBody: $("#edge_referrals_dialog tbody"),
+			loaded: false
+		},
 		$typeField: $("#edge_type"),
 		$from: $("#edge_from"),
 		$to: $("#edge_to"),
-		$requestsNumberField: $("#edge_requests_no"),
-		selectedEdge: null,
-		requestsLoaded: false
+		selectedEdge: null
 	};
 	this.modeMenu = $("#mode-dialog");
 	this.graphContainer = $("#graph");
@@ -67,11 +83,13 @@ InterfaceHandler.prototype.enableWidgetDialogs = function() {
 	var dialogOptions = {
 		autoOpen: false,
 		modal: true,
-		width: $(window).width()*0.7,
-		height: $(window).height()*0.7
+		width: $(window).width()*0.6,
+		height: $(window).height()*0.6
 	};
 	this.nodeWidget.$dialogContent.dialog(dialogOptions);
-	this.edgeWidget.$dialogContent.dialog(dialogOptions);
+	this.edgeWidget.requests.$dialogContent.dialog(dialogOptions);
+	this.edgeWidget.redirects.$dialogContent.dialog(dialogOptions);
+	this.edgeWidget.referrals.$dialogContent.dialog(dialogOptions);
  
 	this.nodeWidget.$opener.click({handler: this}, function(event) {
 		var handler = event.data.handler;
@@ -83,14 +101,34 @@ InterfaceHandler.prototype.enableWidgetDialogs = function() {
 		widget.$dialogContent.dialog( "open" );
 	});
 
-	this.edgeWidget.$opener.click({handler: this}, function(event) {
+	this.edgeWidget.requests.$opener.click({handler: this}, function(event) {
 		var handler = event.data.handler;
 		var widget = handler.edgeWidget;
-		if(!widget.requestsLoaded) {
+		if(!widget.requests.loaded) {
 			handler.loadEdgeRequests(widget.selectedEdge);
-			widget.requestsLoaded = false;
+			widget.requests.loaded = false;
 		}
-		widget.$dialogContent.dialog( "open" );
+		widget.requests.$dialogContent.dialog( "open" );
+	});
+
+	this.edgeWidget.redirects.$opener.click({handler: this}, function(event) {
+		var handler = event.data.handler;
+		var widget = handler.edgeWidget;
+		if(!widget.redirects.loaded) {
+			handler.loadEdgeRedirects(widget.selectedEdge);
+			widget.redirects.loaded = false;
+		}
+		widget.redirects.$dialogContent.dialog( "open" );
+	});
+
+	this.edgeWidget.referrals.$opener.click({handler: this}, function(event) {
+		var handler = event.data.handler;
+		var widget = handler.edgeWidget;
+		if(!widget.referrals.loaded) {
+			handler.loadEdgeReferrals(widget.selectedEdge);
+			widget.referrals.loaded = false;
+		}
+		widget.referrals.$dialogContent.dialog( "open" );
 	});
 }
 
@@ -149,9 +187,8 @@ InterfaceHandler.prototype.enablePostParamsDialog = function() {
 
 InterfaceHandler.prototype.showNodeStatistics = function(node) {
 	var widget = this.nodeWidget;
-	var requests = node.getRequests();
 	widget.$domainField.html(node.getDomain());
-	widget.$requestsNumberField.html(requests.length);
+	widget.$requestsNumberField.html(node.getRequests().length);
 	
 	widget.selectedNode = node;
 
@@ -195,12 +232,13 @@ InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
 	var widget = this.edgeWidget;
 	var fromNode = edge.getSourceNode();
 	var toNode = edge.getDestinationNode();
-	var requests = edge.getRequests();
 
 	widget.$typeField.html(edge.getType().name);
 	widget.$from.html(fromNode.getDomain());
 	widget.$to.html(toNode.getDomain());
-	widget.$requestsNumberField.html(requests.length);
+	widget.requests.$numberField.html(edge.getRequests().length);
+	widget.redirects.$numberField.html(edge.getRedirects().length);
+	widget.referrals.$numberField.html(edge.getReferrals().length);
 	widget.selectedEdge = edge;
 
 	widget.$container.show();
@@ -216,7 +254,33 @@ InterfaceHandler.prototype.loadEdgeRequests = function(edge) {
 		var toCol = "<td>" + requests[i].to + "</td>";
 		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
 	}
-	widget.$dialogTableBody.append(contentToAdd);
+	widget.requests.$dialogTableBody.append(contentToAdd);
+}
+
+InterfaceHandler.prototype.loadEdgeRedirects = function(edge) {
+	var widget = this.edgeWidget;
+	var redirects = edge.getRedirects();
+
+	var contentToAdd = '';
+	for(var i=0; i < redirects.length; i++) {
+		var fromCol = "<td>" + redirects[i].from + "</td>";
+		var toCol = "<td>" + redirects[i].to + "</td>";
+		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
+	}
+	widget.redirects.$dialogTableBody.append(contentToAdd);
+}
+
+InterfaceHandler.prototype.loadEdgeReferrals = function(edge) {
+	var widget = this.edgeWidget;
+	var referrals = edge.getReferrals();
+
+	var contentToAdd = '';
+	for(var i=0; i < referrals.length; i++) {
+		var fromCol = "<td>" + referrals[i].from + "</td>";
+		var toCol = "<td>" + referrals[i].to + "</td>";
+		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
+	}
+	widget.referrals.$dialogTableBody.append(contentToAdd);
 }
 
 InterfaceHandler.prototype.emptyNodeStatistics = function() {
@@ -230,8 +294,12 @@ InterfaceHandler.prototype.emptyNodeStatistics = function() {
 InterfaceHandler.prototype.emptyEdgeStatistics = function() {
 	this.edgeWidget.$container.hide();
 	this.edgeWidget.selectedEdge = null;
-	this.edgeWidget.requestsLoaded = false;
-	this.edgeWidget.$dialogTableBody.empty();
+	this.edgeWidget.requests.loaded = false;
+	this.edgeWidget.redirects.loaded = false;
+	this.edgeWidget.referrals.loaded = false;
+	this.edgeWidget.requests.$dialogTableBody.empty();
+	this.edgeWidget.redirects.$dialogTableBody.empty();
+	this.edgeWidget.referrals.$dialogTableBody.empty();
 }
 
 InterfaceHandler.prototype.getGraphDomElement = function() {

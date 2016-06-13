@@ -1,10 +1,11 @@
 "use strict";
 
 function Graph(visualisationNetwork) {
-	this._nodesAutoIncrement = 0;
-	this._edgesAutoIncrement = 0;
-	this._graph = {};
+	this._edgesAutoIncrement = 1;
 	this._observers = [];
+
+	this.nodes = {};
+	this.edges = {};
 
 	if(visualisationNetwork != null) {
 		this.buildGraphWithVisualisation(visualisationNetwork);
@@ -13,10 +14,13 @@ function Graph(visualisationNetwork) {
 	else this.mode = Graph.Mode.OFFLINE;
 }
 
+Graph.Mode = {
+	ONLINE: "Online",
+	OFFLINE: "Offline"
+}
+
 Graph.prototype.buildGraphWithVisualisation = function(visualisationNetwork) {
 	this._network = visualisationNetwork;
-	this._network.nodes = [];
-	this._network.edges = [];
 
 	this._setupListeners();
 	this._network._selectEdgeCallback = function(selectedEdge){};
@@ -37,75 +41,76 @@ Graph.prototype.enablePhysics = function() {
 	else this._network.setOptions({physics: {enabled: true}});
 }
 
+Graph.prototype.register = function(observer) {
+	this._observers.push(observer);
+}
+
 Graph.prototype.notifyForNewNode = function(node) {
-	for(var i=0; i < this._observers.length; i++) {
-		var observer = this._observers[i];
-		observer.onNewNode(node);
-	}
+	for(var i=0; i < this._observers.length; i++) this._observers[i].onNewNode(node);
 }
 
-Graph.prototype.notifyForNewEdge = function(fromNode, toNode, edge) {
-	for(var i=0; i < this._observers.length; i++) {
-		var observer = this._observers[i];
-		observer.onNewEdge(fromNode, toNode, edge);
-	}
+Graph.prototype.notifyForNodeChange = function(fromType, toType, node) {
+	for(var i=0; i < this._observers.length; i++) this._observers[i].onNodeChange(fromType, toType, node);
 }
 
-Graph.prototype.createEdge = function(fromHostname, toHostname, edgeType) {
+Graph.prototype.notifyForNewEdge = function(edge) {
+	for(var i=0; i < this._observers.length; i++) this._observers[i].onNewEdge(edge);
+}
+
+Graph.prototype.notifyForEdgeChange = function(fromType, toType, edge) {
+	for(var i=0; i < this._observers.length; i++) this._observers[i].onEdgeChange(fromType, toType, edge);
+}
+
+Graph.prototype.createEdge = function(fromHostname, toHostname) {
 	var fromNode = this.getNode(fromHostname);
 	var toNode = this.getNode(toHostname);
-	var edge = new Edge(this._edgesAutoIncrement, edgeType, fromNode, toNode);
-	this._edgesAutoIncrement++;
-	if(this.mode == Graph.Mode.ONLINE) this._addEdgeToNetwork(edge);
-
-	fromNode.addEdgeTo(toNode, edge);
-	toNode.addEdgeFrom(fromNode, edge);
-
-	this.notifyForNewEdge(fromNode, toNode, edge);
+	var edge = new Edge(this._edgesAutoIncrement++, fromNode, toNode, this, this.mode == Graph.Mode.ONLINE ? this._network.body.data.edges : null);
+	this.edges[edge.id] = edge;
+	this.notifyForNewEdge(edge);
 }
 
-Graph.prototype.addRequestToEdge = function(fromURL, toURL) {
-	var fromNode = this.getNode(Util.getUrlHostname(fromURL));
-	var toNode = this.getNode(Util.getUrlHostname(toURL));
-	var edge = fromNode.getEdgeTo(toNode);
-	edge.addRequest(fromURL, toURL);
-}
-
-Graph.prototype.getEdge = function(fromHostname, toHostname, edgeType) {
+Graph.prototype.getEdge = function(fromHostname, toHostname) {
 	var fromNode = this.getNode(fromHostname);
 	var toNode = this.getNode(toHostname);
-	if(!fromNode.hasEdgeTo(toNode)) return null;
-	else {
-		var edge = fromNode.getEdgeTo(toNode);
-		if(edge.getType() == edgeType) return edge;
-		else return null;
-	}
+	return fromNode.hasEdgeTo(toNode) ? fromNode.getEdgeTo(toNode) : null;
 }
 
-Graph.prototype.existsEdge = function(fromHostname, toHostname, edgeType) {
-	return this.getEdge(fromHostname, toHostname, edgeType) != null;
+Graph.prototype.existsEdge = function(fromHostname, toHostname) {
+	return this.getEdge(fromHostname, toHostname) != null;
 }
 
-Graph.prototype.createNode = function(hostname, requestType) {
-	var node = new Node(this._nodesAutoIncrement, requestType, hostname);
-	this._graph[hostname] = node;
-	this._nodesAutoIncrement++;
-	if(this.mode == Graph.Mode.ONLINE) this._addNodeToNetwork(node);
-
+Graph.prototype.createNode = function(hostname) {
+	var node = new Node(hostname, this, this.mode == Graph.Mode.ONLINE ? this._network.body.data.nodes : null);
+	this.nodes[hostname] = node;
 	this.notifyForNewNode(node);
 }
 
-Graph.prototype.addRequestToNode = function(request) {
-	var node = this._graph[Util.getUrlHostname(request.url)];
-	node.addRequest(request);
-}
-
 Graph.prototype.getNode = function(hostname) {
-	return this._graph[hostname];
+	return (hostname in this.nodes) ? this.nodes[hostname] : null;
 }
 
 Graph.prototype.existsNode = function(hostname) {
-	return hostname in this._graph;
+	return hostname in this.nodes;
+}
+
+Graph.prototype.addRequestToEdge = function(fromURL, toURL) {
+	var edge = this.getEdge(Util.getUrlHostname(fromURL), Util.getUrlHostname(toURL));
+	edge.addRequest(fromURL, toURL);
+}
+
+Graph.prototype.addRequestToNode = function(request) {
+	var node = this.nodes[Util.getUrlHostname(request.url)];
+	node.addRequest(request);
+}
+
+Graph.prototype.addRedirectToEdge = function(fromURL, toURL) {
+	var edge = this.getEdge(Util.getUrlHostname(fromURL), Util.getUrlHostname(toURL));
+	edge.addRedirect(fromURL, toURL);
+}
+
+Graph.prototype.addReferralToEdge = function(fromURL, toURL) {
+	var edge = this.getEdge(Util.getUrlHostname(fromURL), Util.getUrlHostname(toURL));
+	edge.addReferral(fromURL, toURL);
 }
 
 Graph.prototype.onSelectNode = function(callbackFunction) {
@@ -131,13 +136,14 @@ Graph.prototype.onDeselectEdge = function(callbackFunction) {
 Graph.prototype._setupListeners = function() {
 	if(this.mode == Graph.Mode.OFFLINE) console.log("Error: _setupListeners() called for graph without visualisation");
 	else {
+		var graph = this;
 		this._network.on("select", function(eventParams) {
 			if(eventParams.nodes.length == 1) {//Node Selected
-				var selectedNode = this.nodes[eventParams.nodes[0]];
+				var selectedNode = graph.nodes[eventParams.nodes[0]];
 				this._selectNodeCallback(selectedNode);
 			}
 			else if(eventParams.nodes.length == 0 && eventParams.edges.length == 1) {//Edge Selected
-				var selectedEdge = this.edges[eventParams.edges[0]];
+				var selectedEdge = graph.edges[eventParams.edges[0]];
 				this._selectEdgeCallback(selectedEdge);
 			}
 		});
@@ -160,30 +166,11 @@ Graph.prototype._setupListeners = function() {
 	}
 }
 
-Graph.prototype._addNodeToNetwork = function(node) {
-	this._network.nodes[this._nodesAutoIncrement] = node;
-	this._network.body.data.nodes.add(node.getVizNode());
-}
-
-Graph.prototype._addEdgeToNetwork = function(edge) {
-	this._network.edges[this._edgesAutoIncrement] = edge;
-	this._network.body.data.edges.add(edge.getVizEdge())
-}
-
 Graph.prototype.filterNodes = function(callbackFunction) {
 	var filteredNodes = [];
-	for(var hostnameKey in this._graph) {
-		var node = this._graph[hostnameKey];
+	for(var hostnameKey in this.nodes) {
+		var node = this.nodes[hostnameKey];
 		if(callbackFunction(node)) filteredNodes.push(node);
 	}
 	return filteredNodes;
-}
-
-Graph.prototype.register = function(observer) {
-	this._observers.push(observer);
-}
-
-Graph.Mode = {
-	ONLINE: "Online",
-	OFFLINE: "Offline"
 }

@@ -1,25 +1,57 @@
 "use strict";
 
-function Edge(ID, type, fromNode, toNode) {
-	this._type = type;
+function Edge(id, fromNode, toNode, graph, networkEdges) {
+	this.id = id;
+	this.type = Edge.Type.DEFAULT;
+
+	
 	this._from = fromNode;
 	this._to = toNode;
-	this._links = [];
+	this._links = {
+		"requests": [],
+		"redirects": [],
+		"referrals": []
+	};
+	this.networkEdges = networkEdges;
 
-	this._vizEdge = Edge.buildVizEdge(ID, type, fromNode, toNode);
+	if(graph.mode == Graph.Mode.ONLINE) this.createVisualEdge();
+	this.graph = graph;
+	fromNode.addEdgeTo(toNode, this);
+	toNode.addEdgeFrom(fromNode, this);
 }
 
 Edge.Type = {
-	REQUEST: {name: "Request", dashes: false},
-	REDIRECT: {name: "Redirect", dashes: true},
+	DEFAULT: {name: "Default", rank: 4,dashes: false, color: "grey"},
+	REQUEST: {name: "Request", rank: 2,dashes: false, color: "grey"},
+	REDIRECT: {name: "Redirect", rank: 3,dashes: true, color: "grey"},
+	REFERRAL: {name: "Referral", rank: 1,dashes: false, color: "red"}
 }
 
 Edge.prototype.addRequest = function(fromURL, toURL) {
-	this._links.push({from: fromURL, to: toURL});
+	this._links.requests.push({from: fromURL, to: toURL});
+	if(this.type.rank > Edge.Type.REQUEST.rank) this.updateType(Edge.Type.REQUEST);
 }
 
 Edge.prototype.getRequests = function() {
-	return this._links;
+	return this._links.requests;
+}
+
+Edge.prototype.addRedirect = function(fromURL, toURL) {
+	this._links.redirects.push({from: fromURL, to: toURL});
+	if(this.type.rank > Edge.Type.REDIRECT.rank) this.updateType(Edge.Type.REDIRECT);
+}
+
+Edge.prototype.getRedirects = function() {
+	return this._links.redirects;
+}
+
+Edge.prototype.addReferral = function(fromURL, toURL) {
+	this._links.referrals.push({from: fromURL, to: toURL});
+	if(this.type.rank > Edge.Type.REFERRAL.rank) this.updateType(Edge.Type.REFERRAL);
+}
+
+Edge.prototype.getReferrals = function() {
+	return this._links.referrals;
 }
 
 Edge.prototype.getSourceNode = function() {
@@ -31,22 +63,40 @@ Edge.prototype.getDestinationNode = function() {
 }
 
 Edge.prototype.getType = function() {
-	return this._type;
+	return this.type;
 }
 
-Edge.prototype.getVizEdge = function() {
-	return this._vizEdge
-}
-
-Edge.buildVizEdge = function(ID, type, fromNode, toNode){
-	return {
-		id: ID,
+Edge.prototype.createVisualEdge = function(){
+	this.networkEdges.add({
+		id: this.id,
 		arrows: {
 			to: {scaleFactor: 1}
 		},
-		from: fromNode.getID(),
-		to: toNode.getID(),
+		from: this._from.getID(),
+		to: this._to.getID(),
 		width: 3,
-		dashes: type.dashes
-	}
+		dashes: this.type.dashes,
+		color: this.type.color
+	});
+}
+
+Edge.prototype.updateVisualEdgeType = function(type) {
+	this.networkEdges.update({
+		id: this.id,
+		dashes: this.type.dashes,
+		color: this.type.color
+	});
+}
+
+Edge.prototype.updateType = function(type) {
+	var previousType = this.type, newType = type;
+
+	this.type = newType;
+	if(this.graph.mode == Graph.Mode.ONLINE) this.updateVisualEdgeType(type);
+	
+	this.notifyForChange(previousType, newType, this);
+}
+
+Edge.prototype.notifyForChange = function(fromType, toType, edge) {
+	this.graph.notifyForEdgeChange(fromType, toType, edge);
 }

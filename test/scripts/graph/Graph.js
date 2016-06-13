@@ -2,11 +2,11 @@ QUnit.module( "graph.Graph", {
 	/* Testing Graph with-without visualisation enabled
 	   Stubbed visualisation network is used when enabled*/
 	beforeEach: function() {
-		var visNetwork = {
+		this.network = {
 			body: {
 				data: {
-					edges: {add: function(){}},
-					nodes: {add: function(){}},
+					edges: {add: function(){}, update: function(){}},
+					nodes: {add: function(){}, update: function(){}},
 				}
 			},
 			on: function(event, callback){
@@ -18,31 +18,30 @@ QUnit.module( "graph.Graph", {
 			setOptions: function(options) {},
 			eventHandlers : {}
 		};
-		this.graph = new Graph(visNetwork);
+		this.graph = new Graph(this.network);
 
-		this.network = visNetwork;
-		this.mockNetwork = sinon.mock(visNetwork);
+		this.mockNetwork = sinon.mock(this.network);
 	}
 });
 
 QUnit.test("createEdge(), existsEdge(), addRequestToEdge() methods", function(assert){
 	var graph = this.graph;
-	graph.createNode("www.example.com", HttpRequest.Type.ROOT);
-	graph.createNode("www.dependency.com", HttpRequest.Type.EMBEDDED);
+	graph.createNode("www.example.com");
+	graph.createNode("www.dependency.com");
 	graph.createEdge("www.example.com", "www.dependency.com", Edge.Type.REQUEST);
 
-	assert.ok(graph.existsEdge("www.example.com", "www.dependency.com", Edge.Type.REQUEST), "Added Request edge exists in the graph");
-	assert.notOk(graph.existsEdge("www.example.com", "www.dependency.com", Edge.Type.REDIRECT), "No Redirect edge exists in the graph");
+	assert.ok(graph.existsEdge("www.example.com", "www.dependency.com"), "Added edge exists in the graph");
+	assert.equal(graph.getEdge("www.example.com", "www.dependency.com").getType(), Edge.Type.DEFAULT, "Initial edge type is default");
 
 	graph.addRequestToEdge("http://www.example.com/test", "http://www.dependency.com/library");
-	request = graph.getEdge("www.example.com", "www.dependency.com", Edge.Type.REQUEST).getRequests()[0];
+	request = graph.getEdge("www.example.com", "www.dependency.com").getRequests()[0];
 	assert.equal(request.from, "http://www.example.com/test", "from URL of request set successfully");
 	assert.equal(request.to, "http://www.dependency.com/library", "to URL of request set succesfully");
 });
 
 QUnit.test("createNode(), existsNode(), addRequestToNode() methods", function(assert) {
 	var graph = this.graph;
-	graph.createNode("www.example.com", HttpRequest.Type.ROOT);
+	graph.createNode("www.example.com");
 
 	assert.ok(graph.existsNode("www.example.com"), "Added node exists in the graph");
 
@@ -93,32 +92,6 @@ QUnit.test("Testing setupListeners() method, checking if assigned callback funct
 	sinon.assert.calledOnce(callback);
 });
 
-QUnit.test("_addNodeToNetwork() method calls method body.data.nodes.add() of visNetwork", function(assert) {
-	var network = this.network;
-	var graph = this.graph;
-
-	var mockedNetworkNodes = sinon.mock(network.body.data.nodes);
-	mockedNetworkNodes.expects("add").once();
-
-	var node = sinon.createStubInstance(Node);
-	graph._addNodeToNetwork(node);
-
-	mockedNetworkNodes.verify();
-});
-
-QUnit.test("_addEdgeToNetwork() method calls method body.data.edges.add() of visNetwork", function(assert) {
-	var network = this.network;
-	var graph = this.graph;
-
-	var mockedNetworkEdges = sinon.mock(network.body.data.edges);
-	mockedNetworkEdges.expects("add").once();
-
-	var edge = sinon.createStubInstance(Edge);
-	graph._addEdgeToNetwork(edge);
-
-	mockedNetworkEdges.verify();
-});
-
 QUnit.test("filterNodes() method returns only filtered nodes", function(assert) {
 	var graph = this.graph;
 
@@ -154,10 +127,14 @@ QUnit.test("notifyForNewNode(), notifyForNewEdge() methods", function(assert) {
 	var edge = sinon.createStubInstance(Edge);
 
 	mockGraphStatsCalculator.expects("onNewNode").exactly(1).withArgs(srcNode);
-	mockGraphStatsCalculator.expects("onNewEdge").exactly(1).withArgs(srcNode, destinationNode, edge);
+	mockGraphStatsCalculator.expects("onNodeChange").exactly(1).withArgs(Node.Type.default, Node.Type[HttpRequest.Type.ROOT], srcNode);
+	mockGraphStatsCalculator.expects("onNewEdge").exactly(1).withArgs( edge);
+	mockGraphStatsCalculator.expects("onEdgeChange").exactly(1).withArgs(Edge.Type.DEFAULT, Edge.Type.REQUEST, edge);
 
 	graph.notifyForNewNode(srcNode);
-	graph.notifyForNewEdge(srcNode, destinationNode, edge);
+	graph.notifyForNodeChange(Node.Type.default, Node.Type[HttpRequest.Type.ROOT], srcNode);
+	graph.notifyForNewEdge(edge);
+	graph.notifyForEdgeChange(Edge.Type.DEFAULT, Edge.Type.REQUEST, edge);
 
 	mockGraphStatsCalculator.verify();
 });

@@ -9,7 +9,7 @@ QUnit.test("createCSVRow() method", function(assert) {
 
 QUnit.test("getRedirectColumnValuesCSV() method", function(assert) {
 	var actualColumns = Converter.getRedirectColumnValuesCSV();
-	var expectedColumns = Converter.createCSVRow(["From", "To", "Type", "Timestamp"]);
+	var expectedColumns = Converter.createCSVRow(["SessionID", "From", "To", "Type", "Timestamp"]);
 
 	assert.equal(actualColumns, expectedColumns, "Redirect CSV Header columns are right.");
 });
@@ -22,10 +22,11 @@ QUnit.test("getRequestsColumnValuesCSV() method", function(assert) {
 });
 
 QUnit.test("redirectToCSV() method", function(assert) {
+	var sessionID = 1;
 	var redirect = new Redirect("http://www.example.com", "https://www.example.com", HttpRequest.Type.ROOT, 0);
 
-	var actualCSV = Converter.redirectToCSV(redirect);
-	var expectedCSV = Converter.createCSVRow([redirect.getInitialURL(), redirect.getFinalURL(), redirect.type, redirect.timestamp]);
+	var actualCSV = Converter.redirectToCSV(sessionID, redirect);
+	var expectedCSV = Converter.createCSVRow([sessionID, redirect.getInitialURL(), redirect.getFinalURL(), redirect.type, redirect.timestamp]);
 
 	assert.equal(actualCSV, expectedCSV, "Redirect is converted correctly.");
 });

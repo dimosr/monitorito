@@ -33,27 +33,40 @@ GraphHandler.prototype.enableGraphPhysics = function() {
 }
 
 GraphHandler.prototype.addRequest = function(rootRequest, request) {
-	if(!this.graph.existsNode(Util.getUrlHostname(request.url))) {
-		this.graph.createNode(Util.getUrlHostname(request.url), request.type);
-	}
+	this._ensureNodeExists(Util.getUrlHostname(request.url));
 	this.graph.addRequestToNode(request);
 
-	if( Util.getUrlHostname(rootRequest.url) != Util.getUrlHostname(request.url) ) {
-		if(!this.graph.existsEdge(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url), Edge.Type.REQUEST)) {
-			this.graph.createEdge(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url), Edge.Type.REQUEST);
+	if(request.hasReferer() && Util.getUrlHostname(request.getReferer()) != Util.getUrlHostname(request.url)) {
+		this._ensureNodeExists(Util.getUrlHostname(request.getReferer()));
+		this._ensureEdgeExists(Util.getUrlHostname(request.getReferer()), Util.getUrlHostname(request.url));
+		this.graph.addReferralToEdge(request.getReferer(), request.url);
+	}
+	else {
+		this._ensureNodeExists(Util.getUrlHostname(rootRequest.url));
+		if(request.type != HttpRequest.Type.ROOT && Util.getUrlHostname(rootRequest.url) != Util.getUrlHostname(request.url)) {
+			this._ensureEdgeExists(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url));
+			this.graph.addRequestToEdge(rootRequest.url, request.url);
 		}
-		this.graph.addRequestToEdge(rootRequest.url, request.url);
 	}
 }
 
 GraphHandler.prototype.addRedirect = function(redirect) {
-	var fromHostname = Util.getUrlHostname(redirect.getInitialURL());
-	var toHostname = Util.getUrlHostname(redirect.getFinalURL());
-	if(!this.graph.existsEdge(fromHostname, toHostname, Edge.Type.REDIRECT)) {
-		this.graph.createEdge(fromHostname, toHostname, Edge.Type.REDIRECT);
+	if(Util.getUrlHostname(redirect.getInitialURL()) != Util.getUrlHostname(redirect.getFinalURL())) {
+		var fromHostname = Util.getUrlHostname(redirect.getInitialURL());
+		var toHostname = Util.getUrlHostname(redirect.getFinalURL());
+		this._ensureNodeExists(fromHostname);
+		this._ensureNodeExists(toHostname);
+		this._ensureEdgeExists(fromHostname, toHostname);
+		this.graph.addRedirectToEdge(redirect.getInitialURL(), redirect.getFinalURL());
 	}
-	this.graph.addRequestToEdge(redirect.getInitialURL(), redirect.getFinalURL());
+}
 
+GraphHandler.prototype._ensureNodeExists = function(domain) {
+	if(!this.graph.existsNode(domain)) this.graph.createNode(domain);
+}
+
+GraphHandler.prototype._ensureEdgeExists = function(fromDomain, toDomain) {
+	if(!this.graph.existsEdge(fromDomain, toDomain)) this.graph.createEdge(fromDomain, toDomain);
 }
 
 GraphHandler.prototype.addSelectNodeListener = function(callbackFunction) {

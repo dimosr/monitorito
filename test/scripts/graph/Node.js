@@ -1,11 +1,15 @@
 QUnit.module( "graph.Node", {
 	beforeEach: function() {
-		this.fromNode = new Node(1, HttpRequest.Type.ROOT, "www.example.com");
-		this.toNode = new Node(2, HttpRequest.Type.EMBEDDED, "www.dependency.com");
+		var networkNodes = sinon.createStubInstance(vis.DataSet);
+		var network = sinon.createStubInstance(vis.Network);
+		var graph = new Graph(network);
+		this.mockGraph = sinon.mock(graph);
+		this.mockNetworkNodes = sinon.mock(networkNodes);
 
-		this.edge = new Edge(1, Edge.Type.REQUEST, this.fromNode, this.toNode);
-		this.fromNode.addEdgeTo(this.toNode, this.edge);
-		this.toNode.addEdgeFrom(this.fromNode, this.edge);
+		this.fromNode = new Node("www.example.com", graph, networkNodes);
+		this.toNode = new Node("www.dependency.com", graph, networkNodes);
+
+		this.edge = new Edge(1, this.fromNode, this.toNode, graph, networkNodes);
 	}
 });
 
@@ -13,11 +17,8 @@ QUnit.test("getters and translation of type to node size", function(assert) {
 	var fromNode = this.fromNode;
 	var toNode = this.toNode;
 
-	assert.equal(fromNode.getID(), 1, "node.getID() returns correctly the assigned id");
-	assert.equal(fromNode.getType(), HttpRequest.Type.ROOT, "node.getID() returns correctly the assigned id");
-	assert.equal(fromNode.getDomain(), "www.example.com", "node.getDomain() returns correctly the assigned domain");
-	assert.equal(fromNode.getVizNode().size, 40, "Root request nodes get big size (40)");
-	assert.equal(toNode.getVizNode().size, 20, "Embedded request nodes get small size (20)");
+	assert.equal(fromNode.getID(), "www.example.com", "node.getID() returns correctly the assigned id");
+	assert.equal(fromNode.type, Node.Type.default, "node.getID() returns correctly the assigned id");
 });
 
 QUnit.test("addRequest() method", function(assert) {

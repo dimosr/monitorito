@@ -1,13 +1,13 @@
 "use strict";
 
 function MonitoringService(eventSource) {
-	this._monitorEnabled = true;
-	this._excludedUrlPatterns = [];
-	this._tabSessionMap = {};
-	this._redirectedRequests = {};
-
 	eventSource.register(this);
 
+	this._monitorEnabled = true;
+	this._excludedUrlPatterns = [];
+	
+	this._tabSessionMap = {};
+	this._openRequests = {};
 	this.sessionIncrement = 1;
 }
 
@@ -39,27 +39,55 @@ MonitoringService.prototype.toBeExcluded = function(url) {
 	return false;
 }
 
-MonitoringService.prototype.onRequest = function(httpRequest, tabID) {
+MonitoringService.prototype.shouldBeMonitored = function(requestID) {
+	return this._monitorEnabled && (requestID in this._openRequests);
+}
+
+MonitoringService.prototype.onRequest = function(requestID, httpRequest, tabID) {
 	if(this._monitorEnabled && !this.toBeExcluded(httpRequest.url)) {
-		if(this._isTabMonitored(tabID) || httpRequest.type == HttpRequest.Type.ROOT) {
-			var session = this._archiveRequest(httpRequest, tabID);
-			this.controller.addRequestToGraph(session.getRootRequest(), httpRequest);
-
-			this._checkForRedirect(httpRequest);
+		if(this._isTabMonitored(tabID) || httpRequest.type == HttpRequest.Type.ROOT) {		//start monitoring sessions only after ROOT Request
+			var session = this.addRequestToSession(httpRequest, tabID);
+			this._openRequests[requestID] = {'session': session, 'request': httpRequest};
 		}
 	}
-};
+}
 
-MonitoringService.prototype.onRedirect = function(redirect, tabID) {
-	if(this._monitorEnabled && !this.toBeExcluded(redirect.getInitialURL())) {
-		if(this._isTabMonitored(tabID) || redirect.type == HttpRequest.Type.ROOT) {
-			this._archiveRedirect(redirect);
-			this._redirectedRequests[redirect.getFinalURL()] = redirect;
-		}
+MonitoringService.prototype.onRequestHeaders = function(requestID, headers) {
+	if(this.shouldBeMonitored(requestID)) {
+		var session = this._openRequests[requestID].session;
+		var request = this._openRequests[requestID].request;
+		request.setHeaders(headers);
 	}
-};
+}
 
-MonitoringService.prototype._archiveRequest = function(httpRequest, tabID) {
+MonitoringService.prototype.onRedirect = function(requestID, redirect) {
+	if(this.shouldBeMonitored(requestID)) {
+		var session = this._openRequests[requestID].session;
+		this.onRequestCompleted(requestID);
+		this.controller.addRedirectToGraph(redirect);
+		this._archiveRedirect(session.id, redirect);
+	}
+}
+
+MonitoringService.prototype.onRequestCompleted = function(requestID) {
+	if(this.shouldBeMonitored(requestID)) {
+		var session = this._openRequests[requestID].session;
+		var request = this._openRequests[requestID].request;
+		this.controller.addRequestToGraph(session.getRootRequest(), request);
+		this._archiveRequest(session.id, request);
+		delete this._openRequests[requestID];
+	}
+}
+
+MonitoringService.prototype.onRequestError = function(requestID, error) {
+	if(this.shouldBeMonitored(requestID)) {
+		console.log("Request error: " + error);
+		console.log(this._openRequests[requestID].request);
+		delete this._openRequests[requestID];
+	}
+}
+
+MonitoringService.prototype.addRequestToSession = function(httpRequest, tabID) {
 	if(httpRequest.type == HttpRequest.Type.ROOT) {
 		var session = new Session(this.sessionIncrement++, httpRequest);
 		this._monitorTabSession(tabID, session);
@@ -68,20 +96,15 @@ MonitoringService.prototype._archiveRequest = function(httpRequest, tabID) {
 		var session = this._getTabSession(tabID);
 		session.addEmbeddedRequest(httpRequest);
 	}
-	this.controller.storeRequest(session.id, httpRequest);
 	return session;
 }
 
-MonitoringService.prototype._archiveRedirect = function(redirect) {
-	this.controller.storeRedirect(redirect);
+MonitoringService.prototype._archiveRequest = function(sessionID, request) {
+	this.controller.storeRequest(sessionID, request);
 }
 
-MonitoringService.prototype._checkForRedirect = function(httpRequest) {
-	if(httpRequest.url in this._redirectedRequests) {
-		var redirect = this._redirectedRequests[httpRequest.url];
-		this.controller.addRedirectToGraph(redirect);
-		delete this._redirectedRequests[httpRequest.url];
-	}
+MonitoringService.prototype._archiveRedirect = function(sessionID, redirect) {
+	this.controller.storeRedirect(sessionID, redirect);
 }
 
 MonitoringService.prototype._isTabMonitored = function(tabID) {

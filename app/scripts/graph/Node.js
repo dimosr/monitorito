@@ -1,29 +1,34 @@
 "use strict";
 
-function Node(ID, type, domain) {
-	this._type = type;
+function Node(id, graph, networkNodes) {
+	this.id = id;
+	this.type = Node.Type.default;
+
 	this._outgoing = {};
 	this._incoming = {};
 	this._requests = [];
+	this.networkNodes = networkNodes;
 
-	var size = type == HttpRequest.Type.ROOT ? 40 : 20;
-	this._vizNode = Node.buildVizNode(ID, size, domain);
+	if(graph.mode == Graph.Mode.ONLINE) this.createVisualNode();
+	this.graph = graph;
 }
 
-Node.prototype.getType = function() {
-	return this._type;
-}
+Node.Type = {};
+Node.Type["default"] = {name: "Default", rank: 3, size: 20};
+Node.Type[HttpRequest.Type.ROOT] = {name: "First Party", rank: 1, size: 40},
+Node.Type[HttpRequest.Type.EMBEDDED] = {name: "Third Party", rank: 2, size: 20}
 
 Node.prototype.getID = function() {
-	return this._vizNode.id;
+	return this.id;
 }
 
 Node.prototype.getDomain = function() {
-	return this._vizNode.title;
+	return this.id;
 }
 
-Node.prototype.addRequest = function(HttpRequest) {
-	this._requests.push(HttpRequest);
+Node.prototype.addRequest = function(httpRequest) {
+	this._requests.push(httpRequest);
+	if(this.type.rank > Node.Type[httpRequest.type].rank) this.updateType(Node.Type[httpRequest.type]);
 }
 
 Node.prototype.getRequests = function() {
@@ -42,8 +47,6 @@ Node.prototype.hasEdgeTo = function(destinationNode) {
 	return destinationNode.getDomain() in this._outgoing;
 }
 
-
-
 Node.prototype.addEdgeFrom = function(sourceNode, edge) {
 	this._incoming[sourceNode.getDomain()] = {'edge': edge};
 }
@@ -56,21 +59,33 @@ Node.prototype.hasEdgeFrom = function(sourceNode) {
 	return sourceNode.getDomain() in this._incoming;
 }
 
-Node.buildVizNode = function(ID, size, domain) {
-	return {
-		id: ID, 
+Node.prototype.createVisualNode = function() {
+	this.networkNodes.add({
+		id: this.id, 
 		shape: 'circularImage', 
-		size: size, 
-		image: Node.getFaviconURL(domain),
+		size: this.type.size, 
+		image: Node.getFaviconURL(this.id),
 		borderWidth: 5,
 		'color.border': '#04000F',
 		'color.highlight.border': '#CCC6E2', 
-		title: domain
-	}
+		title: this.id
+	});
 }
 
-Node.prototype.getVizNode = function() {
-	return this._vizNode;
+Node.prototype.updateVisualNodeType = function(type) {
+	this.networkNodes.update({
+		id: this.id,  
+		size: this.type.size
+	});
+}
+
+Node.prototype.updateType = function(type) {
+	var previousType = this.type, newType = type;
+
+	this.type = newType;
+	if(this.graph.mode == Graph.Mode.ONLINE) this.updateVisualNodeType(type);
+
+	this.notifyForChange(previousType, newType, this);
 }
 
 Node.getFaviconURL = function(domain) {
@@ -83,8 +98,38 @@ Node.prototype.getOutgoingEdges = function() {
 	return edges;
 }
 
+Node.prototype.getOutgoingEdgesByType = function() {
+	var edges = {};
+	for(var key in Edge.Type) {
+		var type = Edge.Type[key];
+		edges[type.name] = [];
+	}
+	for(var hostnameKey in this._outgoing) {
+		var edge = this._outgoing[hostnameKey].edge;
+		edges[edge.type.name].push(edge);
+	}
+	return edges;
+}
+
 Node.prototype.getIncomingEdges = function() {
 	var edges = [];
 	for(var hostnameKey in this._incoming) edges.push(this._incoming[hostnameKey].edge);
 	return edges;
+}
+
+Node.prototype.getIncomingEdgesByType = function() {
+	var edges = {};
+	for(var key in Edge.Type) {
+		var type = Edge.Type[key];
+		edges[type.name] = [];
+	}
+	for(var hostnameKey in this._incoming) {
+		var edge = this._incoming[hostnameKey].edge;
+		edges[edge.type.name].push(edge);
+	}
+	return edges;
+}
+
+Node.prototype.notifyForChange = function(fromType, toType, node) {
+	this.graph.notifyForNodeChange(fromType, toType, node);
 }
