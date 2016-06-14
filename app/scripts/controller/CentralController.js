@@ -60,18 +60,18 @@ CentralController.prototype.setGraphMode = function(mode) {
 
 	    graphHandler.setGraph(graph);
 	    graphHandler.addSelectNodeListener(function(selectedNode) {
-			interfaceHandler.emptyEdgeStatistics();
+			interfaceHandler.emptyEdgeInfo();
 			interfaceHandler.showNodeInfo(selectedNode);
 		});
 		graphHandler.addSelectEdgeListener(function(selectedEdge) {
-			interfaceHandler.emptyNodeStatistics();
-			interfaceHandler.showEdgeStatistics(selectedEdge);
+			interfaceHandler.emptyNodeInfo();
+			interfaceHandler.showEdgeInfo(selectedEdge);
 		});
 		graphHandler.addDeselectNodeListener(function(deselectedNodes) {
-			interfaceHandler.emptyNodeStatistics();
+			interfaceHandler.emptyNodeInfo();
 		});
 		graphHandler.addDeselectEdgeListener(function(deselectedEdges) {
-			interfaceHandler.emptyEdgeStatistics();
+			interfaceHandler.emptyEdgeInfo();
 		});
 	}
 	else if(mode == Graph.Mode.OFFLINE){
