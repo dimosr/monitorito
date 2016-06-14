@@ -5,18 +5,16 @@ function InterfaceHandler() {
 		width: $(window).width(),
 		height: $(window).height()
 	};
-	this.modeMenu = $("#mode-dialog");
 	this.graphContainer = $("#graph");
 }
 
 InterfaceHandler.prototype.setController = function(controller) {
 	this.controller = controller;
-	this.initNodeWidget();
-	this.initEdgeWidget();
+	this.initNodeWidgetHandler();
+	this.initEdgeWidgetHandler();
 	this.initControlWidgetHandler();
 	this.initSideWidgetHandler();
-
-	this.showModeMenu();
+	this.initModeWidgetHandler();
 }
 
 InterfaceHandler.prototype.initControlWidgetHandler = function() {
@@ -43,7 +41,7 @@ InterfaceHandler.prototype.initSideWidgetHandler = function() {
 	this.sideWidgetHandler = new SideWidgetHandler(this.controller, statisticsWidget);
 }
 
-InterfaceHandler.prototype.initNodeWidget = function() {
+InterfaceHandler.prototype.initNodeWidgetHandler = function() {
 	var nodeWidget = {
 		$container: $("#node_widget"),
 		$opener: $("#node_requests_opener"),
@@ -55,7 +53,7 @@ InterfaceHandler.prototype.initNodeWidget = function() {
 	this.nodeWidgetHandler = new NodeWidgetHandler(this.controller, nodeWidget, this.screenDimensions);
 }
 
-InterfaceHandler.prototype.initEdgeWidget = function() {
+InterfaceHandler.prototype.initEdgeWidgetHandler = function() {
 	var edgeWidget = {
 		$container: $("#edge_widget"),
 		requests : {
@@ -87,27 +85,13 @@ InterfaceHandler.prototype.initEdgeWidget = function() {
 	this.edgeWidgetHandler = new EdgeWidgetHandler(this.controller, edgeWidget, this.screenDimensions);
 }
 
-InterfaceHandler.prototype.showModeMenu = function() {
-	$("#online-mode").click({interfaceHandler: this}, function(event){
-		var interfaceHandler = event.data.interfaceHandler;
-		interfaceHandler.controller.setGraphMode(Graph.Mode.ONLINE);
-		interfaceHandler.modeMenu.dialog("close");
-	});
-	$("#offline-mode").click({interfaceHandler: this}, function(event){
-		var interfaceHandler = event.data.interfaceHandler;
-		interfaceHandler.controller.setGraphMode(Graph.Mode.OFFLINE);
-		interfaceHandler.modeMenu.dialog("close");
-	});
-
-	this.modeMenu.dialog({
-		autoOpen: true,
-		draggable: false,
-		modal: true,
-		title: "Select Mode",
-		width: $(window).width()*0.7,
-		closeOnEscape: false,
-    	dialogClass: "noclose"
-	});
+InterfaceHandler.prototype.initModeWidgetHandler = function() {
+	var modeWidget = {
+		$container: $("#mode-dialog"),
+		$onlineModeButton: $("#online-mode"),
+		$offlineModeButton: $("#offline-mode")
+	}
+	this.modeWidgetHandler = new ModeWidgetHandler(this.controller, modeWidget, this.screenDimensions);
 }
 
 InterfaceHandler.prototype.disableVisualisation = function() {
