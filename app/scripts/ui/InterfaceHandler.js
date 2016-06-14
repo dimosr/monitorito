@@ -40,47 +40,42 @@ function InterfaceHandler() {
 		$to: $("#edge_to"),
 		selectedEdge: null
 	};
-	this.statisticsWidget = {
-		$container: $("#side-widget"),
-		$trigger: $("#side-widget-trigger"),
-		$nodeTypesPlotContainer: $("#node-types"),
-		$inEdgesPlotContainer: $("#in-edges"),
-		$outEdgesPlotContainer: $("#out-edges"),
-		$nodeMetricsPlotContainer: $("#node-metrics")
-	}
 	this.modeMenu = $("#mode-dialog");
 	this.graphContainer = $("#graph");
-
-	this.physicsSwitchContainer = $("#physics-switch-container");
 
 	this.init();
 }
 
 InterfaceHandler.prototype.setController = function(controller) {
 	this.controller = controller;
-	this.configureControlPanel();
+	this.initControlWidgetHandler();
+	this.initSideWidgetHandler();
 
-	this.sideWidgetHandler = new SideWidgetHandler(this.controller, this.statisticsWidget);
 	this.showModeMenu();
 }
 
-InterfaceHandler.prototype.configureControlPanel = function() {
-	$("#monitoring-switch").on("click", {controller: this.controller}, function(event) {
-		var controller = event.data.controller;
-		if(this.checked) controller.enableMonitoring();
-		else controller.disableMonitoring();
-	});
+InterfaceHandler.prototype.initControlWidgetHandler = function() {
+	var controlWidget = {
+		physics: {
+			$container: $("#physics-switch-container"),
+			$button: $("#physics-switch"),
+		},
+		monitoring: {$button: $("#monitoring-switch")},
+		export: {$button: $("#export-button")}
+	};
+	this.controlWidgetHandler = new ControlWidgetHandler(this.controller, controlWidget);
+}
 
-	$("#physics-switch").on("click", {controller: this.controller}, function(event) {
-		var controller = event.data.controller;
-		if(this.checked) controller.enableGraphPhysics();
-		else controller.disableGraphPhysics();
-	});
-
-	$("#export-button").on("click", {controller: this.controller}, function(event) {
-		var controller = event.data.controller;
-		controller.extractMonitoredData();
-	});
+InterfaceHandler.prototype.initSideWidgetHandler = function() {
+	var statisticsWidget = {
+		$container: $("#side-widget"),
+		$trigger: $("#side-widget-trigger"),
+		$nodeTypesPlotContainer: $("#node-types"),
+		$inEdgesPlotContainer: $("#in-edges"),
+		$outEdgesPlotContainer: $("#out-edges"),
+		$nodeMetricsPlotContainer: $("#node-metrics")
+	};
+	this.sideWidgetHandler = new SideWidgetHandler(this.controller, statisticsWidget);
 }
 
 InterfaceHandler.prototype.init = function() {
@@ -165,7 +160,7 @@ InterfaceHandler.prototype.showModeMenu = function() {
 
 InterfaceHandler.prototype.disableVisualisation = function() {
 	this.graphContainer.addClass("disabled");
-	this.physicsSwitchContainer.hide();
+	this.controlWidgetHandler.hidePhysicsOption();
 }
 
 InterfaceHandler.prototype.enablePostParamsDialog = function() {
