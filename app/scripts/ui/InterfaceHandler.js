@@ -42,12 +42,12 @@ function InterfaceHandler() {
 	};
 	this.modeMenu = $("#mode-dialog");
 	this.graphContainer = $("#graph");
-
-	this.init();
 }
 
 InterfaceHandler.prototype.setController = function(controller) {
 	this.controller = controller;
+	this.initNodeWidget();
+	this.initEdgeWidget();
 	this.initControlWidgetHandler();
 	this.initSideWidgetHandler();
 
@@ -78,11 +78,7 @@ InterfaceHandler.prototype.initSideWidgetHandler = function() {
 	this.sideWidgetHandler = new SideWidgetHandler(this.controller, statisticsWidget);
 }
 
-InterfaceHandler.prototype.init = function() {
-	this.enableWidgetDialogs();
-}
-
-InterfaceHandler.prototype.enableWidgetDialogs = function() {
+InterfaceHandler.prototype.initNodeWidget = function() {
 	var dialogOptions = {
 		autoOpen: false,
 		modal: true,
@@ -90,10 +86,6 @@ InterfaceHandler.prototype.enableWidgetDialogs = function() {
 		height: $(window).height()*0.6
 	};
 	this.nodeWidget.$dialogContent.dialog(dialogOptions);
-	this.edgeWidget.requests.$dialogContent.dialog(dialogOptions);
-	this.edgeWidget.redirects.$dialogContent.dialog(dialogOptions);
-	this.edgeWidget.referrals.$dialogContent.dialog(dialogOptions);
- 
 	this.nodeWidget.$opener.click({handler: this}, function(event) {
 		var handler = event.data.handler;
 		var widget = handler.nodeWidget;
@@ -103,7 +95,18 @@ InterfaceHandler.prototype.enableWidgetDialogs = function() {
 		}
 		widget.$dialogContent.dialog( "open" );
 	});
+}
 
+InterfaceHandler.prototype.initEdgeWidget = function() {
+	var dialogOptions = {
+		autoOpen: false,
+		modal: true,
+		width: $(window).width()*0.6,
+		height: $(window).height()*0.6
+	};
+	this.edgeWidget.requests.$dialogContent.dialog(dialogOptions);
+	this.edgeWidget.redirects.$dialogContent.dialog(dialogOptions);
+	this.edgeWidget.referrals.$dialogContent.dialog(dialogOptions);
 	this.edgeWidget.requests.$opener.click({handler: this}, function(event) {
 		var handler = event.data.handler;
 		var widget = handler.edgeWidget;
@@ -113,7 +116,6 @@ InterfaceHandler.prototype.enableWidgetDialogs = function() {
 		}
 		widget.requests.$dialogContent.dialog( "open" );
 	});
-
 	this.edgeWidget.redirects.$opener.click({handler: this}, function(event) {
 		var handler = event.data.handler;
 		var widget = handler.edgeWidget;
@@ -163,31 +165,6 @@ InterfaceHandler.prototype.disableVisualisation = function() {
 	this.controlWidgetHandler.hidePhysicsOption();
 }
 
-InterfaceHandler.prototype.enablePostParamsDialog = function() {
-	$('.param_key').each(function() {  
-		$.data(this, 'dialog', 
-			$(this).children('.param_values').dialog({
-				autoOpen: false,
-				show: {
-					effect: "bounce",
-					duration: 300
-				},
-				hide: {
-					effect: "scale",
-					duration: 300
-				},
-				modal: true,
-				width: $(window).width()*0.3,
-				height: $(window).height()*0.3,
-				stack: true
-			})
-		);  
-	}).click(function() {
-		$.data(this, 'dialog').dialog('open');
-		return false;  
-	});
-}
-
 InterfaceHandler.prototype.showNodeStatistics = function(node) {
 	var widget = this.nodeWidget;
 	widget.$domainField.html(node.getDomain());
@@ -229,6 +206,39 @@ InterfaceHandler.prototype.loadNodeRequests = function(node) {
 	}
 	widget.$dialogTableBody.append(requestsRows);
 	this.enablePostParamsDialog();
+}
+
+InterfaceHandler.prototype.enablePostParamsDialog = function() {
+	$('.param_key').each(function() {  
+		$.data(this, 'dialog', 
+			$(this).children('.param_values').dialog({
+				autoOpen: false,
+				show: {
+					effect: "bounce",
+					duration: 300
+				},
+				hide: {
+					effect: "scale",
+					duration: 300
+				},
+				modal: true,
+				width: $(window).width()*0.3,
+				height: $(window).height()*0.3,
+				stack: true
+			})
+		);  
+	}).click(function() {
+		$.data(this, 'dialog').dialog('open');
+		return false;  
+	});
+}
+
+InterfaceHandler.prototype.emptyNodeStatistics = function() {
+	this.nodeWidget.$container.hide();
+	this.nodeWidget.selectedNode = null;
+	this.nodeWidget.requestsLoaded = false;
+	this.nodeWidget.$dialogTableBody.empty();
+	this.sideWidgetHandler.resetSelectedNodeStats();
 }
 
 InterfaceHandler.prototype.showEdgeStatistics = function(edge) {
@@ -284,14 +294,6 @@ InterfaceHandler.prototype.loadEdgeReferrals = function(edge) {
 		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
 	}
 	widget.referrals.$dialogTableBody.append(contentToAdd);
-}
-
-InterfaceHandler.prototype.emptyNodeStatistics = function() {
-	this.nodeWidget.$container.hide();
-	this.nodeWidget.selectedNode = null;
-	this.nodeWidget.requestsLoaded = false;
-	this.nodeWidget.$dialogTableBody.empty();
-	this.sideWidgetHandler.resetSelectedNodeStats();
 }
 
 InterfaceHandler.prototype.emptyEdgeStatistics = function() {

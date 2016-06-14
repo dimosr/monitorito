@@ -1,5 +1,6 @@
 "use strict";
 
+/* For reference of the widget structure, check InterfaceHandler.initControlWidgetHandler */
 function ControlWidgetHandler(controller, widget) {
 	this.widget = widget;
 	this.controller = controller;

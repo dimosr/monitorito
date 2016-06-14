@@ -1,5 +1,6 @@
 "use strict";
 
+/* For reference of the widget structure, check InterfaceHandler.initSideWidgetHandler */
 function SideWidgetHandler(controller, widget) {
 	this.widget = widget;
 
