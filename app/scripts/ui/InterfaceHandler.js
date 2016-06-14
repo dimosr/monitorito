@@ -1,16 +1,9 @@
 "use strict";
 
 function InterfaceHandler() {
-	this.nodeWidget = {
-		$container: $("#node_widget"),
-		$opener: $("#node_requests_opener"),
-		$dialogContent: $("#node_requests_dialog"),
-		$dialogTableBody: $("#node_requests_dialog tbody"),
-		$domainField: $("#node_domain"),
-		$requestsNumberField: $("#node_requests_no"),
-		selectedNode: null,
-		requestsLoaded: false
-
+	this.screenDimensions = {
+		width: $(window).width(),
+		height: $(window).height()
 	};
 	this.edgeWidget = {
 		$container: $("#edge_widget"),
@@ -79,22 +72,15 @@ InterfaceHandler.prototype.initSideWidgetHandler = function() {
 }
 
 InterfaceHandler.prototype.initNodeWidget = function() {
-	var dialogOptions = {
-		autoOpen: false,
-		modal: true,
-		width: $(window).width()*0.6,
-		height: $(window).height()*0.6
+	var nodeWidget = {
+		$container: $("#node_widget"),
+		$opener: $("#node_requests_opener"),
+		$dialogContent: $("#node_requests_dialog"),
+		$dialogTableBody: $("#node_requests_dialog tbody"),
+		$domainField: $("#node_domain"),
+		$requestsNumberField: $("#node_requests_no")
 	};
-	this.nodeWidget.$dialogContent.dialog(dialogOptions);
-	this.nodeWidget.$opener.click({handler: this}, function(event) {
-		var handler = event.data.handler;
-		var widget = handler.nodeWidget;
-		if(!widget.requestsLoaded) {
-			handler.loadNodeRequests(widget.selectedNode);
-			widget.requestsLoaded = true;
-		}
-		widget.$dialogContent.dialog( "open" );
-	});
+	this.nodeWidgetHandler = new NodeWidgetHandler(this.controller, nodeWidget, this.screenDimensions);
 }
 
 InterfaceHandler.prototype.initEdgeWidget = function() {
@@ -165,79 +151,13 @@ InterfaceHandler.prototype.disableVisualisation = function() {
 	this.controlWidgetHandler.hidePhysicsOption();
 }
 
-InterfaceHandler.prototype.showNodeStatistics = function(node) {
-	var widget = this.nodeWidget;
-	widget.$domainField.html(node.getDomain());
-	widget.$requestsNumberField.html(node.getRequests().length);
-	
-	widget.selectedNode = node;
-
-	widget.$container.show();
+InterfaceHandler.prototype.showNodeInfo = function(node) {
+	this.nodeWidgetHandler.showInfo(node);
 	this.sideWidgetHandler.updateSelectedNodeStats(node);
 }
 
-InterfaceHandler.prototype.loadNodeRequests = function(node) {
-	var widget = this.nodeWidget;
-	var requests = node.getRequests();
-
-	var requestsRows = "";
-	for(var i=0; i < requests.length; i++) {
-		var request = requests[i];
-		var typeColumn = "<td>" + request.type + "</td>";
-		var methodColumn = "<td>" + request.method + "</td>";
-		var urlColumn = "<td>" + request.url + "</td>";
-		var parametersContent = "";
-		if(request.method == "POST") {
-			var bodyParams = request.bodyParams;
-			var paramKeys = Object.keys(bodyParams);
-			for(var keyIdx = 0; keyIdx < paramKeys.length; keyIdx++) {
-				var key = paramKeys[keyIdx];
-				var paramValues = "";
-				for(var j = 0; j < bodyParams[key].length; j++) {
-					var paramValue = "<li>" + Util.escapeHtml(bodyParams[key][j]) + "</li>";
-					paramValues += paramValue;
-				}
-				paramValues = "<ul title='Values of parameter " + key + "' class='param_values'>" + paramValues + "</ul>";
-				parametersContent += "<li class='param_key'>" + key + paramValues + "</li>";
-			}
-		}
-		var bodyColumn = "<td><ul>" + parametersContent + "</ul></td>";
-		requestsRows += "<tr>" + typeColumn + methodColumn + urlColumn + bodyColumn + "</tr>";
-	}
-	widget.$dialogTableBody.append(requestsRows);
-	this.enablePostParamsDialog();
-}
-
-InterfaceHandler.prototype.enablePostParamsDialog = function() {
-	$('.param_key').each(function() {  
-		$.data(this, 'dialog', 
-			$(this).children('.param_values').dialog({
-				autoOpen: false,
-				show: {
-					effect: "bounce",
-					duration: 300
-				},
-				hide: {
-					effect: "scale",
-					duration: 300
-				},
-				modal: true,
-				width: $(window).width()*0.3,
-				height: $(window).height()*0.3,
-				stack: true
-			})
-		);  
-	}).click(function() {
-		$.data(this, 'dialog').dialog('open');
-		return false;  
-	});
-}
-
 InterfaceHandler.prototype.emptyNodeStatistics = function() {
-	this.nodeWidget.$container.hide();
-	this.nodeWidget.selectedNode = null;
-	this.nodeWidget.requestsLoaded = false;
-	this.nodeWidget.$dialogTableBody.empty();
+	this.nodeWidgetHandler.emptyInfo();
 	this.sideWidgetHandler.resetSelectedNodeStats();
 }
 

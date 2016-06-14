@@ -61,7 +61,7 @@ CentralController.prototype.setGraphMode = function(mode) {
 	    graphHandler.setGraph(graph);
 	    graphHandler.addSelectNodeListener(function(selectedNode) {
 			interfaceHandler.emptyEdgeStatistics();
-			interfaceHandler.showNodeStatistics(selectedNode);
+			interfaceHandler.showNodeInfo(selectedNode);
 		});
 		graphHandler.addSelectEdgeListener(function(selectedEdge) {
 			interfaceHandler.emptyNodeStatistics();

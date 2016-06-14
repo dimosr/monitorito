@@ -103,6 +103,10 @@ table {
     word-wrap:break-word;
 }
 
+.wrap{
+	word-wrap:break-word;
+}
+
 .param_key{
 	cursor: pointer;
 }
