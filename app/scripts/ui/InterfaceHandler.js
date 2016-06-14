@@ -40,6 +40,14 @@ function InterfaceHandler() {
 		$to: $("#edge_to"),
 		selectedEdge: null
 	};
+	this.statisticsWidget = {
+		$container: $("#side-widget"),
+		$trigger: $("#side-widget-trigger"),
+		$nodeTypesPlotContainer: $("#node-types"),
+		$inEdgesPlotContainer: $("#in-edges"),
+		$outEdgesPlotContainer: $("#out-edges"),
+		$nodeMetricsPlotContainer: $("#node-metrics")
+	}
 	this.modeMenu = $("#mode-dialog");
 	this.graphContainer = $("#graph");
 
@@ -52,7 +60,7 @@ InterfaceHandler.prototype.setController = function(controller) {
 	this.controller = controller;
 	this.configureControlPanel();
 
-	this.sideWidgetHandler = new SideWidgetHandler(this.controller);
+	this.sideWidgetHandler = new SideWidgetHandler(this.controller, this.statisticsWidget);
 	this.showModeMenu();
 }
 
@@ -288,7 +296,7 @@ InterfaceHandler.prototype.emptyNodeStatistics = function() {
 	this.nodeWidget.selectedNode = null;
 	this.nodeWidget.requestsLoaded = false;
 	this.nodeWidget.$dialogTableBody.empty();
-	this.sideWidgetHandler.updateSelectedNodeStats(null);
+	this.sideWidgetHandler.resetSelectedNodeStats();
 }
 
 InterfaceHandler.prototype.emptyEdgeStatistics = function() {
