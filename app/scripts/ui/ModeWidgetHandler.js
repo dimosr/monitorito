@@ -9,14 +9,18 @@ function ModeWidgetHandler(controller, widget, screenDimensions) {
 }
 
 ModeWidgetHandler.prototype.init = function() {
+	this.controller.disableMonitoring();	//disable Monitoring until a mode is selected
+
 	this.widget.$onlineModeButton.click({handler: this}, function(event){
 		var handler = event.data.handler;
 		handler.controller.setGraphMode(Graph.Mode.ONLINE);
+		handler.controller.enableMonitoring();
 		handler.widget.$container.dialog("close");
 	});
 	this.widget.$offlineModeButton.click({handler: this}, function(event){
 		var handler = event.data.handler;
 		handler.controller.setGraphMode(Graph.Mode.OFFLINE);
+		handler.controller.enableMonitoring();
 		handler.widget.$container.dialog("close");
 	});
 
