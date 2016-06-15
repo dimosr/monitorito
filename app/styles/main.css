@@ -103,6 +103,10 @@ table {
     word-wrap:break-word;
 }
 
+.hcenter{
+	text-align: center;
+}
+
 .wrap{
 	word-wrap:break-word;
 }
