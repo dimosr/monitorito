@@ -44,11 +44,28 @@ InterfaceHandler.prototype.initSideWidgetHandler = function() {
 InterfaceHandler.prototype.initNodeWidgetHandler = function() {
 	var nodeWidget = {
 		$container: $("#node_widget"),
-		$opener: $("#node_requests_opener"),
-		$dialogContent: $("#node_requests_dialog"),
-		$dialogTableBody: $("#node_requests_dialog tbody"),
-		$domainField: $("#node_domain"),
-		$requestsNumberField: $("#node_requests_no")
+		requests: {
+			$numberField: $("#node_requests_no"),
+			$opener: $("#node_requests_opener"),
+			$dialogContent: $("#node_requests_dialog"),
+			$dialogTableBody: $("#node_requests_dialog tbody"),
+			loaded: false
+		},
+		firstPartyCookies: {
+			$numberField: $("#node_cookies_1st_no"),
+			$opener: $("#node_cookies_1st_opener"),
+			$dialogContent: $("#node_cookies_1st_dialog"),
+			$dialogTableBody: $("#node_cookies_1st_dialog tbody"),
+			loaded: false
+		},
+		thirdPartyCookies: {
+			$numberField: $("#node_cookies_3rd_no"),
+			$opener: $("#node_cookies_3rd_opener"),
+			$dialogContent: $("#node_cookies_3rd_dialog"),
+			$dialogTableBody: $("#node_cookies_3rd_dialog tbody"),
+			loaded: false
+		},
+		$domainField: $("#node_domain")
 	};
 	this.nodeWidgetHandler = new NodeWidgetHandler(this.controller, nodeWidget, this.screenDimensions);
 }

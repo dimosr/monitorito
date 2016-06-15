@@ -9,6 +9,10 @@ function Node(id, graph, networkNodes) {
 	this._requests = [];
 	this.networkNodes = networkNodes;
 
+	this.cookies = {};
+	this.cookies[HttpRequest.Type.ROOT] = {};
+	this.cookies[HttpRequest.Type.EMBEDDED] = {};
+
 	if(graph.mode == Graph.Mode.ONLINE) this.createVisualNode();
 	this.graph = graph;
 }
@@ -28,11 +32,22 @@ Node.prototype.getDomain = function() {
 
 Node.prototype.addRequest = function(httpRequest) {
 	this._requests.push(httpRequest);
+	for(var key in httpRequest.cookies) {
+		this.cookies[httpRequest.type][key] = httpRequest.cookies[key];
+	}
 	if(this.type.rank > Node.Type[httpRequest.type].rank) this.updateType(Node.Type[httpRequest.type]);
 }
 
 Node.prototype.getRequests = function() {
 	return this._requests;
+}
+
+Node.prototype.getFirstPartyCookies = function() {
+	return this.cookies[HttpRequest.Type.ROOT];
+}
+
+Node.prototype.getThirdPartyCookies = function() {
+	return this.cookies[HttpRequest.Type.EMBEDDED];
 }
 
 Node.prototype.addEdgeTo = function(destinationNode, edge) {

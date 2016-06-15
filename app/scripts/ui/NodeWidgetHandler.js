@@ -4,7 +4,6 @@
 function NodeWidgetHandler(controller, widget, screenDimensions) {
 	this.widget = widget;
 	this.selectedNode = null;
-	this.requestsLoaded = false;
 
 	this.screenDimensions = screenDimensions;
 	this.init();
@@ -17,21 +16,45 @@ NodeWidgetHandler.prototype.init = function() {
 		width: this.screenDimensions.width*0.9,
 		height: this.screenDimensions.height*0.6
 	};
-	this.widget.$dialogContent.dialog(dialogOptions);
-	this.widget.$opener.click({handler: this}, function(event) {
+	this.widget.requests.$dialogContent.dialog(dialogOptions);
+	this.widget.firstPartyCookies.$dialogContent.dialog(dialogOptions);
+	this.widget.thirdPartyCookies.$dialogContent.dialog(dialogOptions);
+
+
+	this.widget.requests.$opener.click({handler: this}, function(event) {
 		var handler = event.data.handler;
 		var widget = handler.widget;
-		if(!handler.requestsLoaded) {
+		if(!widget.requests.loaded) {
 			handler.loadNodeRequests(handler.selectedNode);
-			handler.requestsLoaded = true;
+			widget.requests.loaded = true;
 		}
-		widget.$dialogContent.dialog( "open" );
+		widget.requests.$dialogContent.dialog( "open" );
+	});
+	this.widget.firstPartyCookies.$opener.click({handler: this}, function(event) {
+		var handler = event.data.handler;
+		var widget = handler.widget;
+		if(!widget.firstPartyCookies.loaded) {
+			handler.loadFirstPartyCookies(handler.selectedNode);
+			widget.firstPartyCookies.loaded = true;
+		}
+		widget.firstPartyCookies.$dialogContent.dialog( "open" );
+	});
+	this.widget.thirdPartyCookies.$opener.click({handler: this}, function(event) {
+		var handler = event.data.handler;
+		var widget = handler.widget;
+		if(!widget.thirdPartyCookies.loaded) {
+			handler.loadThirdPartyCookies(handler.selectedNode);
+			widget.thirdPartyCookies.loaded = true;
+		}
+		widget.thirdPartyCookies.$dialogContent.dialog( "open" );
 	});
 }
 
 NodeWidgetHandler.prototype.showInfo = function(node) {
 	this.widget.$domainField.html(node.getDomain());
-	this.widget.$requestsNumberField.html(node.getRequests().length);
+	this.widget.requests.$numberField.html(node.getRequests().length);
+	this.widget.firstPartyCookies.$numberField.html(Object.keys(node.getFirstPartyCookies()).length);
+	this.widget.thirdPartyCookies.$numberField.html(Object.keys(node.getThirdPartyCookies()).length);
 	
 	this.selectedNode = node;
 	this.widget.$container.show();
@@ -65,7 +88,7 @@ NodeWidgetHandler.prototype.loadNodeRequests = function(node) {
 		var bodyColumn = "<td><ul>" + parametersContent + "</ul></td>";
 		requestsRows += "<tr>" + typeColumn + methodColumn + urlColumn + refererColumn + bodyColumn + "</tr>";
 	}
-	this.widget.$dialogTableBody.append(requestsRows);
+	this.widget.requests.$dialogTableBody.append(requestsRows);
 	this.enablePostParamsDialog();
 }
 
@@ -95,9 +118,35 @@ NodeWidgetHandler.prototype.enablePostParamsDialog = function() {
 	});
 }
 
+NodeWidgetHandler.prototype.loadFirstPartyCookies = function(node) {
+	var cookies = node.getFirstPartyCookies();
+	var contentToAdd = '';
+	for(var key in cookies) {
+		var keyCol = "<td>" + key + "</td>";
+		var valueCol = "<td>" + cookies[key] + "</td>";
+		contentToAdd += "<tr>" + keyCol + valueCol + "</tr>";
+	}
+	this.widget.firstPartyCookies.$dialogTableBody.append(contentToAdd);
+}
+
+NodeWidgetHandler.prototype.loadThirdPartyCookies = function(node) {
+	var cookies = node.getThirdPartyCookies();
+	var contentToAdd = '';
+	for(var key in cookies) {
+		var keyCol = "<td>" + key + "</td>";
+		var valueCol = "<td>" + cookies[key] + "</td>";
+		contentToAdd += "<tr>" + keyCol + valueCol + "</tr>";
+	}
+	this.widget.thirdPartyCookies.$dialogTableBody.append(contentToAdd);
+}
+
 NodeWidgetHandler.prototype.emptyInfo = function() {
 	this.widget.$container.hide();
-	this.widget.$dialogTableBody.empty();
+	this.widget.requests.$dialogTableBody.empty();
+	this.widget.firstPartyCookies.$dialogTableBody.empty();
+	this.widget.thirdPartyCookies.$dialogTableBody.empty();
 	this.selectedNode = null;
-	this.requestsLoaded = false;
+	this.widget.requests.loaded = false;
+	this.widget.firstPartyCookies.loaded = false;
+	this.widget.thirdPartyCookies.loaded = false;
 }

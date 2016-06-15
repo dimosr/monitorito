@@ -7,6 +7,7 @@ function HttpRequest(method, url, timestamp, bodyParams, type) {
 	this.bodyParams = bodyParams;
 	this.type = type;
 	this.headers = {};
+	this.cookies = {};
 
 	this._referer = null;
 }
@@ -14,6 +15,7 @@ function HttpRequest(method, url, timestamp, bodyParams, type) {
 HttpRequest.prototype.setHeaders = function(headers) {
 	this.headers = headers;
 	if("Referer" in headers) this._referer = headers["Referer"];
+	if("Cookie" in headers) this.cookies = Util.getCookiesMap(headers["Cookie"]);
 }
 
 HttpRequest.prototype.getHeaders = function() {
