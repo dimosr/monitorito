@@ -13,7 +13,7 @@ EdgeWidgetHandler.prototype.init = function() {
 	var dialogOptions = {
 		autoOpen: false,
 		modal: true,
-		width: this.screenDimensions.width*0.6,
+		width: this.screenDimensions.width*0.9,
 		height: this.screenDimensions.height*0.6
 	};
 

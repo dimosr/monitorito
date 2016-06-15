@@ -7,7 +7,7 @@ Converter.getRedirectColumnValuesCSV = function() {
 }
 
 Converter.getRequestsColumnValuesCSV = function() {
-	return Converter.createCSVRow(["SessionID", "Method", "URL", "Timestamp", "Body Parameters", "Type"]);
+	return Converter.createCSVRow(["SessionID", "Method", "URL", "Timestamp", "Body Parameters", "Type", "Headers", "Referer"]);
 }
 
 Converter.redirectToCSV = function(sessionID, redirect) {
@@ -15,7 +15,7 @@ Converter.redirectToCSV = function(sessionID, redirect) {
 }
 
 Converter.requestToCSV = function(sessionID, request) {
-	return Converter.createCSVRow([sessionID, request.method, request.url, request.timestamp, this.mapToCSVCell(request.bodyParams), request.type]);
+	return Converter.createCSVRow([sessionID, request.method, request.url, request.timestamp, this.mapToCSVCell(request.bodyParams), request.type, this.mapToCSVCell(request.headers), request._referer]);
 }
 
 Converter.mapToCSVCell = function(map) {

@@ -14,7 +14,7 @@ NodeWidgetHandler.prototype.init = function() {
 	var dialogOptions = {
 		autoOpen: false,
 		modal: true,
-		width: this.screenDimensions.width*0.6,
+		width: this.screenDimensions.width*0.9,
 		height: this.screenDimensions.height*0.6
 	};
 	this.widget.$dialogContent.dialog(dialogOptions);
@@ -46,6 +46,7 @@ NodeWidgetHandler.prototype.loadNodeRequests = function(node) {
 		var typeColumn = "<td>" + request.type + "</td>";
 		var methodColumn = "<td>" + request.method + "</td>";
 		var urlColumn = "<td>" + request.url + "</td>";
+		var refererColumn = "<td>" + request.getReferer() + "</td>";
 		var parametersContent = "";
 		if(request.method == "POST") {
 			var bodyParams = request.bodyParams;
@@ -62,7 +63,7 @@ NodeWidgetHandler.prototype.loadNodeRequests = function(node) {
 			}
 		}
 		var bodyColumn = "<td><ul>" + parametersContent + "</ul></td>";
-		requestsRows += "<tr>" + typeColumn + methodColumn + urlColumn + bodyColumn + "</tr>";
+		requestsRows += "<tr>" + typeColumn + methodColumn + urlColumn + refererColumn + bodyColumn + "</tr>";
 	}
 	this.widget.$dialogTableBody.append(requestsRows);
 	this.enablePostParamsDialog();

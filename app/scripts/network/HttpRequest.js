@@ -16,6 +16,10 @@ HttpRequest.prototype.setHeaders = function(headers) {
 	if("Referer" in headers) this._referer = headers["Referer"];
 }
 
+HttpRequest.prototype.getHeaders = function() {
+	return this.headers;
+}
+
 HttpRequest.prototype.hasReferer = function() {
 	return this._referer != null;
 }

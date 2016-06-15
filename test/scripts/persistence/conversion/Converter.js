@@ -16,7 +16,7 @@ QUnit.test("getRedirectColumnValuesCSV() method", function(assert) {
 
 QUnit.test("getRequestsColumnValuesCSV() method", function(assert) {
 	var actualColumns = Converter.getRequestsColumnValuesCSV();
-	var expectedColumns = Converter.createCSVRow(["SessionID", "Method", "URL", "Timestamp", "Body Parameters", "Type"]);
+	var expectedColumns = Converter.createCSVRow(["SessionID", "Method", "URL", "Timestamp", "Body Parameters", "Type", "Headers", "Referer"]);
 
 	assert.equal(actualColumns, expectedColumns, "Requests CSV Header columns are right.");
 });
@@ -36,7 +36,7 @@ QUnit.test("requestToCSV() method", function(assert) {
 	var sessionID = 1;
 
 	var actualCSV = Converter.requestToCSV(sessionID, request);
-	var expectedCSV = Converter.createCSVRow([sessionID, request.method, request.url, request.timestamp, Converter.mapToCSVCell(request.bodyParams), request.type]);
+	var expectedCSV = Converter.createCSVRow([sessionID, request.method, request.url, request.timestamp, Converter.mapToCSVCell(request.bodyParams), request.type, '', request.getReferer()]);
 
 	assert.equal(actualCSV, expectedCSV, "Request is converted correctly.");
 });
