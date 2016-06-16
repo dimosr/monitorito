@@ -56,7 +56,7 @@ SideWidgetHandler.prototype.initialiseStatisticsGraphs = function() {
 				ticks: {display: false, min: 0, max: 100}
 			}
 		},
-		data: this.generatePlotData(["Phishing.", "Tracking", "Leaking"], ["Node Metrics"], [{r:153,g:0,b:153}])
+		data: this.generatePlotData(["Phishing.", "Tracking", "Tracking Cookies", "Leaking"], ["Node Metrics"], [{r:153,g:0,b:153}])
 	});
 }
 
@@ -149,7 +149,7 @@ SideWidgetHandler.prototype.updateSelectedNodeStats = function(node) {
 	this.incomingEdgesPlot.update();
 
 	var metrics = this.controller.getGraphNodeMetrics(node);
-	this.nodeMetricsPlot.data.datasets[0].data = [metrics.phishing, metrics.tracking, metrics.leaking];
+	this.nodeMetricsPlot.data.datasets[0].data = [metrics.phishing, metrics.tracking, metrics.trackingCookies, metrics.leaking];
 	this.nodeMetricsPlot.update();
 }
 

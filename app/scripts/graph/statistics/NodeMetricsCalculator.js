@@ -8,7 +8,8 @@ NodeMetricsCalculator.prototype.getNodeMetrics = function(node, graphStatistics)
 	return {
 		phishing: this.getPhishingMetric(node, graphStatistics),
 		tracking: this.getTrackingMetric(node, graphStatistics),
-		leaking: this.getLeakingMetric(node, graphStatistics)
+		leaking: this.getLeakingMetric(node, graphStatistics),
+		trackingCookies: this.getTrackingCookiesMetric(node)
 	};
 }
 
@@ -22,6 +23,12 @@ NodeMetricsCalculator.prototype.getTrackingMetric = function(node, graphStatisti
 	var maxIncomingEdges = graphStatistics.inEdges.referral.max;
 	var inEdges = node.getIncomingEdgesByType()[Edge.Type.REFERRAL.name].length;
 	return (inEdges/maxIncomingEdges)*100;
+}
+
+NodeMetricsCalculator.prototype.getTrackingCookiesMetric = function(node) {
+	var firstPartyCookiesNum = Object.keys(node.getFirstPartyCookies()).length;
+	var thirdPartyCookiesNum = Object.keys(node.getThirdPartyCookies()).length;
+	return thirdPartyCookiesNum / (thirdPartyCookiesNum + firstPartyCookiesNum) * 100;
 }
 
 NodeMetricsCalculator.prototype.getLeakingMetric = function(node, graphStatistics) {
