@@ -15,6 +15,10 @@ function ChromeStorageService(storageEndpoint, downloader) {
 	this.clearStorage();
 }
 
+ChromeStorageService.prototype.setController = function(controller) {
+	this.controller = controller;
+}
+
 ChromeStorageService.prototype.clearStorage = function() {
 	this.storageEndpoint.clear();
 }
@@ -46,6 +50,7 @@ ChromeStorageService.prototype.storeRedirect = function(sessionID, redirect) {
 }
 
 ChromeStorageService.prototype.extractData = function() {
+	this.controller.showLoader();
 	if(this.redirectsNo > 0) {
 		this._extractRedirect(0, this.redirectsNo, Converter.getRedirectColumnValuesCSV(), 1);
 	}
@@ -67,6 +72,7 @@ ChromeStorageService.prototype._extractRequest = function(index, topLimit, reque
 	else {
 		this.downloader.saveFileAs(requestData, "text/csv", fileName);
 		if((index+1) < topLimit) this._extractRequest(index+1, topLimit, Converter.getRequestsColumnValuesCSV(), batch+1);
+		else this.controller.hideLoader();
 	}
 }
 

@@ -6,6 +6,7 @@ function InterfaceHandler() {
 		height: $(window).height()
 	};
 	this.graphContainer = $("#graph");
+	this.loader = $("#loader");
 }
 
 InterfaceHandler.prototype.setController = function(controller) {
@@ -136,4 +137,12 @@ InterfaceHandler.prototype.emptyEdgeInfo = function() {
 
 InterfaceHandler.prototype.getGraphDomElement = function() {
 	return this.graphContainer[0];
+}
+
+InterfaceHandler.prototype.showLoader = function() {
+	this.loader.show();
+}
+
+InterfaceHandler.prototype.hideLoader = function() {
+	this.loader.hide();
 }

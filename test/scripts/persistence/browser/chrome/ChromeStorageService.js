@@ -13,6 +13,7 @@ QUnit.module( "persistence.browser.chrome.ChromeStorageService", {
 		this.mockDownloader = sinon.mock(downloader);
 
 		this.storageService = new ChromeStorageService(storageEndpoint, downloader);
+		this.storageService.setController(sinon.createStubInstance(CentralController));
 	}
 });
 

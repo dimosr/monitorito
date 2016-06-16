@@ -51,6 +51,14 @@ CentralController.prototype.storeRedirect = function(sessionID, redirect) {
 	this.storageService.storeRedirect(sessionID, redirect);
 }
 
+CentralController.prototype.showLoader = function() {
+	this.interfaceHandler.showLoader();
+}
+
+CentralController.prototype.hideLoader = function() {
+	this.interfaceHandler.hideLoader();
+}
+
 CentralController.prototype.setGraphMode = function(mode) {
 	var graphHandler = this.graphHandler;
 	var interfaceHandler = this.interfaceHandler;
