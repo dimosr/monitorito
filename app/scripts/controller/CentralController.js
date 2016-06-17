@@ -59,6 +59,14 @@ CentralController.prototype.hideLoader = function() {
 	this.interfaceHandler.hideLoader();
 }
 
+CentralController.prototype.clusterByDomain = function(domains, clusterID) {
+	this.graphHandler.clusterByDomain(domains, clusterID);
+}
+
+CentralController.prototype.deleteCluster = function(clusterID) {
+	this.graphHandler.deleteCluster(clusterID);
+}
+
 CentralController.prototype.setGraphMode = function(mode) {
 	var graphHandler = this.graphHandler;
 	var interfaceHandler = this.interfaceHandler;

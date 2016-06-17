@@ -85,6 +85,12 @@ Graph.prototype.createNode = function(hostname) {
 	this.notifyForNewNode(node);
 }
 
+Graph.prototype.getNodes = function() {
+	var nodes = [];
+	for(var key in this.nodes) nodes.push(this.nodes[key]);
+	return nodes;
+}
+
 Graph.prototype.getNode = function(hostname) {
 	return (hostname in this.nodes) ? this.nodes[hostname] : null;
 }
