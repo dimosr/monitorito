@@ -68,7 +68,7 @@ Edge.prototype.getType = function() {
 
 Edge.prototype.createVisualEdge = function(){
 	this.networkEdges.add({
-		id: this.id,
+		id: this.id.toString(),
 		arrows: {
 			to: {scaleFactor: 1}
 		},
@@ -82,7 +82,7 @@ Edge.prototype.createVisualEdge = function(){
 
 Edge.prototype.updateVisualEdgeType = function(type) {
 	this.networkEdges.update({
-		id: this.id,
+		id: this.id.toString(),
 		dashes: this.type.dashes,
 		color: this.type.color
 	});

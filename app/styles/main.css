@@ -1,6 +1,5 @@
 html,body {
 	background-color: grey;
-	height: auto;
 }
 
 #main-container {
@@ -21,24 +20,24 @@ html,body {
 	background-size: 25% auto;
 }
 
-#total_stats, #node_widget, #edge_widget, #control_widget{
+#total_stats, #manipulation_widget, #node_widget, #edge_widget, #control_widget{
 	margin-bottom: 10px;
+	border: 2px solid black;
+	border-radius: 5%;
+	padding: 5px;
+	font-family: "Courier New", Courier, monospace;
 }
 
 #total_stats, #node_widget, #edge_widget{
-	border: 2px solid black;
-	border-radius: 5%;
 	background-color: #5c85d6;
-	font-family: "Courier New", Courier, monospace;
-	padding: 5px;
 }
 
 #control_widget {
-	border: 2px solid black;
-	border-radius: 5%;
 	background-color: #00cc99;
-	font-family: "Courier New", Courier, monospace;
-	padding: 5px;
+}
+
+#manipulation_widget {
+	background-color: #77773c;
 }
 
 #node_widget, #edge_widget {
@@ -101,6 +100,7 @@ html,body {
 table {
     table-layout: fixed;
     word-wrap:break-word;
+    color: black;
 }
 
 .hcenter{

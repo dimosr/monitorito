@@ -148,7 +148,7 @@ Graph.prototype._setupListeners = function() {
 				var selectedNode = graph.nodes[eventParams.nodes[0]];
 				this._selectNodeCallback(selectedNode);
 			}
-			else if(eventParams.nodes.length == 0 && eventParams.edges.length == 1) {//Edge Selected
+			else if(eventParams.nodes.length == 0 && eventParams.edges.length == 1 && (eventParams.edges[0].search("clusterEdge") < 0 )) {//Edge Selected (not clusterEdge)
 				var selectedEdge = graph.edges[eventParams.edges[0]];
 				this._selectEdgeCallback(selectedEdge);
 			}
@@ -164,7 +164,7 @@ Graph.prototype._setupListeners = function() {
 
 		this._network.on("deselectEdge", function(eventParams) {
 			var previousSelection = eventParams.previousSelection;
-			if(previousSelection.nodes.length == 0 && previousSelection.edges.length == 1) {//Only in edge deselections
+			if(previousSelection.nodes.length == 0 && previousSelection.edges.length == 1 && (previousSelection.edges[0].search("clusterEdge") < 0 )) {//Only in edge deselections (not clusterEdge)
 				var deselectedEdges = previousSelection.edges;
 				this._deselectEdgeCallback(deselectedEdges);
 			}

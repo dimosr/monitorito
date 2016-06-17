@@ -1,5 +1,10 @@
+<!DOCTYPE html>
 <html>
 	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Monitorito</title>
+
 		<!-- Libraries Styles -->
 		<link rel="stylesheet" href="lib/jquery-ui-1.11.4/jquery-ui.structure.css">
 		<link rel="stylesheet" href="lib/jquery-ui-1.11.4/jquery-ui.theme.css">
@@ -25,6 +30,7 @@
 
 		<script src="scripts/util/Util.js"></script>
 		<script src="scripts/ui/InterfaceHandler.js"></script>
+		<script src="scripts/ui/ManipulationWidgetHandler.js"></script>
 		<script src="scripts/ui/NodeWidgetHandler.js"></script>
 		<script src="scripts/ui/EdgeWidgetHandler.js"></script>
 		<script src="scripts/ui/ControlWidgetHandler.js"></script>
@@ -99,6 +105,57 @@
 
 							<div id="export-button" class="button warning">
 								Export Data
+							</div>
+						</div>
+
+						<div id="manipulation_widget" class="row">
+							<div class="columns large-12">
+								<div id="cluster-button" class="button">Cluster By Domain</div>
+								<div id="cluster-options">
+									
+									<form>
+										<fieldset>
+											<legend>Cluster ID/Name</legend>
+											<input class="cluster-id" type="text" placeholder="My-Cluster">
+										</fieldset>
+										<fieldset>
+											<legend>Domains</legend>
+											<input class="domain" type="text" placeholder="www.example.com">
+										</fieldset>
+										<div class="add-row-button button tiny secondary">+ Add Domain</div>
+									</form>
+									<div class="submit-button button tiny success">Cluster</div>
+									<div class="cancel-button button tiny secondary">Cancel</div>
+								</div>
+							</div>
+						</div>
+
+						<div id="cluster_widget" class="row">
+							<div class="row">
+								<div class="columns large-12">Selected Cluster</div>
+							</div>
+
+							<div class="row">
+								<div class="columns large-3 name">Cluster ID</div>
+								<div id="cluster_id" class="columns large-9 value"></div>
+							</div>
+							<div class="row">
+								<div class="columns large-3 name">Clustered Nodes</div>
+								<div id="cluster_nodes_num" class="columns large-2 value hcenter"></div>
+								<div class="columns large-7">
+									<div id="cluster_nodes_opener" class="button tiny secondary">Show</div>
+								</div>
+								<div id="cluster_nodes_dialog" title="Cluster nodes">
+									<table>
+										<thead>
+											<tr>
+												<th style="width: 100%">Node Domain</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
 							</div>
 						</div>
 
@@ -263,7 +320,7 @@
 					<canvas id="out-edges" ></canvas>
 					<canvas id="node-metrics" ></canvas>
 				</div>
-				<div id="side-widget-trigger"><img src="resources/img/arrow.png"></div>
+				<div id="side-widget-trigger"><img src="resources/img/arrow.png" alt="arrow image"></div>
 			</div>
 
 			<div id="mode-dialog">
@@ -271,15 +328,15 @@
 					<div class="columns large-5">
 						<div id="online-mode" class="row option">
 							<div class="columns large-12 header">Online</div>
-							<div class="columns large-12"><img src="resources/img/online.jpg"></div>
-							<div class="columns large-12">This mode is more suitable for visualising small datasets (&lt ~50 websites). If this mode is selected, the real-time visualisation of your data will be enabled and you will also able to export the monitored data in the end.</div>
+							<div class="columns large-12"><img src="resources/img/online.jpg" alt="online image"></div>
+							<div class="columns large-12">This mode is more suitable for visualising small datasets (&lt; ~50 websites). If this mode is selected, the real-time visualisation of your data will be enabled and you will also able to export the monitored data in the end.</div>
 						</div>
 					</div>
 					<div class="columns large-offset-1 large-5">
 						<div id="offline-mode" class="row option">
 							<div class="columns large-12 header">Offline</div>
-							<div class="columns large-12"><img src="resources/img/offline.jpg"></div>
-							<div class="columns large-12">This mode is more suitable for visualising large datasets (&gt ~50 websites). If this mode is selected, the real-time visualisation of your data is disabled to improve performance, but you will be able to export the monitored data in the end.</div>
+							<div class="columns large-12"><img src="resources/img/offline.jpg" alt="offline image"></div>
+							<div class="columns large-12">This mode is more suitable for visualising large datasets (&gt; ~50 websites). If this mode is selected, the real-time visualisation of your data is disabled to improve performance, but you will be able to export the monitored data in the end.</div>
 						</div>
 					</div>
 				</div>

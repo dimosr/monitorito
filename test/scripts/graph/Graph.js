@@ -61,34 +61,34 @@ QUnit.test("Testing setupListeners() method, checking if assigned callback funct
 	graph.createEdge("www.dependency.com", "www.example.com", Edge.Type.REQUEST);
 
 
-	network.triggerEvent("select", {nodes: [1], edges: []});
+	network.triggerEvent("select", {nodes: ["1"], edges: []});
 	sinon.assert.notCalled(callback);
 	graph.onSelectNode(callback);
-	network.triggerEvent("select", {nodes: [1], edges: []});
+	network.triggerEvent("select", {nodes: ["1"], edges: []});
 	sinon.assert.calledOnce(callback);
 	
 	callback.reset();
 
-	network.triggerEvent("select", {nodes: [], edges: [1]});
+	network.triggerEvent("select", {nodes: [], edges: ["1"]});
 	sinon.assert.notCalled(callback);
 	graph.onSelectEdge(callback);
-	network.triggerEvent("select", {nodes: [], edges: [1]});
+	network.triggerEvent("select", {nodes: [], edges: ["1"]});
 	sinon.assert.calledOnce(callback);
 
 	callback.reset();
 
-	network.triggerEvent("deselectNode", {previousSelection: {nodes: [1], edges: []}});
+	network.triggerEvent("deselectNode", {previousSelection: {nodes: ["1"], edges: []}});
 	sinon.assert.notCalled(callback);
 	graph.onDeselectNode(callback);
-	network.triggerEvent("deselectNode", {previousSelection: {nodes: [1], edges: []}});
+	network.triggerEvent("deselectNode", {previousSelection: {nodes: ["1"], edges: []}});
 	sinon.assert.calledOnce(callback);
 
 	callback.reset();
 
-	network.triggerEvent("deselectEdge", {previousSelection: {nodes: [], edges: [1]}});
+	network.triggerEvent("deselectEdge", {previousSelection: {nodes: [], edges: ["1"]}});
 	sinon.assert.notCalled(callback);
 	graph.onDeselectEdge(callback);
-	network.triggerEvent("deselectEdge", {previousSelection: {nodes: [], edges: [1]}});
+	network.triggerEvent("deselectEdge", {previousSelection: {nodes: [], edges: ["1"]}});
 	sinon.assert.calledOnce(callback);
 });
 

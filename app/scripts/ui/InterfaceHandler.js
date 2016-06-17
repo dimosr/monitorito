@@ -7,15 +7,46 @@ function InterfaceHandler() {
 	};
 	this.graphContainer = $("#graph");
 	this.loader = $("#loader");
+	this.loadExtensions();
 }
 
 InterfaceHandler.prototype.setController = function(controller) {
 	this.controller = controller;
+	this.initManipulationWidgetHandler();
+	this.initClusterWidgetHandler();
 	this.initNodeWidgetHandler();
 	this.initEdgeWidgetHandler();
 	this.initControlWidgetHandler();
 	this.initSideWidgetHandler();
 	this.initModeWidgetHandler();
+}
+
+InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
+	var manipulationWidget = {
+		clustering: {
+			$clusterButton: $("#cluster-button"),
+			$clusterOptions: $("#cluster-options"),
+			$clusterForm: $("#cluster-options form"),
+			$addRowButton: $("#cluster-options .add-row-button"),
+			$submitButton: $("#cluster-options .submit-button"),
+			$cancelButton: $("#cluster-options .cancel-button")
+		}
+	}
+	this.manipulationWidgetHandler = new ManipulationWidgetHandler(this.controller, manipulationWidget, this.screenDimensions);
+}
+
+InterfaceHandler.prototype.initClusterWidgetHandler = function() {
+	var clusterWidget = {
+		$container: $("#cluster_widget"),
+		$clusterID: $("#cluster_id"),
+		nodes: {
+			$numberField: $("#cluster_nodes_num"),
+			$opener: $("#cluster_nodes_opener"),
+			$dialogContent: $("#cluster_nodes_dialog"),
+			$dialogTableBody: $("#cluster_nodes_dialog tbody")
+		}
+	};
+	this.clusterWidgetHandler = new ClusterWidgetHandler(this.controller, clusterWidget, this.screenDimensions);
 }
 
 InterfaceHandler.prototype.initControlWidgetHandler = function() {
@@ -145,4 +176,17 @@ InterfaceHandler.prototype.showLoader = function() {
 
 InterfaceHandler.prototype.hideLoader = function() {
 	this.loader.hide();
+}
+
+InterfaceHandler.prototype.loadExtensions = function() {
+	$.extend({ alert: function (message, title) {
+		$("<div></div>").dialog( {
+			buttons: { "Ok": function () { $(this).dialog("close"); } },
+			close: function (event, ui) { $(this).remove(); },
+			resizable: false,
+			draggable: false,
+			title: title,
+			modal: true
+		}).text(message);
+	}});
 }

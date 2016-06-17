@@ -12,7 +12,6 @@ GraphFactory.prototype.buildGraph = function(mode, graphElement) {
 			},
 			interaction: {
 				tooltipDelay: 0,
-				keyboard: true,
 				navigationButtons: true
 			},
 			physics: {
