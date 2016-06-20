@@ -100,3 +100,16 @@ Edge.prototype.updateType = function(type) {
 Edge.prototype.notifyForChange = function(fromType, toType, edge) {
 	this.graph.notifyForEdgeChange(fromType, toType, edge);
 }
+
+Edge.groupEdgesByType = function(edges) {
+	var groupedEdges = {};
+	for(var key in Edge.Type) {
+		var type = Edge.Type[key];
+		groupedEdges[type.name] = [];
+	}
+	for(var i = 0; i < edges.length; i++) {
+		var edge = edges[i];
+		groupedEdges[edge.getType().name].push(edge);
+	}
+	return groupedEdges;
+}

@@ -5,10 +5,13 @@ function Cluster(id, graph, containedNodes) {
 	this.graph = graph;
 
 	this.nodes = {};
+	this._outgoing = {};
+	this._incoming = {};
+
 	for(var i = 0; i < containedNodes.length; i++) 
 		this.nodes[containedNodes[i].getID()] = containedNodes[i];
-
 	this.createVisualCluster();
+	this.calculateEdges();
 }
 
 Cluster.prototype.createVisualCluster = function() {
@@ -48,4 +51,26 @@ Cluster.prototype.getNodes = function() {
 	var nodes = [];
 	for(var key in this.nodes) nodes.push(this.nodes[key]);
 	return nodes;
+}
+
+Cluster.prototype.calculateEdges = function() {
+	for(var key in this.nodes) {
+		var fromID = key;
+		var outEdges = this.nodes[fromID].getOutgoingEdges();
+		var inEdges = this.nodes[fromID].getIncomingEdges();
+		for(var i = 0; i < outEdges.length; i++) {
+			var edge = outEdges[i];
+			var dstNode = edge.getDestinationNode();
+			if(!(dstNode in this.nodes)) {
+				if(!(dstNode in this._outgoing) || (this._outgoing[dstNode].rank > edge.getType().rank)) this._outgoing[dstNode] = edge.getType();
+			}
+		}
+		for(var i = 0; i < inEdges.length; i++) {
+			var edge = inEdges[i];
+			var srcNode = edge.getSourceNode()
+			if(!(srcNode in this.nodes)) {
+				if(!(srcNode in this._incoming) || (this._incoming[srcNode].rank > edge.getType().rank)) this._incoming[srcNode] = edge.getType();
+			}
+		}
+	}
 }

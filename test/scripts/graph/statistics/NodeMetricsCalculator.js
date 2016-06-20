@@ -26,12 +26,16 @@ QUnit.test("testing Tracking Metric calculation", function(assert) {
 		}
 	};
 
-	var stubNode = sinon.createStubInstance(Node);
-	var edgesByTypeResult = {};
-	edgesByTypeResult[Edge.Type.REFERRAL.name] = new Array(4);
-	stubNode.getIncomingEdgesByType.returns(edgesByTypeResult);
+	var rootNode = sinon.createStubInstance(Node);
+	var edges = [];
+	for(var i = 0; i < 4; i++) {
+		var edge = sinon.createStubInstance(Edge);
+		edge.getType.returns(Edge.Type.REFERRAL);
+		edges.push(edge);
+	}
+	rootNode.getIncomingEdges.returns(edges);
 
-	var trackingMetric = nodeMetricsCalculator.getTrackingMetric(stubNode, mockStatistics);
+	var trackingMetric = nodeMetricsCalculator.getTrackingMetric(rootNode, mockStatistics);
 	assert.equal(trackingMetric, (4/10)*100, "Tracking Metric calculated correctly");
 });
 
@@ -45,25 +49,31 @@ QUnit.test("testing Leaking Metric calculation", function(assert) {
 		}
 	};
 
-
-
-	var stubNode = sinon.createStubInstance(Node);
+	var rootNode = sinon.createStubInstance(Node);
 	var neighbourNode1 = sinon.createStubInstance(Node);
-	var edgesByTypeResult = {};
-	edgesByTypeResult[Edge.Type.REFERRAL.name] = new Array(2);
-	neighbourNode1.getIncomingEdgesByType.returns(edgesByTypeResult);
+	var edges = [];
+	for(var i = 0; i < 2; i++) {
+		var edge = sinon.createStubInstance(Edge);
+		edge.getType.returns(Edge.Type.REFERRAL);
+		edges.push(edge);
+	}
+	neighbourNode1.getIncomingEdges.returns(edges);
 	var edge1 = sinon.createStubInstance(Edge);
 	edge1.getDestinationNode.returns(neighbourNode1);
+	edge1.getType.returns(Edge.Type.REFERRAL);
 	var neighbourNode2 = sinon.createStubInstance(Node);
-	var edgesByTypeResult = {};
-	edgesByTypeResult[Edge.Type.REFERRAL.name] = new Array(3);
-	neighbourNode2.getIncomingEdgesByType.returns(edgesByTypeResult);
+	var edges = [];
+	for(var i = 0; i < 3; i++) {
+		var edge = sinon.createStubInstance(Edge);
+		edge.getType.returns(Edge.Type.REFERRAL);
+		edges.push(edge);
+	}
+	neighbourNode2.getIncomingEdges.returns(edges);
 	var edge2 = sinon.createStubInstance(Edge);
 	edge2.getDestinationNode.returns(neighbourNode2);
-	var edgesByTypeResult = {};
-	edgesByTypeResult[Edge.Type.REFERRAL.name] = [edge1, edge2];
-	stubNode.getOutgoingEdgesByType.returns(edgesByTypeResult);
+	edge2.getType.returns(Edge.Type.REFERRAL);
+	rootNode.getOutgoingEdges.returns([edge1, edge2]);
 
-	var leakingMetric = nodeMetricsCalculator.getLeakingMetric(stubNode, mockStatistics);
+	var leakingMetric = nodeMetricsCalculator.getLeakingMetric(rootNode, mockStatistics);
 	assert.equal(leakingMetric, (Math.pow(2/10,2)+Math.pow(3/10,2))/2*100, "Tracking Leaking calculated correctly");
 });

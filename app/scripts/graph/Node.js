@@ -113,35 +113,9 @@ Node.prototype.getOutgoingEdges = function() {
 	return edges;
 }
 
-Node.prototype.getOutgoingEdgesByType = function() {
-	var edges = {};
-	for(var key in Edge.Type) {
-		var type = Edge.Type[key];
-		edges[type.name] = [];
-	}
-	for(var hostnameKey in this._outgoing) {
-		var edge = this._outgoing[hostnameKey].edge;
-		edges[edge.type.name].push(edge);
-	}
-	return edges;
-}
-
 Node.prototype.getIncomingEdges = function() {
 	var edges = [];
 	for(var hostnameKey in this._incoming) edges.push(this._incoming[hostnameKey].edge);
-	return edges;
-}
-
-Node.prototype.getIncomingEdgesByType = function() {
-	var edges = {};
-	for(var key in Edge.Type) {
-		var type = Edge.Type[key];
-		edges[type.name] = [];
-	}
-	for(var hostnameKey in this._incoming) {
-		var edge = this._incoming[hostnameKey].edge;
-		edges[edge.type.name].push(edge);
-	}
 	return edges;
 }
 

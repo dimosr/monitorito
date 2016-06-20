@@ -139,8 +139,8 @@ SideWidgetHandler.prototype.showOutgoingEdgesStatistics = function(graphStatisti
 }
 
 SideWidgetHandler.prototype.updateSelectedNodeStats = function(node) {
-	var outEdges = node.getOutgoingEdgesByType();
-	var inEdges = node.getIncomingEdgesByType();
+	var outEdges = Edge.groupEdgesByType(node.getOutgoingEdges());
+	var inEdges = Edge.groupEdgesByType(node.getIncomingEdges());
 	this.outgoingEdgesPlot.data.datasets[0].data[5] = outEdges[Edge.Type.REFERRAL.name].length;
 	this.outgoingEdgesPlot.data.datasets[1].data[5] = outEdges[Edge.Type.DEFAULT.name].length + outEdges[Edge.Type.REDIRECT.name].length + outEdges[Edge.Type.REQUEST.name].length;
 	this.incomingEdgesPlot.data.datasets[0].data[5] = inEdges[Edge.Type.REFERRAL.name].length;

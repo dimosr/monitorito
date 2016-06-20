@@ -64,7 +64,7 @@ GraphStatsCalculator.prototype.onNodeChange = function(fromType, toType, node) {
 GraphStatsCalculator.prototype.onNewEdge = function(edge) {
 	this.totalEdges++;
 
-	var srcOutgoingEdges = edge.getSourceNode().getOutgoingEdgesByType(), dstIncomingEdges = edge.getDestinationNode().getIncomingEdgesByType();
+	var srcOutgoingEdges = Edge.groupEdgesByType(edge.getSourceNode().getOutgoingEdges()), dstIncomingEdges = Edge.groupEdgesByType(edge.getDestinationNode().getIncomingEdges());
 	var srcOutgoingReferralEdges = srcOutgoingEdges[Edge.Type.REFERRAL.name].length;
 	var srcOutgoingNonReferralEdges = srcOutgoingEdges[Edge.Type.DEFAULT.name].length + srcOutgoingEdges[Edge.Type.REQUEST.name].length + srcOutgoingEdges[Edge.Type.REDIRECT.name].length;
 	var dstIncomingReferralEdges = dstIncomingEdges[Edge.Type.REFERRAL.name].length;
@@ -77,7 +77,7 @@ GraphStatsCalculator.prototype.onNewEdge = function(edge) {
 GraphStatsCalculator.prototype.onEdgeChange = function(fromType, toType, edge) {
 	/* Only track changes from nonReferral to Referral */
 	if(fromType != Edge.Type.REFERRAL && toType == Edge.Type.REFERRAL) {
-		var srcOutgoingEdges = edge.getSourceNode().getOutgoingEdgesByType(), dstIncomingEdges = edge.getDestinationNode().getIncomingEdgesByType();
+		var srcOutgoingEdges = Edge.groupEdgesByType(edge.getSourceNode().getOutgoingEdges()), dstIncomingEdges = Edge.groupEdgesByType(edge.getDestinationNode().getIncomingEdges());
 		var srcOutgoingReferralEdges = srcOutgoingEdges[Edge.Type.REFERRAL.name].length;
 		var srcOutgoingNonReferralEdges = srcOutgoingEdges[Edge.Type.DEFAULT.name].length + srcOutgoingEdges[Edge.Type.REQUEST.name].length + srcOutgoingEdges[Edge.Type.REDIRECT.name].length;
 		var dstIncomingReferralEdges = dstIncomingEdges[Edge.Type.REFERRAL.name].length;
