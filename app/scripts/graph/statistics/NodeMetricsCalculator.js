@@ -4,12 +4,18 @@ function NodeMetricsCalculator() {
 
 }
 
+/*  @Docs
+	Returns node metrics of the given node/cluster
+	Math.min is only used for clusters, that can 
+	present values greater than 100 due to aggregation
+	of multiple nodes
+*/
 NodeMetricsCalculator.prototype.getNodeMetrics = function(node, graphStatistics) {
 	return {
-		phishing: this.getPhishingMetric(node, graphStatistics),
-		tracking: this.getTrackingMetric(node, graphStatistics),
-		leaking: this.getLeakingMetric(node, graphStatistics),
-		trackingCookies: this.getTrackingCookiesMetric(node)
+		phishing: Math.min(this.getPhishingMetric(node, graphStatistics), 100),
+		tracking: Math.min(this.getTrackingMetric(node, graphStatistics), 100),
+		leaking: Math.min(this.getLeakingMetric(node, graphStatistics), 100),
+		trackingCookies: Math.min(this.getTrackingCookiesMetric(node),100)
 	};
 }
 

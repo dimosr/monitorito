@@ -7,19 +7,18 @@ function Cluster(id, graph, containedNodes) {
 	this.nodes = {};
 	this._outgoing = {};
 	this._incoming = {};
+	this.cookies = {};
+	this.cookies[HttpRequest.Type.ROOT] = {};
+	this.cookies[HttpRequest.Type.EMBEDDED] = {};
 
 	for(var i = 0; i < containedNodes.length; i++) 
 		this.nodes[containedNodes[i].getID()] = containedNodes[i];
 	this.createVisualCluster();
 	this.calculateEdges();
+	this.calculateCookies();
 }
 
 Cluster.prototype.createVisualCluster = function() {
-	if(Object.keys(this.nodes).length <= 1) {
-		var errorMessage = "Only " + Object.keys(this.nodes).length + " nodes matched. More than 1 nodes needed to create a cluster."
-		throw new Error(errorMessage);
-	}
-
 	var nodes = this.nodes;
 	var joinCondition = function(nodeOptions) {
 		return nodeOptions.id in nodes; 
@@ -60,17 +59,50 @@ Cluster.prototype.calculateEdges = function() {
 		var inEdges = this.nodes[fromID].getIncomingEdges();
 		for(var i = 0; i < outEdges.length; i++) {
 			var edge = outEdges[i];
-			var dstNode = edge.getDestinationNode();
-			if(!(dstNode in this.nodes)) {
-				if(!(dstNode in this._outgoing) || (this._outgoing[dstNode].rank > edge.getType().rank)) this._outgoing[dstNode] = edge.getType();
+			var dstNodeID = edge.getDestinationNode().getID();
+			if(!(dstNodeID in this.nodes)) {
+				if(!(dstNodeID in this._outgoing) || (this._outgoing[dstNodeID].rank > edge.getType().rank)) this._outgoing[dstNodeID] = {'edge': edge};
 			}
 		}
 		for(var i = 0; i < inEdges.length; i++) {
 			var edge = inEdges[i];
-			var srcNode = edge.getSourceNode()
-			if(!(srcNode in this.nodes)) {
-				if(!(srcNode in this._incoming) || (this._incoming[srcNode].rank > edge.getType().rank)) this._incoming[srcNode] = edge.getType();
+			var srcNodeID = edge.getSourceNode().getID();
+			if(!(srcNodeID in this.nodes)) {
+				if(!(srcNodeID in this._incoming) || (this._incoming[srcNodeID].rank > edge.getType().rank)) this._incoming[srcNodeID] = {'edge': edge};
 			}
 		}
 	}
+}
+
+Cluster.prototype.getOutgoingEdges = function() {
+	var edges = [];
+	for(var hostnameKey in this._outgoing) edges.push(this._outgoing[hostnameKey].edge);
+	console.log("outgoingEdges");
+	console.log(edges)
+	return edges;
+}
+
+Cluster.prototype.getIncomingEdges = function() {
+	var edges = [];
+	for(var hostnameKey in this._incoming) edges.push(this._incoming[hostnameKey].edge);
+	console.log("incomingEdges");
+	console.log(edges)
+	return edges;
+}
+
+Cluster.prototype.calculateCookies = function() {
+	for(var key in this.nodes) {
+		var firstPartCookies = this.nodes[key].getFirstPartyCookies();
+		var thirdPartyCookies = this.nodes[key].getThirdPartyCookies();
+		for(var cookieKey in firstPartCookies) this.cookies[HttpRequest.Type.ROOT][cookieKey] = firstPartCookies[cookieKey];
+		for(var cookieKey in thirdPartyCookies) this.cookies[HttpRequest.Type.EMBEDDED][cookieKey] = thirdPartyCookies[cookieKey];
+	}
+}
+
+Cluster.prototype.getFirstPartyCookies = function() {
+	return this.cookies[HttpRequest.Type.ROOT];
+}
+
+Cluster.prototype.getThirdPartyCookies = function() {
+	return this.cookies[HttpRequest.Type.EMBEDDED];
 }

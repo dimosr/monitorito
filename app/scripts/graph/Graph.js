@@ -212,9 +212,13 @@ Graph.prototype.clusterByDomain = function(domains, clusterID) {
 			}
 		}
 	}
-	if(clusteredNodes.length > 0) {
+	if(clusteredNodes.length > 1) {
 		var cluster = new Cluster(clusterID, this, clusteredNodes);
 		this.clusters[clusterID] = cluster;
+	}
+	else {
+		var errorMessage = "Only " + clusteredNodes.length + " nodes matched. More than 1 nodes needed to create a cluster."
+		throw new Error(errorMessage);
 	}
 }
 

@@ -162,12 +162,12 @@ InterfaceHandler.prototype.emptyNodeInfo = function() {
 
 InterfaceHandler.prototype.showClusterInfo = function(cluster) {
 	this.clusterWidgetHandler.showInfo(cluster);
-	//this.clusterWidgetHandler.updateSelectedNodeStats(node);
+	this.sideWidgetHandler.updateSelectedNodeStats(cluster);
 }
 
 InterfaceHandler.prototype.emptyClusterInfo = function() {
 	this.clusterWidgetHandler.emptyInfo();
-	//this.clusterWidgetHandler.resetSelectedNodeStats();
+	this.sideWidgetHandler.resetSelectedNodeStats();
 }
 
 InterfaceHandler.prototype.showEdgeInfo = function(edge) {
