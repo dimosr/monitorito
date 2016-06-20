@@ -6,6 +6,7 @@ function Graph(visualisationNetwork) {
 
 	this.nodes = {};
 	this.edges = {};
+	this.clusters = {};
 
 	if(visualisationNetwork != null) {
 		this.buildGraphWithVisualisation(visualisationNetwork);
@@ -145,8 +146,14 @@ Graph.prototype._setupListeners = function() {
 		var graph = this;
 		this._network.on("select", function(eventParams) {
 			if(eventParams.nodes.length == 1) {//Node Selected
-				var selectedNode = graph.nodes[eventParams.nodes[0]];
-				this._selectNodeCallback(selectedNode);
+				if(eventParams.nodes[0] in graph.nodes) {
+					var selectedNode = graph.nodes[eventParams.nodes[0]];
+					this._selectNodeCallback(selectedNode);
+				}
+				else if(eventParams.nodes[0] in graph.clusters) {
+					var selectedCluster = graph.clusters[eventParams.nodes[0]];
+					this._selectNodeCallback(selectedCluster);
+				}
 			}
 			else if(eventParams.nodes.length == 0 && eventParams.edges.length == 1 && (eventParams.edges[0].search("clusterEdge") < 0 )) {//Edge Selected (not clusterEdge)
 				var selectedEdge = graph.edges[eventParams.edges[0]];
@@ -157,8 +164,14 @@ Graph.prototype._setupListeners = function() {
 		this._network.on("deselectNode", function(eventParams) {
 			var previousSelection = eventParams.previousSelection;
 			if(previousSelection.nodes.length == 1) {//Only in node deselections
-				var deselectedNodes = previousSelection.nodes;
-				this._deselectNodeCallback(deselectedNodes);
+				if(previousSelection.nodes[0] in graph.nodes) {
+					var deselectedNode = graph.nodes[previousSelection.nodes[0]];
+					this._deselectNodeCallback(deselectedNode);
+				}
+				else if(previousSelection.nodes[0] in graph.clusters) {
+					var deselectedCluster = graph.clusters[previousSelection.nodes[0]];
+					this._deselectNodeCallback(deselectedCluster);
+				}
 			}
 		});
 
@@ -179,4 +192,40 @@ Graph.prototype.filterNodes = function(callbackFunction) {
 		if(callbackFunction(node)) filteredNodes.push(node);
 	}
 	return filteredNodes;
+}
+
+Graph.prototype.clusterByDomain = function(domains, clusterID) {
+	if(clusterID in this.clusters) {
+		throw new Error("Cluster ID '" + clusterID + "' already exists. Cluster could not be created, because Cluster ID should be unique.");
+	}
+
+	var nodes = this.getNodes();
+	var clusteredNodes = [];
+	var topLevelDomains = {};
+
+	for(var i = 0; i < nodes.length; i++) {
+		for(var j = 0; j < domains.length; j++) {
+			var domain = domains[j];
+			if(nodes[i].getDomain().search(domain) >= 0) {
+				clusteredNodes.push(nodes[i]);
+				j = domains.length;
+			}
+		}
+	}
+	if(clusteredNodes.length > 0) {
+		var cluster = new Cluster(clusterID, this, clusteredNodes);
+		this.clusters[clusterID] = cluster;
+	}
+}
+
+Graph.prototype.getCluster = function(clusterID) {
+	if(clusterID in this.clusters) return this.clusters[clusterID];
+	else return null;
+}
+
+Graph.prototype.deCluster = function(clusterID) {
+	var cluster = this.clusters[clusterID];
+	this._network._deselectNodeCallback(cluster);
+	cluster.delete();
+	delete this.clusters[clusterID];
 }

@@ -31,6 +31,7 @@
 		<script src="scripts/util/Util.js"></script>
 		<script src="scripts/ui/InterfaceHandler.js"></script>
 		<script src="scripts/ui/ManipulationWidgetHandler.js"></script>
+		<script src="scripts/ui/ClusterWidgetHandler.js"></script>
 		<script src="scripts/ui/NodeWidgetHandler.js"></script>
 		<script src="scripts/ui/EdgeWidgetHandler.js"></script>
 		<script src="scripts/ui/ControlWidgetHandler.js"></script>
@@ -57,7 +58,6 @@
 		<script src="scripts/graph/statistics/NodeMetricsCalculator.js"></script>
 		<script src="scripts/graph/statistics/StatisticsHolder.js"></script>
 		<script src="scripts/graph/cluster/Cluster.js"></script>
-		<script src="scripts/graph/cluster/ClusteringEngine.js"></script>
 
 		<script src="scripts/bootstrap.js"></script>
 		<script src="scripts/controller/CentralController.js"></script>
@@ -136,13 +136,13 @@
 							</div>
 
 							<div class="row">
-								<div class="columns large-3 name">Cluster ID</div>
-								<div id="cluster_id" class="columns large-9 value"></div>
+								<div class="columns large-5 name">Cluster ID</div>
+								<div id="cluster_id" class="columns large-7 value"></div>
 							</div>
 							<div class="row">
-								<div class="columns large-3 name">Clustered Nodes</div>
+								<div class="columns large-5 name">Clustered Nodes</div>
 								<div id="cluster_nodes_num" class="columns large-2 value hcenter"></div>
-								<div class="columns large-7">
+								<div class="columns large-5">
 									<div id="cluster_nodes_opener" class="button tiny secondary">Show</div>
 								</div>
 								<div id="cluster_nodes_dialog" title="Cluster nodes">
@@ -155,6 +155,11 @@
 										<tbody>
 										</tbody>
 									</table>
+								</div>
+							</div>
+							<div class="row">
+								<div class="columns large-12">
+									<div id="decluster_button" class="button tiny secondary">De-cluster</div>
 								</div>
 							</div>
 						</div>

@@ -10,8 +10,6 @@ function GraphHandler(graphStatsCalculator) {
 GraphHandler.prototype.setGraph = function(graph) {
 	this.graph = graph;
 	this.graph.register(this.graphStatsCalculator);
-
-	this.clusteringEngine = new ClusteringEngine(graph);
 }
 
 GraphHandler.prototype.setController = function(controller) {
@@ -88,9 +86,9 @@ GraphHandler.prototype.addDeselectEdgeListener = function(callbackFunction) {
 }
 
 GraphHandler.prototype.clusterByDomain = function(domains, clusterID) {
-	this.clusteringEngine.clusterByDomain(domains, clusterID);
+	this.graph.clusterByDomain(domains, clusterID);
 }
 
 GraphHandler.prototype.deleteCluster = function(clusterID) {
-	this.clusteringEngine.deCluster(clusterID);
+	this.graph.deCluster(clusterID);
 }

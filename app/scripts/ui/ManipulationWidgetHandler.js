@@ -31,20 +31,28 @@ ManipulationWidgetHandler.prototype.init = function() {
 		event.data.handler.resetForm();
 		event.data.handler.widget.clustering.$clusterOptions.dialog("close");
 	});
+	this.widget.clustering.$declusterButton.click({handler: this}, function(event) {
+		event.data.handler.controller.deleteCluster(event.data.handler.widget.clustering.$clusterID.html());
+	});
 }
 
 ManipulationWidgetHandler.prototype.executeClustering = function() {
 	var clusterID = this.widget.clustering.$clusterForm.find("input.cluster-id").val();
 	if(clusterID.trim() != "") {
-		var domains = [];
-		this.widget.clustering.$clusterForm.find("input.domain").each(
-			function(idx, elem) {
-				if(elem.value.trim() != "") domains.push(elem.value);
-			}
-		);
-		this.controller.clusterByDomain(domains, clusterID);
-		this.widget.clustering.$clusterOptions.dialog("close");
-		this.resetForm();
+		try{
+			var domains = [];
+			this.widget.clustering.$clusterForm.find("input.domain").each(
+				function(idx, elem) {
+					if(elem.value.trim() != "") domains.push(elem.value);
+				}
+			);
+			this.controller.clusterByDomain(domains, clusterID);
+			this.widget.clustering.$clusterOptions.dialog("close");
+			this.resetForm();
+		}
+		catch(err) {
+			$.alert(err.message, "Clustering Error");
+		}
 	}
 	else $.alert("Cluster ID field is empty! You have to provide a value.", "Required Field");
 	

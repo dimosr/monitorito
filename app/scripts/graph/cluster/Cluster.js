@@ -12,6 +12,11 @@ function Cluster(id, graph, containedNodes) {
 }
 
 Cluster.prototype.createVisualCluster = function() {
+	if(Object.keys(this.nodes).length <= 1) {
+		var errorMessage = "Only " + Object.keys(this.nodes).length + " nodes matched. More than 1 nodes needed to create a cluster."
+		throw new Error(errorMessage);
+	}
+
 	var nodes = this.nodes;
 	var joinCondition = function(nodeOptions) {
 		return nodeOptions.id in nodes; 
@@ -21,8 +26,14 @@ Cluster.prototype.createVisualCluster = function() {
 		clusterNodeProperties: {
 			id: this.id,
 			title: this.id,
-			label: this.id,
-			shape: "database"
+			label: "Cluster",
+			shape: "database",
+			font: {
+				size: 30
+			}
+		},
+		processProperties: function (clusterOptions, childNodes, childEdges) {
+			return clusterOptions;
 		}
 	};
 
@@ -35,6 +46,6 @@ Cluster.prototype.delete = function() {
 
 Cluster.prototype.getNodes = function() {
 	var nodes = [];
-	for(var key in this.nodes) nodes.push(nodes[key]);
+	for(var key in this.nodes) nodes.push(this.nodes[key]);
 	return nodes;
 }

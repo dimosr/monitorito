@@ -77,14 +77,23 @@ CentralController.prototype.setGraphMode = function(mode) {
 	    graphHandler.setGraph(graph);
 	    graphHandler.addSelectNodeListener(function(selectedNode) {
 			interfaceHandler.emptyEdgeInfo();
-			interfaceHandler.showNodeInfo(selectedNode);
+			if(selectedNode instanceof Node) {
+				interfaceHandler.emptyClusterInfo();
+				interfaceHandler.showNodeInfo(selectedNode);
+			}
+			else if(selectedNode instanceof Cluster) {
+				interfaceHandler.emptyNodeInfo();
+				interfaceHandler.showClusterInfo(selectedNode);
+			}
 		});
 		graphHandler.addSelectEdgeListener(function(selectedEdge) {
 			interfaceHandler.emptyNodeInfo();
+			interfaceHandler.emptyClusterInfo();
 			interfaceHandler.showEdgeInfo(selectedEdge);
 		});
 		graphHandler.addDeselectNodeListener(function(deselectedNodes) {
 			interfaceHandler.emptyNodeInfo();
+			interfaceHandler.emptyClusterInfo();
 		});
 		graphHandler.addDeselectEdgeListener(function(deselectedEdges) {
 			interfaceHandler.emptyEdgeInfo();

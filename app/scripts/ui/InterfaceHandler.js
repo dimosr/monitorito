@@ -24,12 +24,14 @@ InterfaceHandler.prototype.setController = function(controller) {
 InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 	var manipulationWidget = {
 		clustering: {
+			$clusterID: $("#cluster_id"),
 			$clusterButton: $("#cluster-button"),
 			$clusterOptions: $("#cluster-options"),
 			$clusterForm: $("#cluster-options form"),
 			$addRowButton: $("#cluster-options .add-row-button"),
 			$submitButton: $("#cluster-options .submit-button"),
-			$cancelButton: $("#cluster-options .cancel-button")
+			$cancelButton: $("#cluster-options .cancel-button"),
+			$declusterButton: $("#decluster_button")
 		}
 	}
 	this.manipulationWidgetHandler = new ManipulationWidgetHandler(this.controller, manipulationWidget, this.screenDimensions);
@@ -156,6 +158,16 @@ InterfaceHandler.prototype.showNodeInfo = function(node) {
 InterfaceHandler.prototype.emptyNodeInfo = function() {
 	this.nodeWidgetHandler.emptyInfo();
 	this.sideWidgetHandler.resetSelectedNodeStats();
+}
+
+InterfaceHandler.prototype.showClusterInfo = function(cluster) {
+	this.clusterWidgetHandler.showInfo(cluster);
+	//this.clusterWidgetHandler.updateSelectedNodeStats(node);
+}
+
+InterfaceHandler.prototype.emptyClusterInfo = function() {
+	this.clusterWidgetHandler.emptyInfo();
+	//this.clusterWidgetHandler.resetSelectedNodeStats();
 }
 
 InterfaceHandler.prototype.showEdgeInfo = function(edge) {

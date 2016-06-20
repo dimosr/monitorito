@@ -12,6 +12,8 @@ QUnit.module( "graph.Graph", {
 			on: function(event, callback){
 				this.eventHandlers[event] = callback;
 			},
+			cluster: function(options){},
+			openCluster: function(clusterID){},
 			triggerEvent: function(event, eventParams) {
 				this.eventHandlers[event].call(this, eventParams);
 			},
@@ -61,10 +63,10 @@ QUnit.test("Testing setupListeners() method, checking if assigned callback funct
 	graph.createEdge("www.dependency.com", "www.example.com", Edge.Type.REQUEST);
 
 
-	network.triggerEvent("select", {nodes: ["1"], edges: []});
+	network.triggerEvent("select", {nodes: ["www.example.com"], edges: []});
 	sinon.assert.notCalled(callback);
 	graph.onSelectNode(callback);
-	network.triggerEvent("select", {nodes: ["1"], edges: []});
+	network.triggerEvent("select", {nodes: ["www.example.com"], edges: []});
 	sinon.assert.calledOnce(callback);
 	
 	callback.reset();
@@ -77,10 +79,10 @@ QUnit.test("Testing setupListeners() method, checking if assigned callback funct
 
 	callback.reset();
 
-	network.triggerEvent("deselectNode", {previousSelection: {nodes: ["1"], edges: []}});
+	network.triggerEvent("deselectNode", {previousSelection: {nodes: ["www.example.com"], edges: []}});
 	sinon.assert.notCalled(callback);
 	graph.onDeselectNode(callback);
-	network.triggerEvent("deselectNode", {previousSelection: {nodes: ["1"], edges: []}});
+	network.triggerEvent("deselectNode", {previousSelection: {nodes: ["www.example.com"], edges: []}});
 	sinon.assert.calledOnce(callback);
 
 	callback.reset();
@@ -149,6 +151,30 @@ QUnit.test("disablePhysics(), enablePhysics() methods", function(assert) {
 
 	graph.enablePhysics();
 	graph.disablePhysics();
+
+	mockNetwork.verify();
+});
+
+QUnit.test("clustering functionalities", function(assert) {
+	var graph = this.graph;
+	var mockNetwork = this.mockNetwork;
+
+	graph.createNode("www.example.com", HttpRequest.Type.ROOT);
+	graph.createNode("another.example.com", HttpRequest.Type.ROOT);
+	graph.createNode("test.com", HttpRequest.Type.EMBEDDED);
+	graph.createNode("dummy.com", HttpRequest.Type.ROOT);
+
+	mockNetwork.expects("cluster").exactly(1);
+
+	graph.clusterByDomain(["example.com", "test.com"], "cluster-1");
+
+	var cluster = graph.getCluster("cluster-1");
+	assert.ok(cluster != null, "Cluster was successfully created.");
+	assert.equal(cluster.getNodes().length, 3, "All nodes have been successfully clustered");
+
+	graph.deCluster("cluster-1");
+	var cluster = graph.getCluster("cluster-1");
+	assert.ok(cluster == null, "Cluster was successfully deleted.");
 
 	mockNetwork.verify();
 });

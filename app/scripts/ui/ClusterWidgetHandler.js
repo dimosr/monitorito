@@ -19,7 +19,7 @@ ClusterWidgetHandler.prototype.init = function() {
 	this.widget.nodes.$dialogContent.dialog(dialogOptions);
 
 	this.widget.nodes.$opener.click({handler: this}, function(event) {
-		event.data.handler.widget.$dialogContent.dialog("open");
+		event.data.handler.widget.nodes.$dialogContent.dialog("open");
 	});
 }
 
@@ -27,14 +27,14 @@ ClusterWidgetHandler.prototype.showInfo = function(cluster) {
 	var clusterNodes = cluster.getNodes()
 	this.widget.$clusterID.html(cluster.id);
 	this.widget.nodes.$numberField.html(clusterNodes.length);
-	this.loadClusteredNodes(nodes);
+	this.loadClusteredNodes(clusterNodes);
 	this.widget.$container.show();
 }
 
 ClusterWidgetHandler.prototype.loadClusteredNodes = function(nodes) {
 	var contentToAdd = '';
 	for(var i = 0; i < nodes.length; i++) {
-		var nodeDomain = "<td>" + node.getDomain() + "</td>";
+		var nodeDomain = "<td>" + nodes[i].getDomain() + "</td>";
 		contentToAdd += "<tr>" + nodeDomain + "</tr>";
 	}
 	this.widget.nodes.$dialogTableBody.append(contentToAdd);

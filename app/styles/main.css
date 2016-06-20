@@ -20,7 +20,7 @@ html,body {
 	background-size: 25% auto;
 }
 
-#total_stats, #manipulation_widget, #node_widget, #edge_widget, #control_widget{
+#total_stats, #manipulation_widget, #cluster_widget, #node_widget, #edge_widget, #control_widget{
 	margin-bottom: 10px;
 	border: 2px solid black;
 	border-radius: 5%;
@@ -28,7 +28,7 @@ html,body {
 	font-family: "Courier New", Courier, monospace;
 }
 
-#total_stats, #node_widget, #edge_widget{
+#total_stats, #cluster_widget, #node_widget, #edge_widget{
 	background-color: #5c85d6;
 }
 
@@ -40,7 +40,7 @@ html,body {
 	background-color: #77773c;
 }
 
-#node_widget, #edge_widget {
+#cluster_widget, #node_widget, #edge_widget {
 	display:none;
 }
 
