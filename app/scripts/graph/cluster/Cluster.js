@@ -39,11 +39,11 @@ Cluster.prototype.createVisualCluster = function() {
 		}
 	};
 
-	this.graph._network.cluster(options);
+	this.graph.createCluster(options);
 }
 
 Cluster.prototype.delete = function() {
-	this.graph._network.openCluster(this.id);
+	this.graph.openCluster(this.id);
 }
 
 Cluster.prototype.getNodes = function() {
@@ -77,16 +77,12 @@ Cluster.prototype.calculateEdges = function() {
 Cluster.prototype.getOutgoingEdges = function() {
 	var edges = [];
 	for(var hostnameKey in this._outgoing) edges.push(this._outgoing[hostnameKey].edge);
-	console.log("outgoingEdges");
-	console.log(edges)
 	return edges;
 }
 
 Cluster.prototype.getIncomingEdges = function() {
 	var edges = [];
 	for(var hostnameKey in this._incoming) edges.push(this._incoming[hostnameKey].edge);
-	console.log("incomingEdges");
-	console.log(edges)
 	return edges;
 }
 

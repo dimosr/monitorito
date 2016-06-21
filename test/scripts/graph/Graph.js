@@ -154,27 +154,3 @@ QUnit.test("disablePhysics(), enablePhysics() methods", function(assert) {
 
 	mockNetwork.verify();
 });
-
-QUnit.test("clustering functionalities", function(assert) {
-	var graph = this.graph;
-	var mockNetwork = this.mockNetwork;
-
-	graph.createNode("www.example.com", HttpRequest.Type.ROOT);
-	graph.createNode("another.example.com", HttpRequest.Type.ROOT);
-	graph.createNode("test.com", HttpRequest.Type.EMBEDDED);
-	graph.createNode("dummy.com", HttpRequest.Type.ROOT);
-
-	mockNetwork.expects("cluster").exactly(1);
-
-	graph.clusterByDomain(["example.com", "test.com"], "cluster-1");
-
-	var cluster = graph.getCluster("cluster-1");
-	assert.ok(cluster != null, "Cluster was successfully created.");
-	assert.equal(cluster.getNodes().length, 3, "All nodes have been successfully clustered");
-
-	graph.deCluster("cluster-1");
-	var cluster = graph.getCluster("cluster-1");
-	assert.ok(cluster == null, "Cluster was successfully deleted.");
-
-	mockNetwork.verify();
-});

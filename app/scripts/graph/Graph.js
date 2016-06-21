@@ -6,7 +6,6 @@ function Graph(visualisationNetwork) {
 
 	this.nodes = {};
 	this.edges = {};
-	this.clusters = {};
 
 	if(visualisationNetwork != null) {
 		this.buildGraphWithVisualisation(visualisationNetwork);
@@ -18,6 +17,10 @@ function Graph(visualisationNetwork) {
 Graph.Mode = {
 	ONLINE: "Online",
 	OFFLINE: "Offline"
+}
+
+Graph.prototype.setClusteringEngine = function(clusteringEngine) {
+	this.clusteringEngine = clusteringEngine;
 }
 
 Graph.prototype.buildGraphWithVisualisation = function(visualisationNetwork) {
@@ -150,8 +153,8 @@ Graph.prototype._setupListeners = function() {
 					var selectedNode = graph.nodes[eventParams.nodes[0]];
 					this._selectNodeCallback(selectedNode);
 				}
-				else if(eventParams.nodes[0] in graph.clusters) {
-					var selectedCluster = graph.clusters[eventParams.nodes[0]];
+				else if(graph.clusteringEngine.getCluster(eventParams.nodes[0]) != null) {
+					var selectedCluster = graph.clusteringEngine.getCluster(eventParams.nodes[0]);
 					this._selectNodeCallback(selectedCluster);
 				}
 			}
@@ -168,8 +171,8 @@ Graph.prototype._setupListeners = function() {
 					var deselectedNode = graph.nodes[previousSelection.nodes[0]];
 					this._deselectNodeCallback(deselectedNode);
 				}
-				else if(previousSelection.nodes[0] in graph.clusters) {
-					var deselectedCluster = graph.clusters[previousSelection.nodes[0]];
+				else if(graph.clusteringEngine.getCluster(previousSelection.nodes[0]) != null) {
+					var deselectedCluster = graph.clusteringEngine.getCluster(previousSelection.nodes[0]);
 					this._deselectNodeCallback(deselectedCluster);
 				}
 			}
@@ -194,42 +197,14 @@ Graph.prototype.filterNodes = function(callbackFunction) {
 	return filteredNodes;
 }
 
-Graph.prototype.clusterByDomain = function(domains, clusterID) {
-	if(clusterID in this.clusters) {
-		throw new Error("Cluster ID '" + clusterID + "' already exists. Cluster could not be created, because Cluster ID should be unique.");
-	}
-
-	var nodes = this.getNodes();
-	var clusteredNodes = [];
-	var topLevelDomains = {};
-
-	for(var i = 0; i < nodes.length; i++) {
-		for(var j = 0; j < domains.length; j++) {
-			var domain = domains[j];
-			if(nodes[i].getDomain().search(domain) >= 0) {
-				clusteredNodes.push(nodes[i]);
-				j = domains.length;
-			}
-		}
-	}
-	if(clusteredNodes.length > 1) {
-		var cluster = new Cluster(clusterID, this, clusteredNodes);
-		this.clusters[clusterID] = cluster;
-	}
-	else {
-		var errorMessage = "Only " + clusteredNodes.length + " nodes matched. More than 1 nodes needed to create a cluster."
-		throw new Error(errorMessage);
-	}
+Graph.prototype.createCluster = function(options) {
+	this._network.cluster(options);
 }
 
-Graph.prototype.getCluster = function(clusterID) {
-	if(clusterID in this.clusters) return this.clusters[clusterID];
-	else return null;
+Graph.prototype.openCluster = function(clusterID) {
+	this._network.openCluster(clusterID);
 }
 
-Graph.prototype.deCluster = function(clusterID) {
-	var cluster = this.clusters[clusterID];
-	this._network._deselectNodeCallback(cluster);
-	cluster.delete();
-	delete this.clusters[clusterID];
+Graph.prototype.triggerDeselectNode = function(node) {
+	this._network._deselectNodeCallback(node);
 }
