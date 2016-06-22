@@ -14,7 +14,6 @@ ClusteringEngine.prototype.clusterByDomain = function(domains, clusterID) {
 
 	var nodes = this.graph.getNodes();
 	var clusteredNodes = [];
-	var topLevelDomains = {};
 	
 	for(var i = 0; i < nodes.length; i++) {
 		for(var j = 0; j < domains.length; j++) {
