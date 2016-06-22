@@ -1,15 +1,13 @@
 QUnit.module( "graph.Node", {
 	beforeEach: function() {
-		var networkNodes = sinon.createStubInstance(vis.DataSet);
-		var network = sinon.createStubInstance(vis.Network);
-		var graph = new Graph(network);
+		var visualisationNetwork = new VisualisationNetwork(jQuery("<canvas>")[0]);
+		var graph = new Graph(visualisationNetwork);
 		this.mockGraph = sinon.mock(graph);
-		this.mockNetworkNodes = sinon.mock(networkNodes);
 
-		this.fromNode = new Node("www.example.com", graph, networkNodes);
-		this.toNode = new Node("www.dependency.com", graph, networkNodes);
+		this.fromNode = new Node("www.example.com", graph, visualisationNetwork.getNodesDataset());
+		this.toNode = new Node("www.dependency.com", graph, visualisationNetwork.getNodesDataset());
 
-		this.edge = new Edge(1, this.fromNode, this.toNode, graph, networkNodes);
+		this.edge = new Edge(1, this.fromNode, this.toNode, graph, visualisationNetwork.getNodesDataset());
 	}
 });
 

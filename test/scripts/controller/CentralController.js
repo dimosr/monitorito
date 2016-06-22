@@ -6,7 +6,6 @@ QUnit.module( "controller.CentralController", {
 		var monitoringService = new MonitoringService(new EventSource());
 		this.mockMonitoringService = sinon.mock(monitoringService);
 
-		var visNetwork = sinon.createStubInstance(vis.Network);
 		var graphHandler = new GraphHandler();
 		this.mockGraphHandler = sinon.mock(graphHandler);
 
@@ -114,10 +113,7 @@ QUnit.test("setGraphMode(Graph.Mode.ONLINE) test", function(assert) {
 
 	mockInterfaceHandler.expects("getGraphDomElement").returns(jQuery("<div>")[0]);
 	mockGraphHandler.expects("setGraph").exactly(1);
-	mockGraphHandler.expects("addSelectNodeListener").exactly(1);
-	mockGraphHandler.expects("addSelectEdgeListener").exactly(1);
-	mockGraphHandler.expects("addDeselectNodeListener").exactly(1);
-	mockGraphHandler.expects("addDeselectEdgeListener").exactly(1);
+	mockGraphHandler.expects("addGraphListeners").exactly(1);
 
 	controller.setGraphMode(Graph.Mode.ONLINE);
 

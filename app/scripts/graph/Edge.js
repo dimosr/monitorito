@@ -1,7 +1,7 @@
 "use strict";
 
 function Edge(id, fromNode, toNode, graph, networkEdges) {
-	this.id = id;
+	this.id = id.toString();
 	this.type = Edge.Type.DEFAULT;
 
 	

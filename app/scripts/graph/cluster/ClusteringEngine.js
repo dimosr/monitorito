@@ -48,3 +48,7 @@ ClusteringEngine.prototype.deCluster = function(clusterID) {
 	cluster.delete();
 	delete this.clusters[clusterID];
 }
+
+ClusteringEngine.prototype.isClusterEdge = function(ID) {
+	return ID.search("clusterEdge") >= 0;
+}

@@ -6,30 +6,7 @@ function GraphFactory() {}
 
 GraphFactory.prototype.buildGraph = function(mode, graphElement) {
 	if(graphElement != null && mode == Graph.Mode.ONLINE) {
-		var options = {
-			edges: {
-				smooth: false
-			},
-			interaction: {
-				tooltipDelay: 0,
-				navigationButtons: true
-			},
-			physics: {
-				barnesHut: {
-					gravitationalConstant: -14000,
-					centralGravity: 0.1,
-					springLength: 400,
-					springConstant: 0.1,
-					avoidOverlap: 0.5,
-				},
-				solver: "barnesHut"
-			}
-		};
-		var data = {
-			nodes: new vis.DataSet([]),
-			edges: new vis.DataSet([])
-		};
-	    var visNetwork = new vis.Network(graphElement, data, options);
+		var visNetwork = new VisualisationNetwork(graphElement);
 	    return new Graph(visNetwork);
 	}
 	else if(graphElement == null && mode == Graph.Mode.OFFLINE) {

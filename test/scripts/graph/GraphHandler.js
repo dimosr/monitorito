@@ -69,23 +69,14 @@ QUnit.test("addRedirect() between same domains, not adding edge", function(asser
 	mockGraph.verify();
 });
 
-QUnit.test("Listeners setup", function(assert) {
+QUnit.test("addGraphListeners", function(assert) {
 	var mockGraph = this.mockGraph;
 	var graphHandler = this.graphHandler;
 
 	var assignedHandler = function() {};
 
-	mockGraph.expects("onSelectNode").exactly(1).withArgs(assignedHandler);
-	graphHandler.addSelectNodeListener(assignedHandler);
-
-	mockGraph.expects("onSelectEdge").exactly(1).withArgs(assignedHandler);
-	graphHandler.addSelectEdgeListener(assignedHandler);
-
-	mockGraph.expects("onDeselectNode").exactly(1).withArgs(assignedHandler);
-	graphHandler.addDeselectNodeListener(assignedHandler);
-
-	mockGraph.expects("onDeselectEdge").exactly(1).withArgs(assignedHandler);
-	graphHandler.addDeselectEdgeListener(assignedHandler);
+	mockGraph.expects("addListeners").exactly(1);
+	graphHandler.addGraphListeners(assignedHandler, assignedHandler, assignedHandler, assignedHandler);
 
 	mockGraph.verify();
 });

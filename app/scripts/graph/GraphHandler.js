@@ -2,9 +2,6 @@
 
 function GraphHandler(graphStatsCalculator) {
 	this.graphStatsCalculator = graphStatsCalculator;
-
-	this._FirstPartyDomains = 0;
-	this._ThirdPartyDomains = 0;
 }
 
 GraphHandler.prototype.setGraph = function(graph) {
@@ -72,20 +69,8 @@ GraphHandler.prototype._ensureEdgeExists = function(fromDomain, toDomain) {
 	if(!this.graph.existsEdge(fromDomain, toDomain)) this.graph.createEdge(fromDomain, toDomain);
 }
 
-GraphHandler.prototype.addSelectNodeListener = function(callbackFunction) {
-	this.graph.onSelectNode(callbackFunction);
-}
-
-GraphHandler.prototype.addSelectEdgeListener = function(callbackFunction) {
-	this.graph.onSelectEdge(callbackFunction);
-}
-
-GraphHandler.prototype.addDeselectNodeListener = function(callbackFunction) {
-	this.graph.onDeselectNode(callbackFunction);
-}
-
-GraphHandler.prototype.addDeselectEdgeListener = function(callbackFunction) {
-	this.graph.onDeselectEdge(callbackFunction);
+GraphHandler.prototype.addGraphListeners = function(selectNodeFn, selectEdgeFn, deselectNodeFn, deselectEdgeFn) {
+	this.graph.addListeners(selectNodeFn, selectEdgeFn, deselectNodeFn, deselectEdgeFn);
 }
 
 GraphHandler.prototype.clusterByDomain = function(domains, clusterID) {

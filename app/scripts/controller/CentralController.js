@@ -75,7 +75,7 @@ CentralController.prototype.setGraphMode = function(mode) {
 	    var graph = factory.buildGraph(Graph.Mode.ONLINE, interfaceHandler.getGraphDomElement());
 
 	    graphHandler.setGraph(graph);
-	    graphHandler.addSelectNodeListener(function(selectedNode) {
+		var selectNodeCallback = function(selectedNode) {
 			interfaceHandler.emptyEdgeInfo();
 			if(selectedNode instanceof Node) {
 				interfaceHandler.emptyClusterInfo();
@@ -85,19 +85,20 @@ CentralController.prototype.setGraphMode = function(mode) {
 				interfaceHandler.emptyNodeInfo();
 				interfaceHandler.showClusterInfo(selectedNode);
 			}
-		});
-		graphHandler.addSelectEdgeListener(function(selectedEdge) {
+		};
+		var selectEdgeCallback = function(selectedEdge) {
 			interfaceHandler.emptyNodeInfo();
 			interfaceHandler.emptyClusterInfo();
 			interfaceHandler.showEdgeInfo(selectedEdge);
-		});
-		graphHandler.addDeselectNodeListener(function(deselectedNodes) {
+		};
+		var deselectNodeCallback = function(deselectedNode) {
 			interfaceHandler.emptyNodeInfo();
 			interfaceHandler.emptyClusterInfo();
-		});
-		graphHandler.addDeselectEdgeListener(function(deselectedEdges) {
+		};
+		var deselectEdgeCallback = function(deselectedEdge) {
 			interfaceHandler.emptyEdgeInfo();
-		});
+		}
+		graphHandler.addGraphListeners(selectNodeCallback, selectEdgeCallback, deselectNodeCallback, deselectEdgeCallback);
 	}
 	else if(mode == Graph.Mode.OFFLINE){
 		interfaceHandler.disableVisualisation();

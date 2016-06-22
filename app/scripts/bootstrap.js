@@ -27,7 +27,6 @@ function Bootstrapper() {
 	storageService.setController(controller);
 
 	this.interfaceHandler = interfaceHandler;
-	this.graph = graph;
 	this.graphHandler = graphHandler;
 	this.storageService = storageService;
 	this.monitoringService = monitoringService;
