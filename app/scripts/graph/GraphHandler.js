@@ -12,6 +12,10 @@ GraphHandler.prototype.setGraph = function(graph) {
 	this.graph.setClusteringEngine(this.clusteringEngine);
 }
 
+GraphHandler.prototype.getGraph = function() {
+	return this.graph;
+}
+
 GraphHandler.prototype.setController = function(controller) {
 	this.controller = controller;
 }

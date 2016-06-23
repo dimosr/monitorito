@@ -27,6 +27,10 @@ CentralController.prototype.extractMonitoredData = function() {
 	this.storageService.extractData();
 }
 
+CentralController.prototype.extractGraphData = function() {
+	this.storageService.extractGraph(this.graphHandler.getGraph());
+}
+
 CentralController.prototype.getGraphStatistics = function() {
 	return this.graphHandler.getGraphStatistics();
 }

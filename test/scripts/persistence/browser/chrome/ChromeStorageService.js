@@ -63,10 +63,9 @@ QUnit.test("extractData() called without stored data does nothing", function(ass
 	mockStorageEndpoint.verify();
 });
 
-QUnit.test("extractData() with stored data calles Downloader with correct formatted CSV", function(assert) {
+QUnit.test("extractData() with stored data called Downloader with correct formatted CSV", function(assert) {
 	var storageService = this.storageService;
 	var mockStorageEndpoint = this.mockStorageEndpoint;
-	var mockDownloader = this.mockDownloader;
 
 	mockStorageEndpoint.expects("get").atLeast(1);
 
@@ -79,4 +78,22 @@ QUnit.test("extractData() with stored data calles Downloader with correct format
 	storageService.extractData();
 
 	mockStorageEndpoint.verify();
+});
+
+QUnit.test("extractGraph()", function(assert) {
+	var storageService = this.storageService;
+	var mockDownloader = this.mockDownloader;
+
+	var graph = new Graph(null);
+	graph.createNode("www.example.com");
+	graph.createNode("www.example2.com");
+	graph.createEdge("www.example.com", "www.example2.com");
+
+	mockDownloader.expects("saveFileAs").exactly(2);  //1 call for the nodes and 1 for the edges
+
+	storageService.extractGraph(graph);
+
+	storageService.extractData();
+
+	mockDownloader.verify();
 });

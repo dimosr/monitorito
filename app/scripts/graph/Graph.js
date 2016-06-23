@@ -79,6 +79,12 @@ Graph.prototype.createEdge = function(fromHostname, toHostname) {
 	this.notifyForNewEdge(edge);
 }
 
+Graph.prototype.getEdges = function() {
+	var edges = [];
+	for(var key in this.edges) edges.push(this.edges[key]);
+	return edges;
+}
+
 Graph.prototype.getEdgeBetweenNodes = function(fromHostname, toHostname) {
 	var fromNode = this.getNode(fromHostname);
 	var toNode = this.getNode(toHostname);

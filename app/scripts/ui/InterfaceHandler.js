@@ -58,7 +58,10 @@ InterfaceHandler.prototype.initControlWidgetHandler = function() {
 			$button: $("#physics-switch"),
 		},
 		monitoring: {$button: $("#monitoring-switch")},
-		export: {$button: $("#export-button")}
+		export: {
+			data: {$button: $("#export-data-button")},
+			graph: {$button: $("#export-graph-button")}
+		}
 	};
 	this.controlWidgetHandler = new ControlWidgetHandler(this.controller, controlWidget);
 }

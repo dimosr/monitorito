@@ -29,8 +29,7 @@ ChromeStorageService.prototype.storeRequest = function(sessionID, request) {
 	requestToStore[id] = {'sessionID': sessionID, 'request': request};
 	this.storageEndpoint.set(requestToStore, function() {
 		if (chrome.runtime.lastError) {
-			console.log("Error while trying to write to Chrome storage:" + id);
-			console.log(chrome.runtime.lastError.message);
+			throw new Error("Error while trying to write to Chrome storage:" + chrome.runtime.lastError.message);
 		}
 	});
 	this.requestsNo++;
@@ -42,8 +41,7 @@ ChromeStorageService.prototype.storeRedirect = function(sessionID, redirect) {
 	redirectToStore[id] = {'sessionID': sessionID, 'redirect': redirect};
 	this.storageEndpoint.set(redirectToStore, function() {
 		if (chrome.runtime.lastError) {
-			console.log("Error while trying to write to Chrome storage:" + id);
-			console.log(chrome.runtime.lastError.message);
+			throw new Error("Error while trying to write to Chrome storage:" + chrome.runtime.lastError.message);
 		}
 	});
 	this.redirectsNo++;
@@ -89,5 +87,40 @@ ChromeStorageService.prototype._extractRedirect = function(index, topLimit, redi
 	else {
 		this.downloader.saveFileAs(redirectsData, "text/csv", fileName);
 		if((index+1) < topLimit) this._extractRedirect(index+1, topLimit, Converter.getRedirectColumnValuesCSV(), batch+1);
+	}
+}
+
+ChromeStorageService.prototype.extractGraph = function(graph) {
+	this.controller.showLoader();
+	this._extractNodes(graph.getNodes());
+	this._extractEdges(graph.getEdges());
+	this.controller.hideLoader();
+}
+
+ChromeStorageService.prototype._extractNodes = function(nodes) {
+	var fileIndex = 1;
+	var nodesData = Converter.getNodesColumnValuesCSV();
+	for(var i = 0; i < nodes.length; i++) {
+		nodesData += Converter.nodeToCSV(nodes[i]);
+		if((nodesData.length >= this.maxBatchSize) || (i == nodes.length-1)) {
+			var fileName = "nodes." + fileIndex + ".csv";
+			this.downloader.saveFileAs(nodesData, "text/csv", fileName);
+			nodesData = Converter.getNodesColumnValuesCSV();;
+			fileIndex++;
+		}
+	}
+}
+
+ChromeStorageService.prototype._extractEdges = function(edges) {
+	var fileIndex = 1;
+	var edgesData = Converter.getEdgesColumnValuesCSV();
+	for(var i = 0; i < edges.length; i++) {
+		edgesData += Converter.edgeToCSV(edges[i]);
+		if((edgesData.length >= this.maxBatchSize) || (i == edges.length-1)) {
+			var fileName = "edges." + fileIndex + ".csv";
+			this.downloader.saveFileAs(edgesData, "text/csv", fileName);
+			edgesData = Converter.getEdgesColumnValuesCSV();
+			fileIndex++;
+		}
 	}
 }

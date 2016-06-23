@@ -20,9 +20,14 @@ ControlWidgetHandler.prototype.init = function() {
 		else controller.disableGraphPhysics();
 	});
 
-	this.widget.export.$button.on("click", {controller: this.controller}, function(event) {
+	this.widget.export.data.$button.on("click", {controller: this.controller}, function(event) {
 		var controller = event.data.controller;
 		controller.extractMonitoredData();
+	});
+
+	this.widget.export.graph.$button.on("click", {controller: this.controller}, function(event) {
+		var controller = event.data.controller;
+		controller.extractGraphData();
 	});
 }
 
