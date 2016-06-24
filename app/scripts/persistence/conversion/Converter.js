@@ -2,6 +2,9 @@
 
 function Converter() {}
 
+Converter.delimiter = "\"";
+Converter.separator = ",";
+
 Converter.getRedirectColumnValuesCSV = function() {
 	return Converter.createCSVRow(["SessionID", "From", "To", "Type", "Timestamp"]);
 }
@@ -11,11 +14,11 @@ Converter.getRequestsColumnValuesCSV = function() {
 }
 
 Converter.getNodesColumnValuesCSV = function() {
-	return Converter.createCSVRow(["nodeId:ID(Domain)"]);
+	return Converter.createCSVRow(["domain"]);
 }
 
 Converter.getEdgesColumnValuesCSV = function() {
-	return Converter.createCSVRow([":START_ID(Domain)", ":END_ID(Domain)"]);
+	return Converter.createCSVRow(["fromNode", "toNode"]);
 }
 
 Converter.redirectToCSV = function(sessionID, redirect) {
@@ -39,8 +42,8 @@ Converter.mapToCSVCell = function(map) {
 	var keys = Object.keys(map);
 	for (var i = 0; i < keys.length; i++) {
 		var paramVal = map[keys[i]];
-		cell += "\"" + keys[i] + "\" : \"" + paramVal + "\"";
-		if(i != (keys.length-1)) cell += " | ";
+		cell += "'" + keys[i] + "' : '" + paramVal + "'";
+		if(i != (keys.length-1)) cell += "\n";
 	}
 	return cell;
 }
@@ -48,9 +51,14 @@ Converter.mapToCSVCell = function(map) {
 Converter.createCSVRow = function(columnValues) {
 	var row = "";
 	for(var i = 0; i < columnValues.length; i++) {
-		row += "'" + columnValues[i] + "'";
-		if(i != (columnValues.length-1)) row += ",";
+		row += Converter.delimiter + Converter.csvEscape(columnValues[i]) + Converter.delimiter;
+		if(i != (columnValues.length-1)) row += Converter.separator;
 		else row += "\n";
 	}
 	return row;
+}
+
+Converter.csvEscape = function(value) {
+	if(typeof(value) != "string") return value;
+	return value.replace("\"", "\"\"");
 }

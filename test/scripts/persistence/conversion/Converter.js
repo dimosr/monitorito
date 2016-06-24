@@ -6,7 +6,7 @@ QUnit.module( "persistence.conversion.Converter", {
 
 QUnit.test("createCSVRow() method", function(assert) {
 	var actualCSV = Converter.createCSVRow(["col1", "col2", "col3"]);
-	var expectedCSV = "'col1','col2','col3'\n";
+	var expectedCSV = '"col1","col2","col3"\n';
 
 	assert.equal(actualCSV, expectedCSV, "createCSVRow translates input correctly.");
 });
@@ -34,14 +34,14 @@ QUnit.test("getRequestsColumnValuesCSV() method", function(assert) {
 
 QUnit.test("getNodesColumnValuesCSV() method", function(assert) {
 	var actualColumns = Converter.getNodesColumnValuesCSV();
-	var expectedColumns = Converter.createCSVRow(["nodeId:ID(Domain)"]);
+	var expectedColumns = Converter.createCSVRow(["domain"]);
 
 	assert.equal(actualColumns, expectedColumns, "Nodes CSV Header columns are right.");
 });
 
 QUnit.test("getEdgesColumnValuesCSV() method", function(assert) {
 	var actualColumns = Converter.getEdgesColumnValuesCSV();
-	var expectedColumns = Converter.createCSVRow([":START_ID(Domain)", ":END_ID(Domain)"]);
+	var expectedColumns = Converter.createCSVRow(["fromNode", "toNode"]);
 
 	assert.equal(actualColumns, expectedColumns, "Edges CSV Header columns are right.");
 });
@@ -88,7 +88,7 @@ QUnit.test("edgeToCSV() method", function(assert) {
 
 QUnit.test("mapToCSVCell() method", function(assert) {
 	var actualCSV = Converter.mapToCSVCell({"key1": "val1", "key2": "val2"});
-	var expectedCSV = '"key1" : "val1" | "key2" : "val2"';
+	var expectedCSV = "'key1' : 'val1'\n'key2' : 'val2'";
 
 	assert.equal(actualCSV, expectedCSV, "Map is converted correctly.");
 });
