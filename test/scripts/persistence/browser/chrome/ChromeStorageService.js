@@ -89,7 +89,7 @@ QUnit.test("extractGraph()", function(assert) {
 	graph.createNode("www.example2.com");
 	graph.createEdge("www.example.com", "www.example2.com");
 
-	mockDownloader.expects("saveFileAs").exactly(2);  //1 call for the nodes and 1 for the edges
+	mockDownloader.expects("saveFileAs").exactly(4);  //1 call for each component of the graph
 
 	storageService.extractGraph(graph);
 

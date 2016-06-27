@@ -119,6 +119,14 @@ Node.prototype.getIncomingEdges = function() {
 	return edges;
 }
 
+Node.prototype.getFirstPartyCookies = function() {
+	return this.cookies[HttpRequest.Type.ROOT];
+}
+
+Node.prototype.getThirdPartyCookies = function() {
+	return this.cookies[HttpRequest.Type.EMBEDDED];
+}
+
 Node.prototype.notifyForChange = function(fromType, toType, node) {
 	this.graph.notifyForNodeChange(fromType, toType, node);
 }

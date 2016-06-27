@@ -92,35 +92,90 @@ ChromeStorageService.prototype._extractRedirect = function(index, topLimit, redi
 
 ChromeStorageService.prototype.extractGraph = function(graph) {
 	this.controller.showLoader();
-	this._extractNodes(graph.getNodes());
+	this._extractDomains(graph.getNodes());
+	this._extractCookies(graph.getNodes());
+	this._extractResources(graph.getNodes());
 	this._extractEdges(graph.getEdges());
 	this.controller.hideLoader();
 }
 
-ChromeStorageService.prototype._extractNodes = function(nodes) {
+ChromeStorageService.prototype._extractDomains = function(nodes) {
 	var fileIndex = 1;
-	var nodesData = Converter.getNodesColumnValuesCSV();
+	var nodesData = Converter.getDomainsColumnValuesCSV();
 	for(var i = 0; i < nodes.length; i++) {
-		nodesData += Converter.nodeToCSV(nodes[i]);
-		if((nodesData.length >= this.maxBatchSize) || (i == nodes.length-1)) {
-			var fileName = "nodes." + fileIndex + ".csv";
+		nodesData += Converter.domainToCSV(nodes[i]);
+		if((nodesData.length >= this.maxBatchSize)) {
+			var fileName = "domains." + fileIndex + ".csv";
 			this.downloader.saveFileAs(nodesData, "text/csv", fileName);
-			nodesData = Converter.getNodesColumnValuesCSV();;
+			nodesData = Converter.getDomainsColumnValuesCSV();;
 			fileIndex++;
 		}
 	}
+	var fileName = "domains." + fileIndex + ".csv";
+	this.downloader.saveFileAs(nodesData, "text/csv", fileName);
+}
+
+ChromeStorageService.prototype._extractCookies = function(nodes) {
+	var fileIndex = 1;
+	var cookiesData = Converter.getCookiesColumnValuesCSV();
+	for(var i = 0; i < nodes.length; i++) {
+		var firstPartyCookies = nodes[i].getFirstPartyCookies(), thirdPartyCookies = nodes[i].getThirdPartyCookies(), cookies = [];
+		for(var key in firstPartyCookies) cookies.push({'key': key, 'value': firstPartyCookies[key], 'type': "FIRST PARTY"});
+		for(var key in thirdPartyCookies) cookies.push({'key': key, 'value': thirdPartyCookies[key], 'type': "THIRD PARTY"});
+
+		for(var j = 0; j < cookies.length; j++) {
+			cookiesData += Converter.cookieToCSV(nodes[i], cookies[j]);
+			if(cookiesData.length >= this.maxBatchSize) {
+				var fileName = "cookies." + fileIndex + ".csv";
+				this.downloader.saveFileAs(cookiesData, "text/csv", fileName);
+				cookiesData = Converter.getCookiesColumnValuesCSV();
+				fileIndex++;
+			}
+		}
+	}
+	var fileName = "cookies." + fileIndex + ".csv";
+	this.downloader.saveFileAs(cookiesData, "text/csv", fileName);
+}
+
+ChromeStorageService.prototype._extractResources = function(nodes) {
+	var fileIndex = 1;
+	var resourcesData = Converter.getResourcesColumnValuesCSV();
+	for(var i = 0; i < nodes.length; i++) {
+		var node = nodes[i];
+		var requests = node.getRequests();
+		for(var j = 0; j < requests.length; j++) {
+			resourcesData += Converter.resourceToCSV(node, requests[j]);
+			if(resourcesData.length >= this.maxBatchSize) {
+				var fileName = "resources." + fileIndex + ".csv";
+				this.downloader.saveFileAs(resourcesData, "text/csv", fileName);
+				resourcesData = Converter.getResourcesColumnValuesCSV();
+				fileIndex++;
+			}
+		}
+	}
+	var fileName = "resources." + fileIndex + ".csv";
+	this.downloader.saveFileAs(resourcesData, "text/csv", fileName);
 }
 
 ChromeStorageService.prototype._extractEdges = function(edges) {
 	var fileIndex = 1;
 	var edgesData = Converter.getEdgesColumnValuesCSV();
 	for(var i = 0; i < edges.length; i++) {
-		edgesData += Converter.edgeToCSV(edges[i]);
-		if((edgesData.length >= this.maxBatchSize) || (i == edges.length-1)) {
-			var fileName = "edges." + fileIndex + ".csv";
-			this.downloader.saveFileAs(edgesData, "text/csv", fileName);
-			edgesData = Converter.getEdgesColumnValuesCSV();
-			fileIndex++;
+		var requests = edges[i].getRequests(), redirects = edges[i].getRedirects(), referrals = edges[i].getReferrals(), links = [];
+		for(var j = 0; j < requests.length; j++) links.push({from: requests[j].from, to: requests[j].to, type: "REQUEST"});
+		for(var j = 0; j < redirects.length; j++) links.push({from: redirects[j].from, to: redirects[j].to, type: "REDIRECT"});
+		for(var j = 0; j < referrals.length; j++) links.push({from: referrals[j].from, to: referrals[j].to, type: "REFERRAL"});
+		
+		for(var j = 0; j < links.length; j++) {
+			edgesData += Converter.edgeToCSV(links[j]);
+			if(edgesData.length >= this.maxBatchSize) {
+				var fileName = "edges." + fileIndex + ".csv";
+				this.downloader.saveFileAs(edgesData, "text/csv", fileName);
+				edgesData = Converter.getEdgesColumnValuesCSV();
+				fileIndex++;
+			}
 		}
 	}
+	var fileName = "edges." + fileIndex + ".csv";
+	this.downloader.saveFileAs(edgesData, "text/csv", fileName);
 }
