@@ -4,6 +4,8 @@ function ClusteringEngine(graph) {
 	this.graph = graph;
 
 	this.clusters = {};
+
+	this.subdomainsRegExp = "^((.+[.])?)(domains)$";
 }
 
 
@@ -12,17 +14,14 @@ ClusteringEngine.prototype.clusterByDomain = function(domains, clusterID) {
 		throw new Error("Cluster ID '" + clusterID + "' already exists. Cluster could not be created, because Cluster ID should be unique.");
 	}
 
+	var regExp = new RegExp(this.subdomainsRegExp.replace("domains", domains.join("|")));
 	var nodes = this.graph.getNodes();
 	var clusteredNodes = [];
-	
+
+
 	for(var i = 0; i < nodes.length; i++) {
-		for(var j = 0; j < domains.length; j++) {
-			var domain = domains[j];
-			if(nodes[i].getDomain().search(domain) >= 0) {
-				clusteredNodes.push(nodes[i]);
-				break;
-			}
-		}
+		if(regExp.test(nodes[i].getDomain()))
+			clusteredNodes.push(nodes[i]);
 	}
 
 	if(clusteredNodes.length > 1) {

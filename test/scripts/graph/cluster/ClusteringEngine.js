@@ -30,6 +30,11 @@ QUnit.test("clustering functionalities", function(assert) {
 	node4.getID.returns("dummy.com");
 	node4.getOutgoingEdges.returns([]);
 	node4.getIncomingEdges.returns([]);
+	var node5 = sinon.createStubInstance(Node);
+	node5.getDomain.returns("test.co.uk");
+	node5.getID.returns("test.co.uk");
+	node5.getOutgoingEdges.returns([]);
+	node5.getIncomingEdges.returns([]);
 	
 	this.graph.getNodes.returns([node1, node2, node3, node4]);
 
@@ -49,7 +54,7 @@ QUnit.test("clustering functionalities", function(assert) {
 
 	assert.throws(
 		function() {
-			clusteringEngine.clusterByDomain(["dummy.com"], "cluster-2");
+			clusteringEngine.clusterByDomain(["test"], "cluster-2");
 		},
 		Error,
 		"cannot create cluster with only 1 containing node"
