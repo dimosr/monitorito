@@ -21,7 +21,7 @@ QUnit.test("getters and translation of type to node size", function(assert) {
 
 QUnit.test("addRequest() method", function(assert) {
 	var fromNode = this.fromNode;
-	var request = new HttpRequest("POST", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+	var request = new HttpRequest(1, "POST", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
 	fromNode.addRequest(request);
 
 	assert.equal(fromNode.getRequests().length, 1, "only the added request is returned");

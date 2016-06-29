@@ -20,8 +20,8 @@ QUnit.test("addRequestToGraph(), addRedirectToGraph() methods", function(assert)
 	var controller = this.controller;
 	var mockGraphHandler = this.mockGraphHandler;
 
-	var rootRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
-	var request = new HttpRequest("GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
+	var rootRequest = new HttpRequest(1, "GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
+	var request = new HttpRequest(2, "GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.ROOT, Date.now());
 
 	mockGraphHandler.expects("addRequest").exactly(1).withArgs(rootRequest, request);

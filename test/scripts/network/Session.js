@@ -1,6 +1,6 @@
 QUnit.module( "network.Session", {
 	beforeEach: function() {
-		this.rootRequest = new HttpRequest("POST", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+		this.rootRequest = new HttpRequest(1, "POST", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
 		this.session = new Session(1, this.rootRequest);
 	}
 });
@@ -14,7 +14,7 @@ QUnit.test("getRootRequest()", function(assert) {
 
 QUnit.test("addEmbeddedRequest(), getEmbeddedRequests() methods", function(assert) {
 	var session = this.session;
-	var request = new HttpRequest("POST", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
+	var request = new HttpRequest(1, "POST", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
 
 	assert.equal(session.getEmbeddedRequests().length, 0, "embedded requests are initially empty");
 

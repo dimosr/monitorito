@@ -30,7 +30,7 @@ QUnit.test("createNode(), existsNode(), addRequestToNode() methods", function(as
 
 	assert.ok(graph.existsNode("www.example.com"), "Added node exists in the graph");
 
-	var request = new HttpRequest("POST", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+	var request = new HttpRequest(1, "POST", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
 	graph.addRequestToNode(request);
 	assert.ok(graph.getNode("www.example.com").getRequests().indexOf(request) != -1, "Added request exists in node");
 });

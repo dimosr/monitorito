@@ -38,7 +38,7 @@ QUnit.test("onRequest(): incoming request with monitoring service disabled", fun
 
 	mockController.expects("addRequestToGraph").never();
 
-	var incomingRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+	var incomingRequest = new HttpRequest(1, "GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
 	var tabId = 1;
 
 	monitoringService.disable();
@@ -52,7 +52,7 @@ QUnit.test("onRequest(): incoming embedded request from not monitored session", 
 
 	mockController.expects("addRequestToGraph").never();
 
-	var incomingRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.EMBEDDED);
+	var incomingRequest = new HttpRequest(1, "GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.EMBEDDED, "main_frame");
 	var requestId = 1;
 	var tabId = 1;
 
@@ -67,9 +67,9 @@ QUnit.test("onRequest(): incoming embedded request from monitored session", func
 
 	var tabId = 1;
 	var requestId1 = 1;
-	var incomingRequest1 = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+	var incomingRequest1 = new HttpRequest(1, "GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
 	var requestId2 = 2;
-	var incomingRequest2 = new HttpRequest("GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
+	var incomingRequest2 = new HttpRequest(1, "GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
 
 	mockController.expects("addRequestToGraph").exactly(2);
 	mockController.expects("addRedirectToGraph").never();
@@ -117,7 +117,7 @@ QUnit.test("onRedirect(): incoming redirect from monitored session", function(as
 	var mockController = this.mockController;
 
 	var requestId = 1;
-	var request = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+	var request = new HttpRequest(1, "GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
 	var redirect = new Redirect("http://www.example.com/test", "http://www.example2.com/test", HttpRequest.Type.EMBEDDED, Date.now());
 	var tabId = 1;
 
@@ -147,7 +147,7 @@ QUnit.test("_isTabMonitored(), _getTabSession() method", function(assert) {
 	var monitoringService = this.monitoringService;
 
 	var requestId = 1;
-	var request = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
+	var request = new HttpRequest(1, "GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
 	var tabId = 1;
 	monitoringService.onRequest(requestId, request, tabId);
 

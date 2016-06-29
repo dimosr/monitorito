@@ -71,7 +71,7 @@ QUnit.test("redirectToCSV() method", function(assert) {
 });
 
 QUnit.test("requestToCSV() method", function(assert) {
-	var request = new HttpRequest("GET", "http://www.example.com", 0, {}, HttpRequest.Type.ROOT);
+	var request = new HttpRequest(1, "GET", "http://www.example.com", 0, {}, HttpRequest.Type.ROOT, "main_frame");
 	var sessionID = 1;
 
 	var actualCSV = Converter.requestToCSV(sessionID, request);
@@ -100,7 +100,7 @@ QUnit.test("cookieToCSV() method", function(assert) {
 
 QUnit.test("resourceToCSV() method", function(assert) {
 	var node = new Node("example.com", this.graph);
-	var request = new HttpRequest("GET", "http://example.com", 5, {}, HttpRequest.Type.ROOT);
+	var request = new HttpRequest(1, "GET", "http://example.com", 5, {}, HttpRequest.Type.ROOT, "main_frame");
 
 	var actualCSV = Converter.resourceToCSV(node, request);
 	var expectedCSV = Converter.createCSVRow([node.getID(), request.url, request.type, request.method, request.timestamp]);

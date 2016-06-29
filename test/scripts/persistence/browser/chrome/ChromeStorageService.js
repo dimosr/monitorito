@@ -70,7 +70,7 @@ QUnit.test("extractData() with stored data called Downloader with correct format
 	mockStorageEndpoint.expects("get").atLeast(1);
 
 	var sessionID = 1;
-	var request = new HttpRequest("GET", "http://www.example.com", 0, {}, HttpRequest.Type.ROOT);
+	var request = new HttpRequest(1, "GET", "http://www.example.com", 0, {}, HttpRequest.Type.ROOT, "main_frame");
 	var redirect = new Redirect("http://www.example.com", "https://www.example.com", HttpRequest.Type.ROOT, 0);
 	storageService.storeRequest(sessionID, request);
 	storageService.storeRedirect(redirect);

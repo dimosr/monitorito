@@ -21,8 +21,8 @@ QUnit.test("addRequest() between different domains, without referrer and with ex
 	var mockGraph = this.mockGraph;
 	var graphHandler = this.graphHandler;
 	
-	var rootRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
-	var request = new HttpRequest("GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
+	var rootRequest = new HttpRequest(1, "GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
+	var request = new HttpRequest(2, "GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
 
 	mockGraph.expects("addRequestToNode").withArgs(request);
 	mockGraph.expects("addRequestToEdge").withArgs(rootRequest.url, request.url);
@@ -35,8 +35,8 @@ QUnit.test("addRequest() between same domains", function(assert) {
 	var mockGraph = this.mockGraph;
 	var graphHandler = this.graphHandler;
 	
-	var rootRequest = new HttpRequest("GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT);
-	var request = new HttpRequest("GET", "http://www.example.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED);
+	var rootRequest = new HttpRequest(1, "GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
+	var request = new HttpRequest(2, "GET", "http://www.example.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
 
 	mockGraph.expects("addRequestToNode").withArgs(request);
 	mockGraph.expects("addRequestToEdge").never();

@@ -1,11 +1,13 @@
 "use strict";
 
-function HttpRequest(method, url, timestamp, bodyParams, type) {
+function HttpRequest(ID, method, url, timestamp, bodyParams, type, resourceType) {
+	this.ID = ID;
 	this.method = method;
 	this.url = url;
 	this.timestamp = timestamp;
 	this.bodyParams = bodyParams;
 	this.type = type;
+	this.resourceType = resourceType;
 	this.headers = {};
 	this.cookies = {};
 
