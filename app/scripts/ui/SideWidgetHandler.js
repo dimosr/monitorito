@@ -8,6 +8,10 @@ function SideWidgetHandler(controller, widget) {
 
 	this.enableSideWidget();
 	this.initialiseStatisticsGraphs();
+
+	$( window ).resize({handler: this}, function(event) {
+		$.debounce( 1000, function(){event.data.handler.reEnableSideWidget()} )();
+	});
 }
 
 /* @Docs
@@ -25,6 +29,16 @@ SideWidgetHandler.prototype.enableSideWidget = function() {
   			handler.showGraphStatistics();
   		}
 	});
+}
+
+/* @Docs
+Re-initialised the slider for the widget, in case of screen resize
+User jQuery-throttle on resize event
+*/
+SideWidgetHandler.prototype.reEnableSideWidget = function() {
+	var detachedWidget = this.widget.$container.remove();
+	$("body").append(detachedWidget);
+	this.enableSideWidget();
 }
 
 /* @Docs
