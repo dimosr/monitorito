@@ -43,13 +43,13 @@ GraphHandler.prototype.addRequest = function(rootRequest, request) {
 	if(request.hasReferer() && Util.getUrlHostname(request.getReferer()) != Util.getUrlHostname(request.url)) {
 		this._ensureNodeExists(Util.getUrlHostname(request.getReferer()));
 		this._ensureEdgeExists(Util.getUrlHostname(request.getReferer()), Util.getUrlHostname(request.url));
-		this.graph.addReferralToEdge(request.getReferer(), request.url);
+		this.graph.addReferralToEdge(request.getReferer(), request);
 	}
 	else {
 		this._ensureNodeExists(Util.getUrlHostname(rootRequest.url));
 		if(request.type != HttpRequest.Type.ROOT && Util.getUrlHostname(rootRequest.url) != Util.getUrlHostname(request.url)) {
 			this._ensureEdgeExists(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url));
-			this.graph.addRequestToEdge(rootRequest.url, request.url);
+			this.graph.addRequestToEdge(rootRequest.url, request);
 		}
 	}
 }
@@ -61,7 +61,7 @@ GraphHandler.prototype.addRedirect = function(redirect) {
 		this._ensureNodeExists(fromHostname);
 		this._ensureNodeExists(toHostname);
 		this._ensureEdgeExists(fromHostname, toHostname);
-		this.graph.addRedirectToEdge(redirect.getInitialURL(), redirect.getFinalURL());
+		this.graph.addRedirectToEdge(redirect);
 	}
 }
 

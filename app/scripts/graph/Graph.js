@@ -119,9 +119,9 @@ Graph.prototype.existsNode = function(ID) {
 	return ID in this.nodes;
 }
 
-Graph.prototype.addRequestToEdge = function(fromURL, toURL) {
-	var edge = this.getEdgeBetweenNodes(Util.getUrlHostname(fromURL), Util.getUrlHostname(toURL));
-	edge.addRequest(fromURL, toURL);
+Graph.prototype.addRequestToEdge = function(fromURL, request) {
+	var edge = this.getEdgeBetweenNodes(Util.getUrlHostname(fromURL), Util.getUrlHostname(request.url));
+	edge.addRequest(fromURL, request);
 }
 
 Graph.prototype.addRequestToNode = function(request) {
@@ -129,12 +129,12 @@ Graph.prototype.addRequestToNode = function(request) {
 	node.addRequest(request);
 }
 
-Graph.prototype.addRedirectToEdge = function(fromURL, toURL) {
-	var edge = this.getEdgeBetweenNodes(Util.getUrlHostname(fromURL), Util.getUrlHostname(toURL));
-	edge.addRedirect(fromURL, toURL);
+Graph.prototype.addRedirectToEdge = function(redirect) {
+	var edge = this.getEdgeBetweenNodes(Util.getUrlHostname(redirect.getInitialURL()), Util.getUrlHostname(redirect.getFinalURL()));
+	edge.addRedirect(redirect);
 }
 
-Graph.prototype.addReferralToEdge = function(fromURL, toURL) {
-	var edge = this.getEdgeBetweenNodes(Util.getUrlHostname(fromURL), Util.getUrlHostname(toURL));
-	edge.addReferral(fromURL, toURL);
+Graph.prototype.addReferralToEdge = function(fromURL, request) {
+	var edge = this.getEdgeBetweenNodes(Util.getUrlHostname(fromURL), Util.getUrlHostname(request.url));
+	edge.addReferral(fromURL, request);
 }

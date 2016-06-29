@@ -27,8 +27,8 @@ Edge.Type = {
 	REFERRAL: {name: "Referral", rank: 1,dashes: false, color: "red"}
 }
 
-Edge.prototype.addRequest = function(fromURL, toURL) {
-	this._links.requests.push({from: fromURL, to: toURL});
+Edge.prototype.addRequest = function(fromURL, request) {
+	this._links.requests.push({from: fromURL, request: request});
 	if(this.type.rank > Edge.Type.REQUEST.rank) this.updateType(Edge.Type.REQUEST);
 }
 
@@ -36,8 +36,8 @@ Edge.prototype.getRequests = function() {
 	return this._links.requests;
 }
 
-Edge.prototype.addRedirect = function(fromURL, toURL) {
-	this._links.redirects.push({from: fromURL, to: toURL});
+Edge.prototype.addRedirect = function(redirect) {
+	this._links.redirects.push(redirect);
 	if(this.type.rank > Edge.Type.REDIRECT.rank) this.updateType(Edge.Type.REDIRECT);
 }
 
@@ -45,8 +45,8 @@ Edge.prototype.getRedirects = function() {
 	return this._links.redirects;
 }
 
-Edge.prototype.addReferral = function(fromURL, toURL) {
-	this._links.referrals.push({from: fromURL, to: toURL});
+Edge.prototype.addReferral = function(fromURL, request) {
+	this._links.referrals.push({from: fromURL, request: request});
 	if(this.type.rank > Edge.Type.REFERRAL.rank) this.updateType(Edge.Type.REFERRAL);
 }
 

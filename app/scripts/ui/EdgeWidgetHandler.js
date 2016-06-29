@@ -74,9 +74,12 @@ EdgeWidgetHandler.prototype.loadEdgeRequests = function(edge) {
 
 	var contentToAdd = '';
 	for(var i=0; i < requests.length; i++) {
+		var httpRequest = requests[i].request;
 		var fromCol = "<td>" + requests[i].from + "</td>";
-		var toCol = "<td>" + requests[i].to + "</td>";
-		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
+		var toUrlCol = "<td>" + httpRequest.url + "</td>";
+		var toResourceCol = "<td>" + httpRequest.resourceType + "</td>";
+		var toMethodCol = "<td>" + httpRequest.method + "</td>";
+		contentToAdd += "<tr>" + fromCol + toUrlCol + toResourceCol + toMethodCol + "</tr>";
 	}
 	this.widget.requests.$dialogTableBody.append(contentToAdd);
 }
@@ -85,8 +88,8 @@ EdgeWidgetHandler.prototype.loadEdgeRedirects = function(edge) {
 
 	var contentToAdd = '';
 	for(var i=0; i < redirects.length; i++) {
-		var fromCol = "<td>" + redirects[i].from + "</td>";
-		var toCol = "<td>" + redirects[i].to + "</td>";
+		var fromCol = "<td>" + redirects[i].getInitialURL() + "</td>";
+		var toCol = "<td>" + redirects[i].getFinalURL() + "</td>";
 		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
 	}
 	this.widget.redirects.$dialogTableBody.append(contentToAdd);
@@ -97,9 +100,12 @@ EdgeWidgetHandler.prototype.loadEdgeReferrals = function(edge) {
 
 	var contentToAdd = '';
 	for(var i=0; i < referrals.length; i++) {
+		var httpRequest = referrals[i].request;
 		var fromCol = "<td>" + referrals[i].from + "</td>";
-		var toCol = "<td>" + referrals[i].to + "</td>";
-		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
+		var toUrlCol = "<td>" + httpRequest.url + "</td>";
+		var toResourceCol = "<td>" + httpRequest.resourceType + "</td>";
+		var toMethodCol = "<td>" + httpRequest.method + "</td>";
+		contentToAdd += "<tr>" + fromCol + toUrlCol + toResourceCol + toMethodCol + "</tr>";
 	}
 	this.widget.referrals.$dialogTableBody.append(contentToAdd);
 }

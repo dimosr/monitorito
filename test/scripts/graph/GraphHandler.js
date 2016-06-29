@@ -25,7 +25,7 @@ QUnit.test("addRequest() between different domains, without referrer and with ex
 	var request = new HttpRequest(2, "GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
 
 	mockGraph.expects("addRequestToNode").withArgs(request);
-	mockGraph.expects("addRequestToEdge").withArgs(rootRequest.url, request.url);
+	mockGraph.expects("addRequestToEdge").withArgs(rootRequest.url, request);
 
 	graphHandler.addRequest(rootRequest, request);
 	mockGraph.verify();
@@ -51,7 +51,7 @@ QUnit.test("addRedirect() between different domains, adding edge", function(asse
 	
 	var redirect = new Redirect("http://www.example.com/test", "http://www.dependency.com/library", Edge.Type.REQUEST, Date.now());
 
-	mockGraph.expects("addRedirectToEdge").withArgs(redirect.getInitialURL(), redirect.getFinalURL());
+	mockGraph.expects("addRedirectToEdge").withArgs(redirect);
 
 	graphHandler.addRedirect(redirect);
 	mockGraph.verify();

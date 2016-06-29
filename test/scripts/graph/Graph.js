@@ -18,10 +18,11 @@ QUnit.test("createEdge(), existsEdge(), addRequestToEdge() methods", function(as
 	assert.ok(graph.existsEdge("www.example.com", "www.dependency.com"), "Added edge exists in the graph");
 	assert.equal(graph.getEdgeBetweenNodes("www.example.com", "www.dependency.com").getType(), Edge.Type.DEFAULT, "Initial edge type is default");
 
-	graph.addRequestToEdge("http://www.example.com/test", "http://www.dependency.com/library");
+	var httpRequest = new HttpRequest(1, "GET",  "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
+	graph.addRequestToEdge("http://www.example.com/test", httpRequest);
 	request = graph.getEdgeBetweenNodes("www.example.com", "www.dependency.com").getRequests()[0];
 	assert.equal(request.from, "http://www.example.com/test", "from URL of request set successfully");
-	assert.equal(request.to, "http://www.dependency.com/library", "to URL of request set succesfully");
+	assert.equal(request.request, httpRequest, "Request set succesfully");
 });
 
 QUnit.test("createNode(), existsNode(), addRequestToNode() methods", function(assert) {
