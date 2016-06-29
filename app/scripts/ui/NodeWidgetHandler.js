@@ -67,6 +67,7 @@ NodeWidgetHandler.prototype.loadNodeRequests = function(node) {
 	for(var i=0; i < requests.length; i++) {
 		var request = requests[i];
 		var typeColumn = "<td>" + request.type + "</td>";
+		var resourceColumn = "<td>" + request.resourceType + "</td>";
 		var methodColumn = "<td>" + request.method + "</td>";
 		var urlColumn = "<td>" + request.url + "</td>";
 		var refererColumn = "<td>" + request.getReferer() + "</td>";
@@ -86,7 +87,7 @@ NodeWidgetHandler.prototype.loadNodeRequests = function(node) {
 			}
 		}
 		var bodyColumn = "<td><ul>" + parametersContent + "</ul></td>";
-		requestsRows += "<tr>" + typeColumn + methodColumn + urlColumn + refererColumn + bodyColumn + "</tr>";
+		requestsRows += "<tr>" + typeColumn + resourceColumn + methodColumn + urlColumn + refererColumn + bodyColumn + "</tr>";
 	}
 	this.widget.requests.$dialogTableBody.append(requestsRows);
 	this.enablePostParamsDialog();
