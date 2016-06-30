@@ -55,8 +55,8 @@ Cluster.prototype.getNodes = function() {
 Cluster.prototype.calculateEdges = function() {
 	for(var key in this.nodes) {
 		var fromID = key;
-		var outEdges = this.nodes[fromID].getOutgoingEdges();
-		var inEdges = this.nodes[fromID].getIncomingEdges();
+		var outEdges = this.nodes[fromID].getOutgoingEdges(true);
+		var inEdges = this.nodes[fromID].getIncomingEdges(true);
 		for(var i = 0; i < outEdges.length; i++) {
 			var edge = outEdges[i];
 			var dstNodeID = edge.getDestinationNode().getID();

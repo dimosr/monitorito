@@ -77,7 +77,7 @@ VisualisationNetwork.prototype.setupListeners = function(graph) {
 
     this._network.on("deselectEdge", function(eventParams) {
         var previousSelection = eventParams.previousSelection;
-        if(previousSelection.nodes.length == 0 && previousSelection.edges.length == 1 && (!graph.clusteringEngine.isClusterEdge(eventParams.edges[0]))) {//Only in edge deselections (not clusterEdge)
+        if(previousSelection.nodes.length == 0 && previousSelection.edges.length == 1 && (!graph.clusteringEngine.isClusterEdge(previousSelection.edges[0]))) {//Only in edge deselections (not clusterEdge)
             var deselectedEdges = previousSelection.edges;
             this._deselectEdgeCallback(deselectedEdges);
         }

@@ -31,20 +31,6 @@ QUnit.test("addRequest() between different domains, without referrer and with ex
 	mockGraph.verify();
 });
 
-QUnit.test("addRequest() between same domains", function(assert) {
-	var mockGraph = this.mockGraph;
-	var graphHandler = this.graphHandler;
-	
-	var rootRequest = new HttpRequest(1, "GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
-	var request = new HttpRequest(2, "GET", "http://www.example.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
-
-	mockGraph.expects("addRequestToNode").withArgs(request);
-	mockGraph.expects("addRequestToEdge").never();
-
-	graphHandler.addRequest(rootRequest, request);
-	mockGraph.verify();
-});
-
 QUnit.test("addRedirect() between different domains, adding edge", function(assert){
 	var mockGraph = this.mockGraph;
 	var graphHandler = this.graphHandler;
@@ -52,18 +38,6 @@ QUnit.test("addRedirect() between different domains, adding edge", function(asse
 	var redirect = new Redirect("http://www.example.com/test", "http://www.dependency.com/library", Edge.Type.REQUEST, Date.now());
 
 	mockGraph.expects("addRedirectToEdge").withArgs(redirect);
-
-	graphHandler.addRedirect(redirect);
-	mockGraph.verify();
-});
-
-QUnit.test("addRedirect() between same domains, not adding edge", function(assert){
-	var mockGraph = this.mockGraph;
-	var graphHandler = this.graphHandler;
-	
-	var redirect = new Redirect("http://www.example.com/test", "http://www.example.com/test2", Edge.Type.REQUEST, Date.now());
-
-	mockGraph.expects("addRedirectToEdge").never();
 
 	graphHandler.addRedirect(redirect);
 	mockGraph.verify();

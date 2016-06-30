@@ -62,31 +62,35 @@ GraphStatsCalculator.prototype.onNodeChange = function(fromType, toType, node) {
 }
 
 GraphStatsCalculator.prototype.onNewEdge = function(edge) {
-	this.totalEdges++;
+	if(edge.getSourceNode() != edge.getDestinationNode()) {//not counting self-referencing edges for statistics
+		this.totalEdges++;
 
-	var srcOutgoingEdges = Edge.groupEdgesByType(edge.getSourceNode().getOutgoingEdges()), dstIncomingEdges = Edge.groupEdgesByType(edge.getDestinationNode().getIncomingEdges());
-	var srcOutgoingReferralEdges = srcOutgoingEdges[Edge.Type.REFERRAL.name].length;
-	var srcOutgoingNonReferralEdges = srcOutgoingEdges[Edge.Type.DEFAULT.name].length + srcOutgoingEdges[Edge.Type.REQUEST.name].length + srcOutgoingEdges[Edge.Type.REDIRECT.name].length;
-	var dstIncomingReferralEdges = dstIncomingEdges[Edge.Type.REFERRAL.name].length;
-	var dstIncomingNonReferralEdges = dstIncomingEdges[Edge.Type.DEFAULT.name].length + dstIncomingEdges[Edge.Type.REQUEST.name].length + dstIncomingEdges[Edge.Type.REDIRECT.name].length;
-
-	this.incomingEdges.nonReferral.editMemberValue(dstIncomingNonReferralEdges, dstIncomingNonReferralEdges-1);
-	this.outgoingEdges.nonReferral.editMemberValue(srcOutgoingNonReferralEdges, srcOutgoingNonReferralEdges-1);
-}
-
-GraphStatsCalculator.prototype.onEdgeChange = function(fromType, toType, edge) {
-	/* Only track changes from nonReferral to Referral */
-	if(fromType != Edge.Type.REFERRAL && toType == Edge.Type.REFERRAL) {
-		var srcOutgoingEdges = Edge.groupEdgesByType(edge.getSourceNode().getOutgoingEdges()), dstIncomingEdges = Edge.groupEdgesByType(edge.getDestinationNode().getIncomingEdges());
+		var srcOutgoingEdges = Edge.groupEdgesByType(edge.getSourceNode().getOutgoingEdges(true)), dstIncomingEdges = Edge.groupEdgesByType(edge.getDestinationNode().getIncomingEdges(true));
 		var srcOutgoingReferralEdges = srcOutgoingEdges[Edge.Type.REFERRAL.name].length;
 		var srcOutgoingNonReferralEdges = srcOutgoingEdges[Edge.Type.DEFAULT.name].length + srcOutgoingEdges[Edge.Type.REQUEST.name].length + srcOutgoingEdges[Edge.Type.REDIRECT.name].length;
 		var dstIncomingReferralEdges = dstIncomingEdges[Edge.Type.REFERRAL.name].length;
 		var dstIncomingNonReferralEdges = dstIncomingEdges[Edge.Type.DEFAULT.name].length + dstIncomingEdges[Edge.Type.REQUEST.name].length + dstIncomingEdges[Edge.Type.REDIRECT.name].length;
 
-		this.incomingEdges.referral.editMemberValue(dstIncomingReferralEdges, dstIncomingReferralEdges-1);
-		this.incomingEdges.nonReferral.editMemberValue(dstIncomingNonReferralEdges, dstIncomingNonReferralEdges+1);
-		this.outgoingEdges.referral.editMemberValue(srcOutgoingReferralEdges, srcOutgoingReferralEdges-1);
-		this.outgoingEdges.nonReferral.editMemberValue(srcOutgoingNonReferralEdges, srcOutgoingNonReferralEdges+1);
+		this.incomingEdges.nonReferral.editMemberValue(dstIncomingNonReferralEdges, dstIncomingNonReferralEdges - 1);
+		this.outgoingEdges.nonReferral.editMemberValue(srcOutgoingNonReferralEdges, srcOutgoingNonReferralEdges - 1);
+	}
+}
+
+GraphStatsCalculator.prototype.onEdgeChange = function(fromType, toType, edge) {
+	if(edge.getSourceNode() != edge.getDestinationNode()) {//not counting self-referencing edges for statistics
+		/* Only track changes from nonReferral to Referral */
+		if(fromType != Edge.Type.REFERRAL && toType == Edge.Type.REFERRAL) {
+			var srcOutgoingEdges = Edge.groupEdgesByType(edge.getSourceNode().getOutgoingEdges(true)), dstIncomingEdges = Edge.groupEdgesByType(edge.getDestinationNode().getIncomingEdges(true));
+			var srcOutgoingReferralEdges = srcOutgoingEdges[Edge.Type.REFERRAL.name].length;
+			var srcOutgoingNonReferralEdges = srcOutgoingEdges[Edge.Type.DEFAULT.name].length + srcOutgoingEdges[Edge.Type.REQUEST.name].length + srcOutgoingEdges[Edge.Type.REDIRECT.name].length;
+			var dstIncomingReferralEdges = dstIncomingEdges[Edge.Type.REFERRAL.name].length;
+			var dstIncomingNonReferralEdges = dstIncomingEdges[Edge.Type.DEFAULT.name].length + dstIncomingEdges[Edge.Type.REQUEST.name].length + dstIncomingEdges[Edge.Type.REDIRECT.name].length;
+
+			this.incomingEdges.referral.editMemberValue(dstIncomingReferralEdges, dstIncomingReferralEdges-1);
+			this.incomingEdges.nonReferral.editMemberValue(dstIncomingNonReferralEdges, dstIncomingNonReferralEdges+1);
+			this.outgoingEdges.referral.editMemberValue(srcOutgoingReferralEdges, srcOutgoingReferralEdges-1);
+			this.outgoingEdges.nonReferral.editMemberValue(srcOutgoingNonReferralEdges, srcOutgoingNonReferralEdges+1);
+		}
 	}
 }
 

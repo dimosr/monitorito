@@ -107,15 +107,21 @@ Node.getFaviconURL = function(domain) {
 	return "http://www.google.com/s2/favicons?domain=" + domain;
 }
 
-Node.prototype.getOutgoingEdges = function() {
+Node.prototype.getOutgoingEdges = function(excludeSelfReferencing) {
 	var edges = [];
-	for(var hostnameKey in this._outgoing) edges.push(this._outgoing[hostnameKey].edge);
+	for(var hostnameKey in this._outgoing) {
+		if(!(excludeSelfReferencing == true && hostnameKey == this.getDomain()))
+			edges.push(this._outgoing[hostnameKey].edge);
+	}
 	return edges;
 }
 
-Node.prototype.getIncomingEdges = function() {
+Node.prototype.getIncomingEdges = function(excludeSelfReferencing) {
 	var edges = [];
-	for(var hostnameKey in this._incoming) edges.push(this._incoming[hostnameKey].edge);
+	for(var hostnameKey in this._incoming) {
+		if(!(excludeSelfReferencing == true && hostnameKey == this.getDomain()))
+			edges.push(this._incoming[hostnameKey].edge);
+	}
 	return edges;
 }
 
