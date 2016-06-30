@@ -94,7 +94,7 @@ ChromeStorageService.prototype.extractGraph = function(graph) {
 	this.controller.showLoader();
 	this._extractDomains(graph.getNodes());
 	this._extractCookies(graph.getNodes());
-	this._extractResources(graph.getNodes());
+	this._extractRootRequests(graph.getNodes());
 	this._extractEdges(graph.getEdges());
 	this.controller.hideLoader();
 }
@@ -119,17 +119,25 @@ ChromeStorageService.prototype._extractCookies = function(nodes) {
 	var fileIndex = 1;
 	var cookiesData = Converter.getCookiesColumnValuesCSV();
 	for(var i = 0; i < nodes.length; i++) {
-		var firstPartyCookies = nodes[i].getFirstPartyCookies(), thirdPartyCookies = nodes[i].getThirdPartyCookies(), cookies = [];
-		for(var key in firstPartyCookies) cookies.push({'key': key, 'value': firstPartyCookies[key], 'type': "FIRST PARTY"});
-		for(var key in thirdPartyCookies) cookies.push({'key': key, 'value': thirdPartyCookies[key], 'type': "THIRD PARTY"});
+		var nodeRequests = nodes[i].getRequests();
+		for(var j = 0; j < nodeRequests.length; j++) {
+			var request = nodeRequests[j], cookies = [];
+			for(var key in request.cookies) {
+				cookies.push({
+					'key': key,
+					'value': request.cookies[key],
+					'type': (request.type == HttpRequest.Type.ROOT) ? "FIRST PARTY" : "THIRD_PARTY"
+				});
+			}
 
-		for(var j = 0; j < cookies.length; j++) {
-			cookiesData += Converter.cookieToCSV(nodes[i], cookies[j]);
-			if(cookiesData.length >= this.maxBatchSize) {
-				var fileName = "cookies." + fileIndex + ".csv";
-				this.downloader.saveFileAs(cookiesData, "text/csv", fileName);
-				cookiesData = Converter.getCookiesColumnValuesCSV();
-				fileIndex++;
+			for (var k = 0; k < cookies.length; k++) {
+				cookiesData += Converter.cookieToCSV(request, cookies[k]);
+				if (cookiesData.length >= this.maxBatchSize) {
+					var fileName = "cookies." + fileIndex + ".csv";
+					this.downloader.saveFileAs(cookiesData, "text/csv", fileName);
+					cookiesData = Converter.getCookiesColumnValuesCSV();
+					fileIndex++;
+				}
 			}
 		}
 	}
@@ -137,24 +145,24 @@ ChromeStorageService.prototype._extractCookies = function(nodes) {
 	this.downloader.saveFileAs(cookiesData, "text/csv", fileName);
 }
 
-ChromeStorageService.prototype._extractResources = function(nodes) {
+ChromeStorageService.prototype._extractRootRequests = function(nodes) {
 	var fileIndex = 1;
-	var resourcesData = Converter.getResourcesColumnValuesCSV();
+	var rootRequestsData = Converter.getRootRequestsColumnValuesCSV();
 	for(var i = 0; i < nodes.length; i++) {
-		var node = nodes[i];
-		var requests = node.getRequests();
+		var requests = nodes[i].getRequests();
 		for(var j = 0; j < requests.length; j++) {
-			resourcesData += Converter.resourceToCSV(node, requests[j]);
-			if(resourcesData.length >= this.maxBatchSize) {
-				var fileName = "resources." + fileIndex + ".csv";
-				this.downloader.saveFileAs(resourcesData, "text/csv", fileName);
-				resourcesData = Converter.getResourcesColumnValuesCSV();
+			if(requests[j].type == HttpRequest.Type.ROOT) rootRequestsData += Converter.rootRequestToCSV(requests[j]);
+
+			if(rootRequestsData.length >= this.maxBatchSize) {
+				var fileName = "rootRequests." + fileIndex + ".csv";
+				this.downloader.saveFileAs(rootRequestsData, "text/csv", fileName);
+				rootRequestsData = Converter.getRootRequestsColumnValuesCSV();
 				fileIndex++;
 			}
 		}
 	}
-	var fileName = "resources." + fileIndex + ".csv";
-	this.downloader.saveFileAs(resourcesData, "text/csv", fileName);
+	var fileName = "rootRequests." + fileIndex + ".csv";
+	this.downloader.saveFileAs(rootRequestsData, "text/csv", fileName);
 }
 
 ChromeStorageService.prototype._extractEdges = function(edges) {
@@ -162,9 +170,9 @@ ChromeStorageService.prototype._extractEdges = function(edges) {
 	var edgesData = Converter.getEdgesColumnValuesCSV();
 	for(var i = 0; i < edges.length; i++) {
 		var requests = edges[i].getRequests(), redirects = edges[i].getRedirects(), referrals = edges[i].getReferrals(), links = [];
-		for(var j = 0; j < requests.length; j++) links.push({from: requests[j].from, to: requests[j].to, type: "REQUEST"});
-		for(var j = 0; j < redirects.length; j++) links.push({from: redirects[j].from, to: redirects[j].to, type: "REDIRECT"});
-		for(var j = 0; j < referrals.length; j++) links.push({from: referrals[j].from, to: referrals[j].to, type: "REFERRAL"});
+		for(var j = 0; j < requests.length; j++) links.push({from: requests[j].from, request: requests[j].request, type: "REQUEST"});
+		for(var j = 0; j < redirects.length; j++) links.push({redirect: redirects[j], type: "REDIRECT"});
+		for(var j = 0; j < referrals.length; j++) links.push({from: referrals[j].from, request: referrals[j].request, type: "REFERRAL"});
 		
 		for(var j = 0; j < links.length; j++) {
 			edgesData += Converter.edgeToCSV(links[j]);

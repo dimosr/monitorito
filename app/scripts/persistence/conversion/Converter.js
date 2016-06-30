@@ -12,7 +12,7 @@ Converter.getRedirectColumnValuesCSV = function() {
 }
 
 Converter.getRequestsColumnValuesCSV = function() {
-	return Converter.createCSVRow(["SessionID", "Method", "URL", "Timestamp", "Body Parameters", "Type", "Headers", "Referer"]);
+	return Converter.createCSVRow(["SessionID", "RequestID", "Type", "Method", "URL", "Timestamp", "Body Parameters", "ResourceType", "Headers", "Referer"]);
 }
 
 Converter.getDomainsColumnValuesCSV = function() {
@@ -20,15 +20,15 @@ Converter.getDomainsColumnValuesCSV = function() {
 }
 
 Converter.getCookiesColumnValuesCSV = function() {
-	return Converter.createCSVRow(["domain", "key", "value", "type"]);
+	return Converter.createCSVRow(["Resource", "requestID", "key", "value", "type"]);
 }
 
-Converter.getResourcesColumnValuesCSV = function() {
-	return Converter.createCSVRow(["domain", "url", "type", "method", "timestamp"]);
+Converter.getRootRequestsColumnValuesCSV = function() {
+	return Converter.createCSVRow(["resourceDomain", "resourceUrl", "requestID", "timestamp", "method", "type"]);
 }
 
 Converter.getEdgesColumnValuesCSV = function() {
-	return Converter.createCSVRow(["fromResource", "toResource", "type"]);
+	return Converter.createCSVRow(["fromResourceDomain", "fromResource", "toResourceDomain", "toResource", "edgeType", "requestID", "timestamp", "method", "type"]);
 }
 
 Converter.redirectToCSV = function(sessionID, redirect) {
@@ -36,23 +36,25 @@ Converter.redirectToCSV = function(sessionID, redirect) {
 }
 
 Converter.requestToCSV = function(sessionID, request) {
-	return Converter.createCSVRow([sessionID, request.method, request.url, request.timestamp, this.mapToCSVCell(request.bodyParams), request.type, this.mapToCSVCell(request.headers), request._referer]);
+	return Converter.createCSVRow([sessionID, request.ID, request.type, request.method, request.url, request.timestamp, this.mapToCSVCell(request.bodyParams), request.resourceType, this.mapToCSVCell(request.headers), request._referer]);
 }
 
 Converter.domainToCSV = function(node) {
 	return Converter.createCSVRow([node.getID()]);
 }
 
-Converter.cookieToCSV = function(node, cookie) {
-	return Converter.createCSVRow([node.getID(), cookie.key, cookie.value, cookie.type]);
+Converter.cookieToCSV = function(request, cookie) {
+	return Converter.createCSVRow([request.url, request.ID, cookie.key, cookie.value, cookie.type]);
 }
 
-Converter.resourceToCSV = function(node, request) {
-	return Converter.createCSVRow([node.getID(), request.url, request.type, request.method, request.timestamp]);
+Converter.rootRequestToCSV = function(request) {
+	return Converter.createCSVRow([Util.getUrlHostname(request.url), request.url, request.ID, request.timestamp, request.method, request.resourceType ]);
 }
 
 Converter.edgeToCSV = function(edge) {
-	return Converter.createCSVRow([edge.from, edge.to, edge.type]);
+	if(edge.type == "REQUEST" || edge.type == "REFERRAL") return Converter.createCSVRow([Util.getUrlHostname(edge.from), edge.from, Util.getUrlHostname(edge.request.url), edge.request.url, edge.type, edge.request.ID, edge.request.timestamp, edge.request.method, edge.request.resourceType]);
+	else if(edge.type == "REDIRECT") return Converter.createCSVRow([Util.getUrlHostname(edge.redirect.getInitialURL()), edge.redirect.getInitialURL(), Util.getUrlHostname(edge.redirect.getFinalURL()), edge.redirect.getFinalURL(), edge.type]);
+
 }
 
 Converter.mapToCSVCell = function(map) {
