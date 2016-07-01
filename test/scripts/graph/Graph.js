@@ -11,29 +11,19 @@ QUnit.module( "graph.Graph", {
 
 QUnit.test("createEdge(), existsEdge(), addRequestToEdge() methods", function(assert){
 	var graph = this.graph;
-	graph.createNode("www.example.com");
-	graph.createNode("www.dependency.com");
-	graph.createEdge("www.example.com", "www.dependency.com", Edge.Type.REQUEST);
+	graph.createDomainNode("www.example.com");
+	graph.createDomainNode("www.dependency.com");
+	graph.createDomainEdge("www.example.com", "www.dependency.com", DomainEdge.Type.REQUEST);
 
 	assert.ok(graph.existsEdge("www.example.com", "www.dependency.com"), "Added edge exists in the graph");
-	assert.equal(graph.getEdgeBetweenNodes("www.example.com", "www.dependency.com").getType(), Edge.Type.DEFAULT, "Initial edge type is default");
-
-	var httpRequest = new HttpRequest(1, "GET",  "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
-	graph.addRequestToEdge("http://www.example.com/test", httpRequest);
-	request = graph.getEdgeBetweenNodes("www.example.com", "www.dependency.com").getRequests()[0];
-	assert.equal(request.from, "http://www.example.com/test", "from URL of request set successfully");
-	assert.equal(request.request, httpRequest, "Request set succesfully");
+	assert.equal(graph.getEdgeBetweenNodes("www.example.com", "www.dependency.com").getType(), DomainEdge.Type.DEFAULT, "Initial edge type is default");
 });
 
 QUnit.test("createNode(), existsNode(), addRequestToNode() methods", function(assert) {
 	var graph = this.graph;
-	graph.createNode("www.example.com");
+	graph.createDomainNode("www.example.com");
 
 	assert.ok(graph.existsNode("www.example.com"), "Added node exists in the graph");
-
-	var request = new HttpRequest(1, "POST", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
-	graph.addRequestToNode(request);
-	assert.ok(graph.getNode("www.example.com").getRequests().indexOf(request) != -1, "Added request exists in node");
 });
 
 QUnit.test("notifyForNewNode(), notifyForNewEdge() methods", function(assert) {
@@ -43,18 +33,18 @@ QUnit.test("notifyForNewNode(), notifyForNewEdge() methods", function(assert) {
 
 	graph.register(graphStatsCalculator);
 
-	var srcNode = sinon.createStubInstance(Node);
-	var edge = sinon.createStubInstance(Edge);
+	var srcNode = sinon.createStubInstance(DomainNode);
+	var edge = sinon.createStubInstance(DomainEdge);
 
 	mockGraphStatsCalculator.expects("onNewNode").exactly(1).withArgs(srcNode);
-	mockGraphStatsCalculator.expects("onNodeChange").exactly(1).withArgs(Node.Type.default, Node.Type[HttpRequest.Type.ROOT], srcNode);
+	mockGraphStatsCalculator.expects("onNodeChange").exactly(1).withArgs(DomainNode.Type.default, DomainNode.Type[HttpRequest.Type.ROOT], srcNode);
 	mockGraphStatsCalculator.expects("onNewEdge").exactly(1).withArgs( edge);
-	mockGraphStatsCalculator.expects("onEdgeChange").exactly(1).withArgs(Edge.Type.DEFAULT, Edge.Type.REQUEST, edge);
+	mockGraphStatsCalculator.expects("onEdgeChange").exactly(1).withArgs(DomainEdge.Type.DEFAULT, DomainEdge.Type.REQUEST, edge);
 
 	graph.notifyForNewNode(srcNode);
-	graph.notifyForNodeChange(Node.Type.default, Node.Type[HttpRequest.Type.ROOT], srcNode);
+	graph.notifyForNodeChange(DomainNode.Type.default, DomainNode.Type[HttpRequest.Type.ROOT], srcNode);
 	graph.notifyForNewEdge(edge);
-	graph.notifyForEdgeChange(Edge.Type.DEFAULT, Edge.Type.REQUEST, edge);
+	graph.notifyForEdgeChange(DomainEdge.Type.DEFAULT, DomainEdge.Type.REQUEST, edge);
 
 	mockGraphStatsCalculator.verify();
 });

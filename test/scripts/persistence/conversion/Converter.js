@@ -81,7 +81,7 @@ QUnit.test("requestToCSV() method", function(assert) {
 });
 
 QUnit.test("domainToCSV() method", function(assert) {
-	var node = new Node("example.com", this.graph);
+	var node = new DomainNode("example.com", this.graph);
 
 	var actualCSV = Converter.domainToCSV(node);
 	var expectedCSV = Converter.createCSVRow([node.getID()]);
@@ -91,7 +91,7 @@ QUnit.test("domainToCSV() method", function(assert) {
 
 QUnit.test("cookieToCSV() method", function(assert) {
 	var request = new HttpRequest(1, "GET", "http://www.example.com/", 0, {}, HttpRequest.Type.ROOT, "main_frame");
-	var node = new Node("example.com", this.graph);
+	var node = new DomainNode("example.com", this.graph);
 
 	var actualCSV = Converter.cookieToCSV(request, {key: "SID", value: "d1dr", type: "FIRST_PARTY" });
 	var expectedCSV = Converter.createCSVRow([request.url, request.ID, "SID", "d1dr", "FIRST_PARTY"]);

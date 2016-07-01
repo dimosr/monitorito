@@ -38,18 +38,21 @@ GraphHandler.prototype.enableGraphPhysics = function() {
 
 GraphHandler.prototype.addRequest = function(rootRequest, request) {
 	this._ensureNodeExists(Util.getUrlHostname(request.url));
-	this.graph.addRequestToNode(request);
+	var node = this.graph.getNode(Util.getUrlHostname(request.url));
+	node.addRequest(request);
 
 	if(request.hasReferer()) {
 		this._ensureNodeExists(Util.getUrlHostname(request.getReferer()));
 		this._ensureEdgeExists(Util.getUrlHostname(request.getReferer()), Util.getUrlHostname(request.url));
-		this.graph.addReferralToEdge(request.getReferer(), request);
+		var edge = this.graph.getEdgeBetweenNodes(Util.getUrlHostname(request.getReferer()), Util.getUrlHostname(request.url));
+		edge.addReferral(request.getReferer(), request);
 	}
 	else {
 		this._ensureNodeExists(Util.getUrlHostname(rootRequest.url));
 		if(request.type != HttpRequest.Type.ROOT) {
 			this._ensureEdgeExists(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url));
-			this.graph.addRequestToEdge(rootRequest.url, request);
+			var edge = this.graph.getEdgeBetweenNodes(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url));
+			edge.addRequest(rootRequest.url, request);
 		}
 	}
 }
@@ -60,15 +63,16 @@ GraphHandler.prototype.addRedirect = function(redirect) {
 	this._ensureNodeExists(fromHostname);
 	this._ensureNodeExists(toHostname);
 	this._ensureEdgeExists(fromHostname, toHostname);
-	this.graph.addRedirectToEdge(redirect);
+	var edge = this.graph.getEdgeBetweenNodes(Util.getUrlHostname(redirect.getInitialURL()), Util.getUrlHostname(redirect.getFinalURL()));
+	edge.addRedirect(redirect);
 }
 
 GraphHandler.prototype._ensureNodeExists = function(domain) {
-	if(!this.graph.existsNode(domain)) this.graph.createNode(domain);
+	if(!this.graph.existsNode(domain)) this.graph.createDomainNode(domain);
 }
 
 GraphHandler.prototype._ensureEdgeExists = function(fromDomain, toDomain) {
-	if(!this.graph.existsEdge(fromDomain, toDomain)) this.graph.createEdge(fromDomain, toDomain);
+	if(!this.graph.existsEdge(fromDomain, toDomain)) this.graph.createDomainEdge(fromDomain, toDomain);
 }
 
 GraphHandler.prototype.addGraphListeners = function(selectNodeFn, selectEdgeFn, deselectNodeFn, deselectEdgeFn) {

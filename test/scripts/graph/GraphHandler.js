@@ -24,23 +24,35 @@ QUnit.test("addRequest() between different domains, without referrer and with ex
 	var rootRequest = new HttpRequest(1, "GET", "http://www.example.com/test", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
 	var request = new HttpRequest(2, "GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
 
-	mockGraph.expects("addRequestToNode").withArgs(request);
-	mockGraph.expects("addRequestToEdge").withArgs(rootRequest.url, request);
+	var node = {addRequest: function(request){}};
+	var mockNode = sinon.mock(node);
+	var edge = {addRequest: function(fromURL, request){}};
+	var mockEdge = sinon.mock(edge);
+	mockGraph.expects("getNode").withArgs("www.dependency.com").atLeast(1).returns(node);
+	mockGraph.expects("existsEdge").withArgs("www.example.com", "www.dependency.com").atLeast(1).returns(true);
+	mockNode.expects("addRequest").withArgs(request);
+	mockGraph.expects("getEdgeBetweenNodes").withArgs("www.example.com", "www.dependency.com").atLeast(1).returns(edge);
+	mockEdge.expects("addRequest").withArgs(rootRequest.url, request).exactly(1);
 
 	graphHandler.addRequest(rootRequest, request);
 	mockGraph.verify();
+	mockNode.verify();
 });
 
 QUnit.test("addRedirect() between different domains, adding edge", function(assert){
 	var mockGraph = this.mockGraph;
 	var graphHandler = this.graphHandler;
 	
-	var redirect = new Redirect("http://www.example.com/test", "http://www.dependency.com/library", Edge.Type.REQUEST, Date.now());
+	var redirect = new Redirect("http://www.example.com/test", "http://www.dependency.com/library", DomainEdge.Type.REQUEST, Date.now());
 
-	mockGraph.expects("addRedirectToEdge").withArgs(redirect);
+	var edge = {addRedirect: function(redirect){}};
+	var mockEdge = sinon.mock(edge);
+	mockGraph.expects("getEdgeBetweenNodes").withArgs("www.example.com", "www.dependency.com").atLeast(1).returns(edge);
+	mockEdge.expects("addRedirect").withArgs(redirect).exactly(1);
 
 	graphHandler.addRedirect(redirect);
 	mockGraph.verify();
+	mockEdge.verify();
 });
 
 QUnit.test("addGraphListeners", function(assert) {
@@ -71,7 +83,7 @@ QUnit.test("enableGraphPhysics(), disableGraphPhysics() methods", function(asser
 QUnit.test("getGraphStatistics(), getGraphNodeMetrics() methods", function(assert) {
 	var graphHandler = this.graphHandler;
 	var mockGraphStatsCalculator = this.mockGraphStatsCalculator;
-	var node = sinon.createStubInstance(Node);
+	var node = sinon.createStubInstance(DomainNode);
 
 	mockGraphStatsCalculator.expects("getStatistics").exactly(1);
 	mockGraphStatsCalculator.expects("getNodeMetrics").exactly(1).withArgs(node);

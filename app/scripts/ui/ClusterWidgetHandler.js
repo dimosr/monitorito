@@ -24,7 +24,7 @@ ClusterWidgetHandler.prototype.init = function() {
 }
 
 ClusterWidgetHandler.prototype.showInfo = function(cluster) {
-	var clusterNodes = cluster.getNodes()
+	var clusterNodes = cluster.getNodes();
 	this.widget.$clusterID.html(cluster.id);
 	this.widget.nodes.$numberField.html(clusterNodes.length);
 	this.loadClusteredNodes(clusterNodes);

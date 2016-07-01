@@ -13,13 +13,13 @@ QUnit.test("validate calculations of nodeTypes, in & out edges max,min", functio
 		Test Graph Structure
 		fromNode ----> toNode     otherNode
 	*/
-	var fromNode = new Node("www.example.com", this.graph, null);
-	var toNode = new Node("www.dependency.com", this.graph, null);
-	var otherNode = new Node("www.other.com", this.graph, null);
-	var edge = new Edge(1, fromNode, toNode, this.graph, null);
+	var fromNode = new DomainNode("www.example.com", this.graph, null);
+	var toNode = new DomainNode("www.dependency.com", this.graph, null);
+	var otherNode = new DomainNode("www.other.com", this.graph, null);
+	var edge = new DomainEdge(1, fromNode, toNode, this.graph, null);
 
 	graphStatsCalculator.onNewNode(fromNode);
-	graphStatsCalculator.onNodeChange(Node.Type.default, Node.Type[HttpRequest.Type.ROOT], fromNode);
+	graphStatsCalculator.onNodeChange(DomainNode.Type.default, DomainNode.Type[HttpRequest.Type.ROOT], fromNode);
 	var statistics = graphStatsCalculator.getStatistics();
 	assert.equal(statistics.nodeTypes.firstParty, 1, "added root node is counted");
 	assert.equal(statistics.nodeTypes.thirdParty, 0, "no embedded node has been added");
@@ -29,7 +29,7 @@ QUnit.test("validate calculations of nodeTypes, in & out edges max,min", functio
 	assert.equal(statistics.inEdges.nonReferral.max, 0, "no edge has been added");
 
 	graphStatsCalculator.onNewNode(toNode);
-	graphStatsCalculator.onNodeChange(Node.Type.default, Node.Type[HttpRequest.Type.EMBEDDED], toNode);
+	graphStatsCalculator.onNodeChange(DomainNode.Type.default, DomainNode.Type[HttpRequest.Type.EMBEDDED], toNode);
 	statistics = graphStatsCalculator.getStatistics();
 	assert.equal(statistics.nodeTypes.firstParty, 1, "no root node has been added");
 	assert.equal(statistics.nodeTypes.thirdParty, 1, "added embedded node is counted");
@@ -40,7 +40,7 @@ QUnit.test("validate calculations of nodeTypes, in & out edges max,min", functio
 
 	graphStatsCalculator.onNewEdge(edge);
 	graphStatsCalculator.onNewNode(otherNode);
-	graphStatsCalculator.onNodeChange(Node.Type.default, Node.Type[HttpRequest.Type.EMBEDDED], otherNode);
+	graphStatsCalculator.onNodeChange(DomainNode.Type.default, DomainNode.Type[HttpRequest.Type.EMBEDDED], otherNode);
 	statistics = graphStatsCalculator.getStatistics();
 	assert.equal(statistics.nodeTypes.firstParty, 1, "no root node has been added");
 	assert.equal(statistics.nodeTypes.thirdParty, 2, "added embedded node is counted");
@@ -59,26 +59,26 @@ QUnit.test("validate calculations of average & Standard deviation", function(ass
 		5-->1		4
 		 	 \-->3
 	*/
-	var node1 = new Node("www.example1.com", this.graph, null);
-	var node2 = new Node("www.example2.com", this.graph, null);
-	var node3 = new Node("www.example3.com", this.graph, null);
-	var node4 = new Node("www.example4.com", this.graph, null);
-	var node5 = new Node("www.sub.example.com", this.graph, null);
+	var node1 = new DomainNode("www.example1.com", this.graph, null);
+	var node2 = new DomainNode("www.example2.com", this.graph, null);
+	var node3 = new DomainNode("www.example3.com", this.graph, null);
+	var node4 = new DomainNode("www.example4.com", this.graph, null);
+	var node5 = new DomainNode("www.sub.example.com", this.graph, null);
 
-	var edge1 = new Edge(1, node5, node1, this.graph, null);
+	var edge1 = new DomainEdge(1, node5, node1, this.graph, null);
 	graphStatsCalculator.onNewNode(node5);
 	graphStatsCalculator.onNewNode(node1);
 	graphStatsCalculator.onNewEdge(edge1);
 
-	var edge2 = new Edge(2, node1, node2, this.graph, null);
+	var edge2 = new DomainEdge(2, node1, node2, this.graph, null);
 	graphStatsCalculator.onNewNode(node2);
 	graphStatsCalculator.onNewEdge(edge2);
 
-	var edge3 = new Edge(3, node1, node3, this.graph, null);
+	var edge3 = new DomainEdge(3, node1, node3, this.graph, null);
 	graphStatsCalculator.onNewNode(node3);
 	graphStatsCalculator.onNewEdge(edge3);
 
-	var edge4 = new Edge(4, node2, node4, this.graph, null);
+	var edge4 = new DomainEdge(4, node2, node4, this.graph, null);
 	graphStatsCalculator.onNewNode(node4);
 	graphStatsCalculator.onNewEdge(edge4);
 

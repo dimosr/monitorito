@@ -71,23 +71,25 @@ Graph.prototype.notifyForEdgeChange = function(fromType, toType, edge) {
 	for(var i=0; i < this._observers.length; i++) this._observers[i].onEdgeChange(fromType, toType, edge);
 }
 
-Graph.prototype.createEdge = function(fromHostname, toHostname) {
+Graph.prototype.createDomainEdge = function(fromHostname, toHostname) {
 	var fromNode = this.getNode(fromHostname);
 	var toNode = this.getNode(toHostname);
-	var edge = new Edge(this._edgesAutoIncrement++, fromNode, toNode, this, this.mode == Graph.Mode.ONLINE ? this.visualisationNetwork.getEdgesDataset() : null);
+	var edge = new DomainEdge(this._edgesAutoIncrement++, fromNode, toNode, this, this.mode == Graph.Mode.ONLINE ? this.visualisationNetwork.getEdgesDataset() : null);
 	this.edges[edge.id] = edge;
 	this.notifyForNewEdge(edge);
 }
 
-Graph.prototype.getEdges = function() {
+Graph.prototype.getDomainEdges = function() {
 	var edges = [];
-	for(var key in this.edges) edges.push(this.edges[key]);
+	for(var key in this.edges) {
+		if(this.edges[key] instanceof DomainEdge) edges.push(this.edges[key]);
+	}
 	return edges;
 }
 
-Graph.prototype.getEdgeBetweenNodes = function(fromHostname, toHostname) {
-	var fromNode = this.getNode(fromHostname);
-	var toNode = this.getNode(toHostname);
+Graph.prototype.getEdgeBetweenNodes = function(fromNodeID, toNodeID) {
+	var fromNode = this.getNode(fromNodeID);
+	var toNode = this.getNode(toNodeID);
 	return fromNode.hasEdgeTo(toNode) ? fromNode.getEdgeTo(toNode) : null;
 }
 
@@ -99,15 +101,17 @@ Graph.prototype.existsEdge = function(fromHostname, toHostname) {
 	return this.getEdgeBetweenNodes(fromHostname, toHostname) != null;
 }
 
-Graph.prototype.createNode = function(hostname) {
-	var node = new Node(hostname, this, this.mode == Graph.Mode.ONLINE ? this.visualisationNetwork.getNodesDataset() : null);
+Graph.prototype.createDomainNode = function(hostname) {
+	var node = new DomainNode(hostname, this, this.mode == Graph.Mode.ONLINE ? this.visualisationNetwork.getNodesDataset() : null);
 	this.nodes[hostname] = node;
 	this.notifyForNewNode(node);
 }
 
-Graph.prototype.getNodes = function() {
+Graph.prototype.getDomainNodes = function() {
 	var nodes = [];
-	for(var key in this.nodes) nodes.push(this.nodes[key]);
+	for(var key in this.nodes) {
+		if(this.nodes[key] instanceof DomainNode) nodes.push(this.nodes[key]);
+	}
 	return nodes;
 }
 
@@ -117,24 +121,4 @@ Graph.prototype.getNode = function(ID) {
 
 Graph.prototype.existsNode = function(ID) {
 	return ID in this.nodes;
-}
-
-Graph.prototype.addRequestToEdge = function(fromURL, request) {
-	var edge = this.getEdgeBetweenNodes(Util.getUrlHostname(fromURL), Util.getUrlHostname(request.url));
-	edge.addRequest(fromURL, request);
-}
-
-Graph.prototype.addRequestToNode = function(request) {
-	var node = this.nodes[Util.getUrlHostname(request.url)];
-	node.addRequest(request);
-}
-
-Graph.prototype.addRedirectToEdge = function(redirect) {
-	var edge = this.getEdgeBetweenNodes(Util.getUrlHostname(redirect.getInitialURL()), Util.getUrlHostname(redirect.getFinalURL()));
-	edge.addRedirect(redirect);
-}
-
-Graph.prototype.addReferralToEdge = function(fromURL, request) {
-	var edge = this.getEdgeBetweenNodes(Util.getUrlHostname(fromURL), Util.getUrlHostname(request.url));
-	edge.addReferral(fromURL, request);
 }

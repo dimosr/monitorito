@@ -10,8 +10,8 @@ QUnit.test("Testing addListeners() method, checking if assigned callback functio
     var visualisationNetwork = this.visualisationNetwork;
     var selectNodeCallback = sinon.spy(), selectEdgeCallback = sinon.spy(), deselectNodeCallback = sinon.spy(), deselectEdgeCallback = sinon.spy();
 
-    var node = sinon.createStubInstance(Node);
-    var edge = sinon.createStubInstance(Edge);
+    var node = sinon.createStubInstance(DomainNode);
+    var edge = sinon.createStubInstance(DomainEdge);
 
     visualisationNetwork.triggerSelectNode(node);
     sinon.assert.notCalled(selectNodeCallback);

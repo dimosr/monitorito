@@ -15,7 +15,7 @@ ClusteringEngine.prototype.clusterByDomain = function(domains, clusterID) {
 	}
 
 	var regExp = new RegExp(this.subdomainsRegExp.replace("domains", domains.join("|")));
-	var nodes = this.graph.getNodes();
+	var nodes = this.graph.getDomainNodes();
 	var clusteredNodes = [];
 
 

@@ -65,7 +65,7 @@ QUnit.test("extractMonitoredData()", function(assert) {
 QUnit.test("getGraphStatistics(), getGraphNodeMetrics() methods", function(assert) {
 	var mockGraphHandler = this.mockGraphHandler;
 	var controller = this.controller;
-	var stubNode = sinon.createStubInstance(Node);
+	var stubNode = sinon.createStubInstance(DomainNode);
 
 	mockGraphHandler.expects("getGraphStatistics").exactly(1);
 	mockGraphHandler.expects("getGraphNodeMetrics").exactly(1).withArgs(stubNode);

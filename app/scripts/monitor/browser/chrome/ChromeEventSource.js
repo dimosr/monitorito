@@ -6,7 +6,7 @@ function ChromeEventSource(browserAPI) {
 	EventSource.call(this);
 }
 
-ChromeEventSource.prototype = new EventSource();
+ChromeEventSource.prototype = Object.create(EventSource.prototype);
 
 ChromeEventSource.prototype.buildHttpRequest = function(customRequest) {
 	if(	customRequest.method == "POST" && 

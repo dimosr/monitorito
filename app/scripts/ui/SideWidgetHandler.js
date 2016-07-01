@@ -153,12 +153,12 @@ SideWidgetHandler.prototype.showOutgoingEdgesStatistics = function(graphStatisti
 }
 
 SideWidgetHandler.prototype.updateSelectedNodeStats = function(node) {
-	var outEdges = Edge.groupEdgesByType(node.getOutgoingEdges(true));
-	var inEdges = Edge.groupEdgesByType(node.getIncomingEdges(true));
-	this.outgoingEdgesPlot.data.datasets[0].data[5] = outEdges[Edge.Type.REFERRAL.name].length;
-	this.outgoingEdgesPlot.data.datasets[1].data[5] = outEdges[Edge.Type.DEFAULT.name].length + outEdges[Edge.Type.REDIRECT.name].length + outEdges[Edge.Type.REQUEST.name].length;
-	this.incomingEdgesPlot.data.datasets[0].data[5] = inEdges[Edge.Type.REFERRAL.name].length;
-	this.incomingEdgesPlot.data.datasets[1].data[5] = inEdges[Edge.Type.DEFAULT.name].length + inEdges[Edge.Type.REDIRECT.name].length + inEdges[Edge.Type.REQUEST.name].length;
+	var outEdges = DomainEdge.groupEdgesByType(node.getOutgoingEdges(true));
+	var inEdges = DomainEdge.groupEdgesByType(node.getIncomingEdges(true));
+	this.outgoingEdgesPlot.data.datasets[0].data[5] = outEdges[DomainEdge.Type.REFERRAL.name].length;
+	this.outgoingEdgesPlot.data.datasets[1].data[5] = outEdges[DomainEdge.Type.DEFAULT.name].length + outEdges[DomainEdge.Type.REDIRECT.name].length + outEdges[DomainEdge.Type.REQUEST.name].length;
+	this.incomingEdgesPlot.data.datasets[0].data[5] = inEdges[DomainEdge.Type.REFERRAL.name].length;
+	this.incomingEdgesPlot.data.datasets[1].data[5] = inEdges[DomainEdge.Type.DEFAULT.name].length + inEdges[DomainEdge.Type.REDIRECT.name].length + inEdges[DomainEdge.Type.REQUEST.name].length;
 	this.outgoingEdgesPlot.update();
 	this.incomingEdgesPlot.update();
 

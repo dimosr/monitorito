@@ -85,9 +85,9 @@ QUnit.test("extractGraph()", function(assert) {
 	var mockDownloader = this.mockDownloader;
 
 	var graph = new Graph(null);
-	graph.createNode("www.example.com");
-	graph.createNode("www.example2.com");
-	graph.createEdge("www.example.com", "www.example2.com");
+	graph.createDomainNode("www.example.com");
+	graph.createDomainNode("www.example2.com");
+	graph.createDomainEdge("www.example.com", "www.example2.com");
 
 	mockDownloader.expects("saveFileAs").exactly(4);  //1 call for each component of the graph
 

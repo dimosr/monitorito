@@ -8,7 +8,7 @@ QUnit.test("testing Phishing Metric calculation", function(assert) {
 	var nodeMetricsCalculator = this.nodeMetricsCalculator;
 	var mockStatistics = {};
 
-	var stubNode = sinon.createStubInstance(Node);
+	var stubNode = sinon.createStubInstance(DomainNode);
 	stubNode.getOutgoingEdges.returns(new Array(5));
 	stubNode.getIncomingEdges.returns(new Array(1));
 
@@ -26,11 +26,11 @@ QUnit.test("testing Tracking Metric calculation", function(assert) {
 		}
 	};
 
-	var rootNode = sinon.createStubInstance(Node);
+	var rootNode = sinon.createStubInstance(DomainNode);
 	var edges = [];
 	for(var i = 0; i < 4; i++) {
-		var edge = sinon.createStubInstance(Edge);
-		edge.getType.returns(Edge.Type.REFERRAL);
+		var edge = sinon.createStubInstance(DomainEdge);
+		edge.getType.returns(DomainEdge.Type.REFERRAL);
 		edges.push(edge);
 	}
 	rootNode.getIncomingEdges.returns(edges);
@@ -49,29 +49,29 @@ QUnit.test("testing Leaking Metric calculation", function(assert) {
 		}
 	};
 
-	var rootNode = sinon.createStubInstance(Node);
-	var neighbourNode1 = sinon.createStubInstance(Node);
+	var rootNode = sinon.createStubInstance(DomainNode);
+	var neighbourNode1 = sinon.createStubInstance(DomainNode);
 	var edges = [];
 	for(var i = 0; i < 2; i++) {
-		var edge = sinon.createStubInstance(Edge);
-		edge.getType.returns(Edge.Type.REFERRAL);
+		var edge = sinon.createStubInstance(DomainEdge);
+		edge.getType.returns(DomainEdge.Type.REFERRAL);
 		edges.push(edge);
 	}
 	neighbourNode1.getIncomingEdges.returns(edges);
-	var edge1 = sinon.createStubInstance(Edge);
+	var edge1 = sinon.createStubInstance(DomainEdge);
 	edge1.getDestinationNode.returns(neighbourNode1);
-	edge1.getType.returns(Edge.Type.REFERRAL);
-	var neighbourNode2 = sinon.createStubInstance(Node);
+	edge1.getType.returns(DomainEdge.Type.REFERRAL);
+	var neighbourNode2 = sinon.createStubInstance(DomainNode);
 	var edges = [];
 	for(var i = 0; i < 3; i++) {
-		var edge = sinon.createStubInstance(Edge);
-		edge.getType.returns(Edge.Type.REFERRAL);
+		var edge = sinon.createStubInstance(DomainEdge);
+		edge.getType.returns(DomainEdge.Type.REFERRAL);
 		edges.push(edge);
 	}
 	neighbourNode2.getIncomingEdges.returns(edges);
-	var edge2 = sinon.createStubInstance(Edge);
+	var edge2 = sinon.createStubInstance(DomainEdge);
 	edge2.getDestinationNode.returns(neighbourNode2);
-	edge2.getType.returns(Edge.Type.REFERRAL);
+	edge2.getType.returns(DomainEdge.Type.REFERRAL);
 	rootNode.getOutgoingEdges.returns([edge1, edge2]);
 
 	var leakingMetric = nodeMetricsCalculator.getLeakingMetric(rootNode, mockStatistics);

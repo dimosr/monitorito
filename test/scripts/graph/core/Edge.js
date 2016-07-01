@@ -5,13 +5,13 @@ QUnit.module( "graph.Edge", {
 		var graph = new Graph(visualisationNetwork);
 		this.mockGraph = sinon.mock(graph);
 
-		this.fromNode = new Node("www.example.com", graph, visualisationNetwork.getNodesDataset());
-		this.toNode = new Node("www.dependency.com", graph, visualisationNetwork.getNodesDataset());
+		this.fromNode = new DomainNode("www.example.com", graph, visualisationNetwork.getNodesDataset());
+		this.toNode = new DomainNode("www.dependency.com", graph, visualisationNetwork.getNodesDataset());
 
-		this.edge = new Edge(1, this.fromNode, this.toNode, graph, visualisationNetwork.getEdgesDataset());
+		this.edge = new DomainEdge(1, this.fromNode, this.toNode, graph, visualisationNetwork.getEdgesDataset());
 
-		var redirectToNode = new Node( "www.example2.com", graph, visualisationNetwork.getNodesDataset());
-		this.edge2 = new Edge(2, this.fromNode, redirectToNode, graph, visualisationNetwork.getEdgesDataset());
+		var redirectToNode = new DomainNode( "www.example2.com", graph, visualisationNetwork.getNodesDataset());
+		this.edge2 = new DomainEdge(2, this.fromNode, redirectToNode, graph, visualisationNetwork.getEdgesDataset());
 	}
 });
 
@@ -39,5 +39,5 @@ QUnit.test("Edge type updated, depending on added links", function(assert) {
 
 	var request = new HttpRequest(1, "GET",  "www.dependency.com/resource2", Date.now(), {}, HttpRequest.Type.EMBEDDED, "sub_frame");
 	edge.addReferral("www.example.com/resource1", request);
-	assert.equal(edge.getType(), Edge.Type.REFERRAL, "Edge type converted to REFERRAL");
+	assert.equal(edge.getType(), DomainEdge.Type.REFERRAL, "Edge type converted to REFERRAL");
 });

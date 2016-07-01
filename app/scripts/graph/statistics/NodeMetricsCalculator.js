@@ -27,7 +27,7 @@ NodeMetricsCalculator.prototype.getPhishingMetric = function(node, graphStatisti
 
 NodeMetricsCalculator.prototype.getTrackingMetric = function(node, graphStatistics) {
 	var maxIncomingEdges = graphStatistics.inEdges.referral.max;
-	var inEdges = Edge.groupEdgesByType(node.getIncomingEdges(true))[Edge.Type.REFERRAL.name].length;
+	var inEdges = DomainEdge.groupEdgesByType(node.getIncomingEdges(true))[DomainEdge.Type.REFERRAL.name].length;
 	return (inEdges/maxIncomingEdges)*100;
 }
 
@@ -39,11 +39,11 @@ NodeMetricsCalculator.prototype.getTrackingCookiesMetric = function(node) {
 
 NodeMetricsCalculator.prototype.getLeakingMetric = function(node, graphStatistics) {
 	var maxIncomingEdges = graphStatistics.inEdges.referral.max;
-	var outEdges = Edge.groupEdgesByType(node.getOutgoingEdges(true))[Edge.Type.REFERRAL.name];
+	var outEdges = DomainEdge.groupEdgesByType(node.getOutgoingEdges(true))[DomainEdge.Type.REFERRAL.name];
 	var sum = 0;
 	for(var i = 0; i < outEdges.length; i++) {
 		var neighbourNode = outEdges[i].getDestinationNode();
-		var neighbourIncomingEdges = Edge.groupEdgesByType(neighbourNode.getIncomingEdges(true))[Edge.Type.REFERRAL.name].length;
+		var neighbourIncomingEdges = DomainEdge.groupEdgesByType(neighbourNode.getIncomingEdges(true))[DomainEdge.Type.REFERRAL.name].length;
 		sum += Math.pow(neighbourIncomingEdges / maxIncomingEdges,2)
 	}
 	sum = (sum/outEdges.length)*100;

@@ -92,10 +92,10 @@ ChromeStorageService.prototype._extractRedirect = function(index, topLimit, redi
 
 ChromeStorageService.prototype.extractGraph = function(graph) {
 	this.controller.showLoader();
-	this._extractDomains(graph.getNodes());
-	this._extractCookies(graph.getNodes());
-	this._extractRootRequests(graph.getNodes());
-	this._extractEdges(graph.getEdges());
+	this._extractDomains(graph.getDomainNodes());
+	this._extractCookies(graph.getDomainNodes());
+	this._extractRootRequests(graph.getDomainNodes());
+	this._extractEdges(graph.getDomainEdges());
 	this.controller.hideLoader();
 }
 

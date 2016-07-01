@@ -4,10 +4,10 @@ QUnit.module( "graph.Node", {
 		var graph = new Graph(visualisationNetwork);
 		this.mockGraph = sinon.mock(graph);
 
-		this.fromNode = new Node("www.example.com", graph, visualisationNetwork.getNodesDataset());
-		this.toNode = new Node("www.dependency.com", graph, visualisationNetwork.getNodesDataset());
+		this.fromNode = new DomainNode("www.example.com", graph, visualisationNetwork.getNodesDataset());
+		this.toNode = new DomainNode("www.dependency.com", graph, visualisationNetwork.getNodesDataset());
 
-		this.edge = new Edge(1, this.fromNode, this.toNode, graph, visualisationNetwork.getNodesDataset());
+		this.edge = new DomainEdge(1, this.fromNode, this.toNode, graph, visualisationNetwork.getNodesDataset());
 	}
 });
 
@@ -16,7 +16,7 @@ QUnit.test("getters and translation of type to node size", function(assert) {
 	var toNode = this.toNode;
 
 	assert.equal(fromNode.getID(), "www.example.com", "node.getID() returns correctly the assigned id");
-	assert.equal(fromNode.type, Node.Type.default, "node.getID() returns correctly the assigned id");
+	assert.equal(fromNode.type, DomainNode.Type.default, "node.getID() returns correctly the assigned id");
 });
 
 QUnit.test("addRequest() method", function(assert) {
