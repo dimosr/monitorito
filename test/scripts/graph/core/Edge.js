@@ -27,17 +27,17 @@ QUnit.test("getters", function(assert) {
 QUnit.test("addRequest() to edge method", function(assert) {
 	var edge = this.edge;
 	var request = new HttpRequest(1, "GET", "http://www.dependency.com/library", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
-	edge.addRequest("http://www.example.com/index", request);
+	edge.addLink("http://www.example.com/index", request, DomainEdge.Type.REQUEST);
 
-	var requests = edge.getRequests();
+	var requests = edge.getLinks(DomainEdge.Type.REQUEST);
 	assert.equal(requests[0].from, "http://www.example.com/index", "from Url of link added correctly");
-	assert.equal(requests[0].request, request, "Request of link added correctly");
+	assert.equal(requests[0].link, request, "Request of link added correctly");
 });
 
 QUnit.test("Edge type updated, depending on added links", function(assert) {
 	var edge = this.edge;
 
 	var request = new HttpRequest(1, "GET",  "www.dependency.com/resource2", Date.now(), {}, HttpRequest.Type.EMBEDDED, "sub_frame");
-	edge.addReferral("www.example.com/resource1", request);
+	edge.addLink("www.example.com/resource1", request, DomainEdge.Type.REFERRAL);
 	assert.equal(edge.getType(), DomainEdge.Type.REFERRAL, "Edge type converted to REFERRAL");
 });

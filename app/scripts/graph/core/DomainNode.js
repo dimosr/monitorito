@@ -8,6 +8,7 @@ function DomainNode(id, graph, networkNodes) {
     this.cookies[HttpRequest.Type.ROOT] = {};
     this.cookies[HttpRequest.Type.EMBEDDED] = {};
     this._requests = [];
+    this.isExpanded = false;
 
     this.createVisualNode();
 }
@@ -18,6 +19,14 @@ DomainNode.Type = {};
 DomainNode.Type["default"] = {name: "Default", rank: 3, size: 20};
 DomainNode.Type[HttpRequest.Type.ROOT] = {name: "First Party", rank: 1, size: 40};
 DomainNode.Type[HttpRequest.Type.EMBEDDED] = {name: "Third Party", rank: 2, size: 20};
+
+DomainNode.setExpanded = function(isExpanded) {
+    this.isExpanded = isExpanded;
+}
+
+DomainNode.isExpanded = function() {
+    return this.isExpanded;
+}
 
 DomainNode.prototype.addRequest = function(httpRequest) {
     this._requests.push(httpRequest);

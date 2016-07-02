@@ -62,19 +62,19 @@ EdgeWidgetHandler.prototype.showInfo = function(edge) {
 	this.widget.$typeField.html(edge.getType().name);
 	this.widget.$from.html(fromNode.getDomain());
 	this.widget.$to.html(toNode.getDomain());
-	this.widget.requests.$numberField.html(edge.getRequests().length);
-	this.widget.redirects.$numberField.html(edge.getRedirects().length);
-	this.widget.referrals.$numberField.html(edge.getReferrals().length);
+	this.widget.requests.$numberField.html(edge.getLinks(DomainEdge.Type.REQUEST).length);
+	this.widget.redirects.$numberField.html(edge.getLinks(DomainEdge.Type.REDIRECT).length);
+	this.widget.referrals.$numberField.html(edge.getLinks(DomainEdge.Type.REFERRAL).length);
 	this.selectedEdge = edge;
 
 	this.widget.$container.show();
 }
 EdgeWidgetHandler.prototype.loadEdgeRequests = function(edge) {
-	var requests = edge.getRequests();
+	var requests = edge.getLinks(DomainEdge.Type.REQUEST);
 
 	var contentToAdd = '';
 	for(var i=0; i < requests.length; i++) {
-		var httpRequest = requests[i].request;
+		var httpRequest = requests[i].link;
 		var fromCol = "<td>" + requests[i].from + "</td>";
 		var toUrlCol = "<td>" + httpRequest.url + "</td>";
 		var toResourceCol = "<td>" + httpRequest.resourceType + "</td>";
@@ -84,19 +84,20 @@ EdgeWidgetHandler.prototype.loadEdgeRequests = function(edge) {
 	this.widget.requests.$dialogTableBody.append(contentToAdd);
 }
 EdgeWidgetHandler.prototype.loadEdgeRedirects = function(edge) {
-	var redirects = edge.getRedirects();
+	var redirects = edge.getLinks(DomainEdge.Type.REDIRECT);
 
 	var contentToAdd = '';
 	for(var i=0; i < redirects.length; i++) {
-		var fromCol = "<td>" + redirects[i].getInitialURL() + "</td>";
-		var toCol = "<td>" + redirects[i].getFinalURL() + "</td>";
+		var redirect = redirects[i].link;
+		var fromCol = "<td>" + redirect.getInitialURL() + "</td>";
+		var toCol = "<td>" + redirect.getFinalURL() + "</td>";
 		contentToAdd += "<tr>" + fromCol + toCol + "</tr>";
 	}
 	this.widget.redirects.$dialogTableBody.append(contentToAdd);
 }
 
 EdgeWidgetHandler.prototype.loadEdgeReferrals = function(edge) {
-	var referrals = edge.getReferrals();
+	var referrals = edge.getLinks(DomainEdge.Type.REFERRAL);
 
 	var contentToAdd = '';
 	for(var i=0; i < referrals.length; i++) {

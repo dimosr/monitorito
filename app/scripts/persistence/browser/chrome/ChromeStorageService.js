@@ -169,10 +169,10 @@ ChromeStorageService.prototype._extractEdges = function(edges) {
 	var fileIndex = 1;
 	var edgesData = Converter.getEdgesColumnValuesCSV();
 	for(var i = 0; i < edges.length; i++) {
-		var requests = edges[i].getRequests(), redirects = edges[i].getRedirects(), referrals = edges[i].getReferrals(), links = [];
-		for(var j = 0; j < requests.length; j++) links.push({from: requests[j].from, request: requests[j].request, type: "REQUEST"});
-		for(var j = 0; j < redirects.length; j++) links.push({redirect: redirects[j], type: "REDIRECT"});
-		for(var j = 0; j < referrals.length; j++) links.push({from: referrals[j].from, request: referrals[j].request, type: "REFERRAL"});
+		var requests = edges[i].getLinks(DomainEdge.Type.REQUESTS), redirects = edges[i].getLinks(DomainEdge.Type.REDIRECT), referrals = edges[i].getLinks(DomainEdge.Type.REFERRAL), links = [];
+		for(var j = 0; j < requests.length; j++) links.push({from: requests[j].from, request: requests[j].link, type: "REQUEST"});
+		for(var j = 0; j < redirects.length; j++) links.push({redirect: redirects[j].link, type: "REDIRECT"});
+		for(var j = 0; j < referrals.length; j++) links.push({from: referrals[j].from, request: referrals[j].link, type: "REFERRAL"});
 		
 		for(var j = 0; j < links.length; j++) {
 			edgesData += Converter.edgeToCSV(links[j]);

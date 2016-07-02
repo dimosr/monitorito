@@ -45,14 +45,14 @@ GraphHandler.prototype.addRequest = function(rootRequest, request) {
 		this._ensureNodeExists(Util.getUrlHostname(request.getReferer()));
 		this._ensureEdgeExists(Util.getUrlHostname(request.getReferer()), Util.getUrlHostname(request.url));
 		var edge = this.graph.getEdgeBetweenNodes(Util.getUrlHostname(request.getReferer()), Util.getUrlHostname(request.url));
-		edge.addReferral(request.getReferer(), request);
+		edge.addLink(request.getReferer(), request, DomainEdge.Type.REFERRAL);
 	}
 	else {
 		this._ensureNodeExists(Util.getUrlHostname(rootRequest.url));
 		if(request.type != HttpRequest.Type.ROOT) {
 			this._ensureEdgeExists(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url));
 			var edge = this.graph.getEdgeBetweenNodes(Util.getUrlHostname(rootRequest.url), Util.getUrlHostname(request.url));
-			edge.addRequest(rootRequest.url, request);
+			edge.addLink(rootRequest.url, request, DomainEdge.Type.REQUEST);
 		}
 	}
 }
@@ -64,7 +64,7 @@ GraphHandler.prototype.addRedirect = function(redirect) {
 	this._ensureNodeExists(toHostname);
 	this._ensureEdgeExists(fromHostname, toHostname);
 	var edge = this.graph.getEdgeBetweenNodes(Util.getUrlHostname(redirect.getInitialURL()), Util.getUrlHostname(redirect.getFinalURL()));
-	edge.addRedirect(redirect);
+	edge.addLink(redirect.getInitialURL(), redirect, DomainEdge.Type.REDIRECT);
 }
 
 GraphHandler.prototype._ensureNodeExists = function(domain) {

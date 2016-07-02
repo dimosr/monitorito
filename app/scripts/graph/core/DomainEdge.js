@@ -3,11 +3,11 @@
 function DomainEdge(id, fromNode, toNode, graph, networkEdges) {
     Edge.call(this, id, fromNode, toNode, graph, networkEdges);
 
-    this._links = {
-        "requests": [],
-        "redirects": [],
-        "referrals": []
-    };
+    this._links = {};
+    for(var key in DomainEdge.Type) {
+        var type = DomainEdge.Type[key];
+        this._links[type.name] = [];
+    }
     this.type = DomainEdge.Type.DEFAULT;
 
     this.createVisualEdge();
@@ -22,31 +22,14 @@ DomainEdge.Type = {
     REFERRAL: {name: "Referral", rank: 1,dashes: false, color: "red"}
 }
 
-DomainEdge.prototype.addRequest = function(fromURL, request) {
-    this._links.requests.push({from: fromURL, request: request});
-    if(this.type.rank > DomainEdge.Type.REQUEST.rank) this.updateType(DomainEdge.Type.REQUEST);
+DomainEdge.prototype.addLink = function(fromURL, link, linkType) {
+    this._links[linkType.name].push({from: fromURL, link: link});
+    if(this.type.rank > linkType.rank) this.updateType(linkType);
 }
 
-DomainEdge.prototype.getRequests = function() {
-    return this._links.requests;
-}
-
-DomainEdge.prototype.addRedirect = function(redirect) {
-    this._links.redirects.push(redirect);
-    if(this.type.rank > DomainEdge.Type.REDIRECT.rank) this.updateType(DomainEdge.Type.REDIRECT);
-}
-
-DomainEdge.prototype.getRedirects = function() {
-    return this._links.redirects;
-}
-
-DomainEdge.prototype.addReferral = function(fromURL, request) {
-    this._links.referrals.push({from: fromURL, request: request});
-    if(this.type.rank > DomainEdge.Type.REFERRAL.rank) this.updateType(DomainEdge.Type.REFERRAL);
-}
-
-DomainEdge.prototype.getReferrals = function() {
-    return this._links.referrals;
+DomainEdge.prototype.getLinks = function(linkType) {
+    if(linkType === undefined) return this._links;
+    return this._links[linkType.name];
 }
 
 DomainEdge.prototype.getType = function() {

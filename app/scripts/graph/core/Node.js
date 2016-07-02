@@ -17,6 +17,10 @@ Node.prototype.addEdgeTo = function(destinationNode, edge) {
 	this._outgoing[destinationNode.getID()] = {'edge': edge};
 }
 
+Node.prototype.removeEdgeTo = function(destinationNode) {
+	delete this._outgoing[destinationNode.getID()];
+}
+
 Node.prototype.getEdgeTo = function(destinationNode) {
 	return this._outgoing[destinationNode.getID()].edge;
 }
@@ -27,6 +31,10 @@ Node.prototype.hasEdgeTo = function(destinationNode) {
 
 Node.prototype.addEdgeFrom = function(sourceNode, edge) {
 	this._incoming[sourceNode.getID()] = {'edge': edge};
+}
+
+Node.prototype.removeEdgeFrom = function(sourceNode) {
+	delete this._incoming[sourceNode.getID()];
 }
 
 Node.prototype.getEdgeFrom = function(sourceNode) {

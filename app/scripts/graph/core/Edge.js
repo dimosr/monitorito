@@ -32,6 +32,7 @@ Edge.prototype.updateVisualEdgeType = function(options) {
 	if(this.graph.mode == Graph.Mode.ONLINE)
 		this.networkEdges.update(options);
 }
+
 Edge.prototype.notifyForChange = function(fromType, toType) {
 	this.graph.notifyForEdgeChange(fromType, toType, this);
 }

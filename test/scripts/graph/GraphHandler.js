@@ -26,13 +26,13 @@ QUnit.test("addRequest() between different domains, without referrer and with ex
 
 	var node = {addRequest: function(request){}};
 	var mockNode = sinon.mock(node);
-	var edge = {addRequest: function(fromURL, request){}};
+	var edge = {addLink: function(fromURL, request, linkType){}};
 	var mockEdge = sinon.mock(edge);
 	mockGraph.expects("getNode").withArgs("www.dependency.com").atLeast(1).returns(node);
 	mockGraph.expects("existsEdge").withArgs("www.example.com", "www.dependency.com").atLeast(1).returns(true);
 	mockNode.expects("addRequest").withArgs(request);
 	mockGraph.expects("getEdgeBetweenNodes").withArgs("www.example.com", "www.dependency.com").atLeast(1).returns(edge);
-	mockEdge.expects("addRequest").withArgs(rootRequest.url, request).exactly(1);
+	mockEdge.expects("addLink").withArgs(rootRequest.url, request, DomainEdge.Type.REQUEST).exactly(1);
 
 	graphHandler.addRequest(rootRequest, request);
 	mockGraph.verify();
@@ -45,10 +45,10 @@ QUnit.test("addRedirect() between different domains, adding edge", function(asse
 	
 	var redirect = new Redirect("http://www.example.com/test", "http://www.dependency.com/library", DomainEdge.Type.REQUEST, Date.now());
 
-	var edge = {addRedirect: function(redirect){}};
+	var edge = {addLink: function(fromURL, link, linkType){}};
 	var mockEdge = sinon.mock(edge);
 	mockGraph.expects("getEdgeBetweenNodes").withArgs("www.example.com", "www.dependency.com").atLeast(1).returns(edge);
-	mockEdge.expects("addRedirect").withArgs(redirect).exactly(1);
+	mockEdge.expects("addLink").withArgs(redirect.getInitialURL(), redirect, DomainEdge.Type.REDIRECT).exactly(1);
 
 	graphHandler.addRedirect(redirect);
 	mockGraph.verify();
