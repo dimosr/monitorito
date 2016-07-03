@@ -8,7 +8,9 @@ function DomainNode(id, graph, networkNodes) {
     this.cookies[HttpRequest.Type.ROOT] = {};
     this.cookies[HttpRequest.Type.EMBEDDED] = {};
     this._requests = [];
-    this.isExpanded = false;
+    this._expanded = false;
+
+    this._children = {};
 
     this.createVisualNode();
 }
@@ -20,12 +22,12 @@ DomainNode.Type["default"] = {name: "Default", rank: 3, size: 20};
 DomainNode.Type[HttpRequest.Type.ROOT] = {name: "First Party", rank: 1, size: 40};
 DomainNode.Type[HttpRequest.Type.EMBEDDED] = {name: "Third Party", rank: 2, size: 20};
 
-DomainNode.setExpanded = function(isExpanded) {
-    this.isExpanded = isExpanded;
+DomainNode.prototype.setExpanded = function(isExpanded) {
+    this._expanded = isExpanded;
 }
 
-DomainNode.isExpanded = function() {
-    return this.isExpanded;
+DomainNode.prototype.isExpanded = function() {
+    return this._expanded;
 }
 
 DomainNode.prototype.addRequest = function(httpRequest) {
@@ -85,4 +87,39 @@ DomainNode.prototype.updateType = function(type) {
     this.updateVisualNodeType();
 
     this.notifyForChange(previousType, newType);
+}
+
+DomainNode.prototype.addChildNode = function(resourceNode) {
+    this._children[resourceNode.getID()] = resourceNode;
+}
+
+DomainNode.prototype.getChildrenNodes = function() {
+    var children = [];
+    for(var key in this._children)
+        children.push(this._children[key]);
+    return children;
+}
+
+DomainNode.prototype.removeChildNode = function(id) {
+    delete this._children[id];
+}
+
+DomainNode.prototype.getIncomingDomainEdges = function(excludeSelfReferencing) {
+    var filterDomainEdges = function(edge) {return (edge instanceof DomainEdge);};
+    return this.getIncomingEdges(excludeSelfReferencing).filter(filterDomainEdges);
+}
+
+DomainNode.prototype.getIncomingResourceEdges = function(excludeSelfReferencing) {
+    var filterResourceEdges = function(edge) {return (edge instanceof ResourceEdge);};
+    return this.getIncomingEdges(excludeSelfReferencing).filter(filterResourceEdges);
+}
+
+DomainNode.prototype.getOutgoingDomainEdges = function(excludeSelfReferencing) {
+    var filterDomainEdges = function(edge) {return (edge instanceof DomainEdge);};
+    return this.getOutgoingEdges(excludeSelfReferencing).filter(filterDomainEdges);
+}
+
+DomainNode.prototype.getOutgoingResourceEdges = function(excludeSelfReferencing) {
+    var filterResourceEdges = function(edge) {return (edge instanceof ResourceEdge);};
+    return this.getOutgoingEdges(excludeSelfReferencing).filter(filterResourceEdges);
 }

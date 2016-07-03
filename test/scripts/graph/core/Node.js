@@ -53,8 +53,8 @@ QUnit.test("getOutgoingEdges(), getIncomingEdges() methods", function(assert) {
 	var toNode = this.toNode;
 	var edge = this.edge;
 
-	assert.equal(fromNode.getOutgoingEdges().length, 1, "fromNode has only 1 outgoin edge");
-	assert.ok(fromNode.getOutgoingEdges().indexOf(edge) != -1, "the added edge is returned by getOutgoingEdges");
-	assert.equal(toNode.getIncomingEdges().length, 1, "to has only 1 incoming edge");
-	assert.ok(toNode.getIncomingEdges().indexOf(edge) != -1, "the added edge in returned by getIncomingEdges");
+	assert.equal(fromNode.getOutgoingDomainEdges().length, 1, "fromNode has only 1 outgoing edge");
+	assert.ok(fromNode.getOutgoingDomainEdges().indexOf(edge) != -1, "the added edge is returned by getOutgoingEdges");
+	assert.equal(toNode.getIncomingDomainEdges().length, 1, "to has only 1 incoming edge");
+	assert.ok(toNode.getIncomingDomainEdges().indexOf(edge) != -1, "the added edge in returned by getIncomingEdges");
 });

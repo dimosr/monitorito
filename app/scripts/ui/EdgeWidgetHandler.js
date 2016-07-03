@@ -101,7 +101,7 @@ EdgeWidgetHandler.prototype.loadEdgeReferrals = function(edge) {
 
 	var contentToAdd = '';
 	for(var i=0; i < referrals.length; i++) {
-		var httpRequest = referrals[i].request;
+		var httpRequest = referrals[i].link;
 		var fromCol = "<td>" + referrals[i].from + "</td>";
 		var toUrlCol = "<td>" + httpRequest.url + "</td>";
 		var toResourceCol = "<td>" + httpRequest.resourceType + "</td>";

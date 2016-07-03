@@ -28,11 +28,17 @@ Edge.prototype.createVisualEdge = function(options){
 		this.networkEdges.add(options);
 }
 
-Edge.prototype.updateVisualEdgeType = function(options) {
+Edge.prototype.updateVisualEdge = function(options) {
 	if(this.graph.mode == Graph.Mode.ONLINE)
 		this.networkEdges.update(options);
 }
 
 Edge.prototype.notifyForChange = function(fromType, toType) {
 	this.graph.notifyForEdgeChange(fromType, toType, this);
+}
+
+Edge.prototype.remove = function() {
+	this.getSourceNode().removeEdgeTo(this.getDestinationNode());
+	this.getDestinationNode().removeEdgeFrom(this.getSourceNode());
+	this.networkEdges.remove(this.getID());
 }

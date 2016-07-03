@@ -10,6 +10,8 @@ GraphHandler.prototype.setGraph = function(graph) {
 
 	this.clusteringEngine = new ClusteringEngine(graph);
 	this.graph.setClusteringEngine(this.clusteringEngine);
+
+	this.resourcesExplorerEngine = new ResourcesExplorerEngine(graph);
 }
 
 GraphHandler.prototype.getGraph = function() {
@@ -85,4 +87,14 @@ GraphHandler.prototype.clusterByDomain = function(domains, clusterID) {
 
 GraphHandler.prototype.deleteCluster = function(clusterID) {
 	this.clusteringEngine.deCluster(clusterID);
+}
+
+GraphHandler.prototype.expandDomainNode = function(nodeID) {
+	if(!(this.graph.getNode(nodeID) instanceof DomainNode)) throw new Error("Only Domain Nodes can be expanded");
+	this.resourcesExplorerEngine.expand(this.graph.getNode(nodeID))
+}
+
+GraphHandler.prototype.collapseDomainNode = function(nodeID) {
+	if(!(this.graph.getNode(nodeID) instanceof DomainNode)) throw new Error("Only Domain Nodes can be collapsed");
+	this.resourcesExplorerEngine.collapse(this.graph.getNode(nodeID));
 }

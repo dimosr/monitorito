@@ -71,6 +71,14 @@ CentralController.prototype.deleteCluster = function(clusterID) {
 	this.graphHandler.deleteCluster(clusterID);
 }
 
+CentralController.prototype.expandDomainNode = function(nodeID) {
+	this.graphHandler.expandDomainNode(nodeID);
+}
+
+CentralController.prototype.collapseDomainNode = function(nodeID) {
+	this.graphHandler.collapseDomainNode(nodeID);
+}
+
 CentralController.prototype.setGraphMode = function(mode) {
 	var graphHandler = this.graphHandler;
 	var interfaceHandler = this.interfaceHandler;

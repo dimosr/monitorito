@@ -65,7 +65,7 @@ GraphStatsCalculator.prototype.onNewEdge = function(edge) {
 	if(edge.getSourceNode() != edge.getDestinationNode()) {//not counting self-referencing edges for statistics
 		this.totalEdges++;
 
-		var srcOutgoingEdges = DomainEdge.groupEdgesByType(edge.getSourceNode().getOutgoingEdges(true)), dstIncomingEdges = DomainEdge.groupEdgesByType(edge.getDestinationNode().getIncomingEdges(true));
+		var srcOutgoingEdges = DomainEdge.groupEdgesByType(edge.getSourceNode().getOutgoingDomainEdges(true)), dstIncomingEdges = DomainEdge.groupEdgesByType(edge.getDestinationNode().getIncomingDomainEdges(true));
 		var srcOutgoingReferralEdges = srcOutgoingEdges[DomainEdge.Type.REFERRAL.name].length;
 		var srcOutgoingNonReferralEdges = srcOutgoingEdges[DomainEdge.Type.DEFAULT.name].length + srcOutgoingEdges[DomainEdge.Type.REQUEST.name].length + srcOutgoingEdges[DomainEdge.Type.REDIRECT.name].length;
 		var dstIncomingReferralEdges = dstIncomingEdges[DomainEdge.Type.REFERRAL.name].length;
@@ -80,7 +80,7 @@ GraphStatsCalculator.prototype.onEdgeChange = function(fromType, toType, edge) {
 	if(edge.getSourceNode() != edge.getDestinationNode()) {//not counting self-referencing edges for statistics
 		/* Only track changes from nonReferral to Referral */
 		if(fromType != DomainEdge.Type.REFERRAL && toType == DomainEdge.Type.REFERRAL) {
-			var srcOutgoingEdges = DomainEdge.groupEdgesByType(edge.getSourceNode().getOutgoingEdges(true)), dstIncomingEdges = DomainEdge.groupEdgesByType(edge.getDestinationNode().getIncomingEdges(true));
+			var srcOutgoingEdges = DomainEdge.groupEdgesByType(edge.getSourceNode().getOutgoingDomainEdges(true)), dstIncomingEdges = DomainEdge.groupEdgesByType(edge.getDestinationNode().getIncomingDomainEdges(true));
 			var srcOutgoingReferralEdges = srcOutgoingEdges[DomainEdge.Type.REFERRAL.name].length;
 			var srcOutgoingNonReferralEdges = srcOutgoingEdges[DomainEdge.Type.DEFAULT.name].length + srcOutgoingEdges[DomainEdge.Type.REQUEST.name].length + srcOutgoingEdges[DomainEdge.Type.REDIRECT.name].length;
 			var dstIncomingReferralEdges = dstIncomingEdges[DomainEdge.Type.REFERRAL.name].length;

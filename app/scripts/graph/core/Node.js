@@ -76,3 +76,7 @@ Node.prototype.updateVisualNodeType = function(options) {
 Node.prototype.notifyForChange = function(fromType, toType) {
 	this.graph.notifyForNodeChange(fromType, toType, this);
 }
+
+Node.prototype.remove = function() {
+	this.networkNodes.remove(this.getID());
+}

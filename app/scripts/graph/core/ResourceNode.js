@@ -1,14 +1,27 @@
 "use strict";
 
-function ResourceNode(id, graph, networkNodes) {
+function ResourceNode(id, graph, networkNodes, networkEdges, parentNode, parentEdgeID) {
     Node.call(this, id, graph, networkNodes);
+
+    this.type = ResourceNode.Type.default;
+    this.cookies = {};
+    this.cookies[HttpRequest.Type.ROOT] = {};
+    this.cookies[HttpRequest.Type.EMBEDDED] = {};
+    this._requests = [];
+    this.networkEdges = networkEdges;
+    this.createVisualNode();
+
+    this._parent = parentNode;
+    this._parent.addChildNode(this);
+    this.parentEdgeID = parentEdgeID;
+    this.createTempParentEdge();
 }
 
 ResourceNode.prototype = Object.create(Node.prototype);
 
 ResourceNode.Type = {};
-ResourceNode.Type["default"] = {name: "Default", rank: 3, size: 5};
-ResourceNode.Type[HttpRequest.Type.ROOT] = {name: "First Party", rank: 1, size: 10};
+ResourceNode.Type["default"] = {name: "Default", rank: 3, size: 10};
+ResourceNode.Type[HttpRequest.Type.ROOT] = {name: "First Party", rank: 1, size: 20};
 ResourceNode.Type[HttpRequest.Type.EMBEDDED] = {name: "Third Party", rank: 2, size: 10};
 
 ResourceNode.prototype.addRequest = function(httpRequest) {
@@ -56,4 +69,19 @@ ResourceNode.prototype.updateVisualNodeType = function() {
 ResourceNode.prototype.updateType = function(type) {
     this.type = type;
     this.updateVisualNodeType();
+}
+
+ResourceNode.prototype.remove = function() {
+    this._parent.removeChildNode(this);
+    this._parent = null;
+    this.removeTempParentEdge();
+    Node.prototype.remove.call(this);
+}
+
+ResourceNode.prototype.createTempParentEdge = function() {
+    this.networkEdges.add({id: this.parentEdgeID, from: this._parent.getID(), to: this.getID(), width: 2, color: "green"})
+}
+
+ResourceNode.prototype.removeTempParentEdge = function() {
+    this.networkEdges.remove(this.parentEdgeID);
 }

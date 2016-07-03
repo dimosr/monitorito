@@ -13,28 +13,28 @@ QUnit.test("clustering functionalities", function(assert) {
 	var node1 = sinon.createStubInstance(DomainNode);
 	node1.getDomain.returns("www.example.com");
 	node1.getID.returns("www.example.com");
-	node1.getOutgoingEdges.returns([]);
-	node1.getIncomingEdges.returns([]);
+	node1.getOutgoingDomainEdges.returns([]);
+	node1.getIncomingDomainEdges.returns([]);
 	var node2 = sinon.createStubInstance(DomainNode);
 	node2.getDomain.returns("another.example.com");
 	node2.getID.returns("another.example.com");
-	node2.getOutgoingEdges.returns([]);
-	node2.getIncomingEdges.returns([]);
+	node2.getOutgoingDomainEdges.returns([]);
+	node2.getIncomingDomainEdges.returns([]);
 	var node3 = sinon.createStubInstance(DomainNode);
 	node3.getDomain.returns("test.com");
 	node3.getID.returns("test.com");
-	node3.getOutgoingEdges.returns([]);
-	node3.getIncomingEdges.returns([]);
+	node3.getOutgoingDomainEdges.returns([]);
+	node3.getIncomingDomainEdges.returns([]);
 	var node4 = sinon.createStubInstance(DomainNode);
 	node4.getDomain.returns("dummy.com");
 	node4.getID.returns("dummy.com");
-	node4.getOutgoingEdges.returns([]);
-	node4.getIncomingEdges.returns([]);
+	node4.getOutgoingDomainEdges.returns([]);
+	node4.getIncomingDomainEdges.returns([]);
 	var node5 = sinon.createStubInstance(DomainNode);
 	node5.getDomain.returns("test.co.uk");
 	node5.getID.returns("test.co.uk");
-	node5.getOutgoingEdges.returns([]);
-	node5.getIncomingEdges.returns([]);
+	node5.getOutgoingDomainEdges.returns([]);
+	node5.getIncomingDomainEdges.returns([]);
 	
 	this.graph.getDomainNodes.returns([node1, node2, node3, node4]);
 

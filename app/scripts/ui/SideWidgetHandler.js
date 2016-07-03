@@ -153,8 +153,8 @@ SideWidgetHandler.prototype.showOutgoingEdgesStatistics = function(graphStatisti
 }
 
 SideWidgetHandler.prototype.updateSelectedNodeStats = function(node) {
-	var outEdges = DomainEdge.groupEdgesByType(node.getOutgoingEdges(true));
-	var inEdges = DomainEdge.groupEdgesByType(node.getIncomingEdges(true));
+	var outEdges = DomainEdge.groupEdgesByType(node.getOutgoingDomainEdges(true));
+	var inEdges = DomainEdge.groupEdgesByType(node.getIncomingDomainEdges(true));
 	this.outgoingEdgesPlot.data.datasets[0].data[5] = outEdges[DomainEdge.Type.REFERRAL.name].length;
 	this.outgoingEdgesPlot.data.datasets[1].data[5] = outEdges[DomainEdge.Type.DEFAULT.name].length + outEdges[DomainEdge.Type.REDIRECT.name].length + outEdges[DomainEdge.Type.REQUEST.name].length;
 	this.incomingEdgesPlot.data.datasets[0].data[5] = inEdges[DomainEdge.Type.REFERRAL.name].length;

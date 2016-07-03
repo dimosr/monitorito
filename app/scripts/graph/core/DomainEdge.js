@@ -57,7 +57,7 @@ DomainEdge.prototype.updateVisualEdgeType = function() {
         dashes: this.type.dashes,
         color: this.type.color
     };
-    Edge.prototype.updateVisualEdgeType.call(this, options);
+    Edge.prototype.updateVisualEdge.call(this, options);
 }
 
 DomainEdge.prototype.updateType = function(type) {
