@@ -14,10 +14,8 @@ ResourcesExplorerEngine.prototype.expand = function(domainNode) {
     var requests = domainNode.getRequests();
     for(var i = 0; i < requests.length; i++) {
         var request = requests[i];
-        if(request.type == HttpRequest.Type.ROOT) {
-            var node = this._ensureResourceNodeExists(request.url);
-            node.addRequest(request);
-        }
+        var node = this._ensureResourceNodeExists(request.url);
+        node.addRequest(request);
     }
 
     var inEdges = domainNode.getIncomingDomainEdges(false);
@@ -146,9 +144,9 @@ ResourcesExplorerEngine.prototype.transferLinks = function(fromEdge, toEdge) {
     var redirects = fromEdge.getLinks(ResourceEdge.Type.REDIRECT);
 
     for(var i = 0; i < requests.length; i++)
-        toEdge.addLink(requests[i].from, requests[i].link.url, ResourceEdge.Type.REQUEST);
+        toEdge.addLink(requests[i].from, requests[i].link, ResourceEdge.Type.REQUEST);
     for(var i = 0; i < referrals.length; i++)
-        toEdge.addLink(referrals[i].from, referrals[i].link.url, ResourceEdge.Type.REFERRAL);
+        toEdge.addLink(referrals[i].from, referrals[i].link, ResourceEdge.Type.REFERRAL);
     for(var i = 0; i < redirects.length; i++)
-        toEdge.addLink(redirects[i].from, redirects[i].link.url, ResourceEdge.Type.REDIRECT);
+        toEdge.addLink(redirects[i].from, redirects[i].link, ResourceEdge.Type.REDIRECT);
 }
