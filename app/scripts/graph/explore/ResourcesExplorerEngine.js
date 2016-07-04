@@ -60,7 +60,7 @@ ResourcesExplorerEngine.prototype.collapse = function(domainNode) {
             if(outEdges[j].getDestinationNode() instanceof DomainNode) this.removeResourceEdge("delete", outEdges[j]);
             else {
                 if(Util.getUrlHostname(outEdges[j].getSourceNode().getID()) == Util.getUrlHostname(outEdges[j].getDestinationNode().getID())) this.removeResourceEdge("delete", outEdges[j]);
-                else this.removeResourceEdge("moveToDestination", outEdges[j]);
+                else this.removeResourceEdge("moveToSource", outEdges[j]);
             }
         }
         this.graph.deleteResourceNode(node.getID());

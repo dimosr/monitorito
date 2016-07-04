@@ -2,6 +2,7 @@
 
 /* For reference of the widget structure, check InterfaceHandler.initNodeWidgetHandler */
 function NodeWidgetHandler(controller, widget, screenDimensions) {
+	this.controller = controller;
 	this.widget = widget;
 	this.selectedNode = null;
 
@@ -48,6 +49,19 @@ NodeWidgetHandler.prototype.init = function() {
 		}
 		widget.thirdPartyCookies.$dialogContent.dialog( "open" );
 	});
+
+	this.widget.$expandButton.click({handler: this}, function(event) {
+		var handler = event.data.handler;
+		handler.controller.expandDomainNode(handler.selectedNode.getID());
+		handler.widget.$expandButton.addClass("disabled");
+		handler.widget.$collapseButton.removeClass("disabled");
+	});
+	this.widget.$collapseButton.click({handler: this}, function(event) {
+		var handler = event.data.handler;
+		handler.controller.collapseDomainNode(handler.selectedNode.getID());
+		handler.widget.$expandButton.removeClass("disabled");
+		handler.widget.$collapseButton.addClass("disabled");
+	});
 }
 
 NodeWidgetHandler.prototype.showInfo = function(node) {
@@ -55,7 +69,15 @@ NodeWidgetHandler.prototype.showInfo = function(node) {
 	this.widget.requests.$numberField.html(node.getRequests().length);
 	this.widget.firstPartyCookies.$numberField.html(Object.keys(node.getFirstPartyCookies()).length);
 	this.widget.thirdPartyCookies.$numberField.html(Object.keys(node.getThirdPartyCookies()).length);
-	
+	if(node.isExpanded()) {
+		this.widget.$expandButton.addClass("disabled");
+		this.widget.$collapseButton.removeClass("disabled");
+	}
+	else {
+		this.widget.$expandButton.removeClass("disabled");
+		this.widget.$collapseButton.addClass("disabled");
+	}
+
 	this.selectedNode = node;
 	this.widget.$container.show();
 }

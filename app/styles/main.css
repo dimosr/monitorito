@@ -15,7 +15,7 @@ html,body {
 	padding: 0px;
 }
 
-.disabled {
+.disabled-panel {
 	background-image: url("/resources/img/disabled_grid.jpg");
 	background-size: 25% auto;
 }

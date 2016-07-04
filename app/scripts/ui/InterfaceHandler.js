@@ -102,6 +102,8 @@ InterfaceHandler.prototype.initNodeWidgetHandler = function() {
 			$dialogTableBody: $("#node_cookies_3rd_dialog tbody"),
 			loaded: false
 		},
+		$expandButton: $("#expand_button"),
+		$collapseButton: $("#collapse_button"),
 		$domainField: $("#node_domain")
 	};
 	this.nodeWidgetHandler = new NodeWidgetHandler(this.controller, nodeWidget, this.screenDimensions);
@@ -149,7 +151,7 @@ InterfaceHandler.prototype.initModeWidgetHandler = function() {
 }
 
 InterfaceHandler.prototype.disableVisualisation = function() {
-	this.graphContainer.addClass("disabled");
+	this.graphContainer.addClass("disabled-panel");
 	this.controlWidgetHandler.hidePhysicsOption();
 }
 
