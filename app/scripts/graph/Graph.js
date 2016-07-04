@@ -89,6 +89,7 @@ Graph.prototype.getDomainEdges = function() {
 }
 
 Graph.prototype.getEdgeBetweenNodes = function(fromNodeID, toNodeID) {
+	if(!this.existsNode(fromNodeID) || !this.existsNode(toNodeID)) return null;
 	var fromNode = this.getNode(fromNodeID);
 	var toNode = this.getNode(toNodeID);
 	return fromNode.hasEdgeTo(toNode) ? fromNode.getEdgeTo(toNode) : null;

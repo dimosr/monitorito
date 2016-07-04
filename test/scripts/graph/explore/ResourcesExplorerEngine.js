@@ -68,5 +68,5 @@ QUnit.test("collapsing DomainNode with other expanded maintains ResourceEdges wi
 
     assert.ok(!graph.existsNode("http://example.com"), "ResourceNode successfully deleted");
     assert.ok(graph.existsNode("http://test.com"), "ResourceNode of non-collapsed node already exists");
-    assert.ok(!graph.existsEdge("example.com", "http://test.com"), "ResourceEdge maintained between domain and non-collapsed ResourceDomain");
+    assert.ok(graph.existsEdge("example.com", "http://test.com"), "ResourceEdge maintained between domain and non-collapsed ResourceDomain");
 });
