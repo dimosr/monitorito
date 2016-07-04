@@ -1,4 +1,4 @@
-//"use strict";
+"use strict";
 
 document.addEventListener("DOMContentLoaded", function(event) {
 	var bootstrapper = new Bootstrapper();
@@ -20,7 +20,7 @@ function Bootstrapper() {
 
 	var storageService = new ChromeStorageService(chrome.storage.local, new Downloader());
 
-	/*var*/ controller = new CentralController(interfaceHandler, monitoringService, graphHandler, storageService);
+	var controller = new CentralController(interfaceHandler, monitoringService, graphHandler, storageService);
 	monitoringService.setController(controller);
 	graphHandler.setController(controller);
 	interfaceHandler.setController(controller);

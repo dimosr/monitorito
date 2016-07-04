@@ -104,6 +104,7 @@ InterfaceHandler.prototype.initNodeWidgetHandler = function() {
 		},
 		$expandButton: $("#expand_button"),
 		$collapseButton: $("#collapse_button"),
+		$explorerPanel: $("#explorer_panel"),
 		$domainField: $("#node_domain")
 	};
 	this.nodeWidgetHandler = new NodeWidgetHandler(this.controller, nodeWidget, this.screenDimensions);
@@ -157,7 +158,7 @@ InterfaceHandler.prototype.disableVisualisation = function() {
 
 InterfaceHandler.prototype.showNodeInfo = function(node) {
 	this.nodeWidgetHandler.showInfo(node);
-	this.sideWidgetHandler.updateSelectedNodeStats(node);
+	if(node instanceof DomainNode) this.sideWidgetHandler.updateSelectedNodeStats(node);
 }
 
 InterfaceHandler.prototype.emptyNodeInfo = function() {

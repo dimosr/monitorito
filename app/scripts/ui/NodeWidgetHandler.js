@@ -65,17 +65,23 @@ NodeWidgetHandler.prototype.init = function() {
 }
 
 NodeWidgetHandler.prototype.showInfo = function(node) {
-	this.widget.$domainField.html(node.getDomain());
+	this.widget.$domainField.html(node.getID());
 	this.widget.requests.$numberField.html(node.getRequests().length);
 	this.widget.firstPartyCookies.$numberField.html(Object.keys(node.getFirstPartyCookies()).length);
 	this.widget.thirdPartyCookies.$numberField.html(Object.keys(node.getThirdPartyCookies()).length);
-	if(node.isExpanded()) {
-		this.widget.$expandButton.addClass("disabled");
-		this.widget.$collapseButton.removeClass("disabled");
+	if(node instanceof DomainNode) {
+		this.widget.$explorerPanel.show();
+		if(node.isExpanded()) {
+			this.widget.$expandButton.addClass("disabled");
+			this.widget.$collapseButton.removeClass("disabled");
+		}
+		else {
+			this.widget.$expandButton.removeClass("disabled");
+			this.widget.$collapseButton.addClass("disabled");
+		}
 	}
-	else {
-		this.widget.$expandButton.removeClass("disabled");
-		this.widget.$collapseButton.addClass("disabled");
+	else if(node instanceof ResourceNode) {
+		this.widget.$explorerPanel.hide();
 	}
 
 	this.selectedNode = node;

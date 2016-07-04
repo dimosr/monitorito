@@ -89,7 +89,7 @@ CentralController.prototype.setGraphMode = function(mode) {
 	    graphHandler.setGraph(graph);
 		var selectNodeCallback = function(selectedNode) {
 			interfaceHandler.emptyEdgeInfo();
-			if(selectedNode instanceof DomainNode) {
+			if(selectedNode instanceof Node) {
 				interfaceHandler.emptyClusterInfo();
 				interfaceHandler.showNodeInfo(selectedNode);
 			}

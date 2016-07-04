@@ -54,7 +54,7 @@ VisualisationNetwork.prototype.setupListeners = function(graph) {
                 this._selectNodeCallback(selectedCluster);
             }
         }
-        else if(eventParams.nodes.length == 0 && eventParams.edges.length == 1 && (!graph.clusteringEngine.isClusterEdge(eventParams.edges[0]))) {//Edge Selected (not clusterEdge)
+        else if(eventParams.nodes.length == 0 && eventParams.edges.length == 1 && (graph.getEdge(eventParams.edges[0]) != null)) {//Edge selected (except clusterEdge, or ResourceNode parentEdge)
             var selectedEdge = graph.getEdge(eventParams.edges[0]);
             this._selectEdgeCallback(selectedEdge);
         }
@@ -77,7 +77,7 @@ VisualisationNetwork.prototype.setupListeners = function(graph) {
 
     this._network.on("deselectEdge", function(eventParams) {
         var previousSelection = eventParams.previousSelection;
-        if(previousSelection.nodes.length == 0 && previousSelection.edges.length == 1 && (!graph.clusteringEngine.isClusterEdge(previousSelection.edges[0]))) {//Only in edge deselections (not clusterEdge)
+        if(previousSelection.nodes.length == 0 && previousSelection.edges.length == 1 && (graph.getEdge(previousSelection.edges[0]) != null)) {//Edge deselected (except clusterEdge, or ResourceNode parentEdge)
             var deselectedEdges = previousSelection.edges;
             this._deselectEdgeCallback(deselectedEdges);
         }

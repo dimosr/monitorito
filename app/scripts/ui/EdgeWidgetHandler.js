@@ -60,17 +60,17 @@ EdgeWidgetHandler.prototype.showInfo = function(edge) {
 	var toNode = edge.getDestinationNode();
 
 	this.widget.$typeField.html(edge.getType().name);
-	this.widget.$from.html(fromNode.getDomain());
-	this.widget.$to.html(toNode.getDomain());
-	this.widget.requests.$numberField.html(edge.getLinks(DomainEdge.Type.REQUEST).length);
-	this.widget.redirects.$numberField.html(edge.getLinks(DomainEdge.Type.REDIRECT).length);
-	this.widget.referrals.$numberField.html(edge.getLinks(DomainEdge.Type.REFERRAL).length);
+	this.widget.$from.html(fromNode.getID());
+	this.widget.$to.html(toNode.getID());
+	this.widget.requests.$numberField.html(this.getEdgeRequests(edge).length);
+	this.widget.redirects.$numberField.html(this.getEdgeRedirects(edge).length);
+	this.widget.referrals.$numberField.html(this.getEdgeReferrals(edge).length);
 	this.selectedEdge = edge;
 
 	this.widget.$container.show();
 }
 EdgeWidgetHandler.prototype.loadEdgeRequests = function(edge) {
-	var requests = edge.getLinks(DomainEdge.Type.REQUEST);
+	var requests = this.getEdgeRequests(edge);
 
 	var contentToAdd = '';
 	for(var i=0; i < requests.length; i++) {
@@ -84,7 +84,7 @@ EdgeWidgetHandler.prototype.loadEdgeRequests = function(edge) {
 	this.widget.requests.$dialogTableBody.append(contentToAdd);
 }
 EdgeWidgetHandler.prototype.loadEdgeRedirects = function(edge) {
-	var redirects = edge.getLinks(DomainEdge.Type.REDIRECT);
+	var redirects = this.getEdgeRedirects(edge);
 
 	var contentToAdd = '';
 	for(var i=0; i < redirects.length; i++) {
@@ -97,7 +97,7 @@ EdgeWidgetHandler.prototype.loadEdgeRedirects = function(edge) {
 }
 
 EdgeWidgetHandler.prototype.loadEdgeReferrals = function(edge) {
-	var referrals = edge.getLinks(DomainEdge.Type.REFERRAL);
+	var referrals = this.getEdgeReferrals(edge);
 
 	var contentToAdd = '';
 	for(var i=0; i < referrals.length; i++) {
@@ -120,4 +120,22 @@ EdgeWidgetHandler.prototype.emptyInfo = function() {
 	this.widget.redirects.$dialogTableBody.empty();
 	this.widget.referrals.$dialogTableBody.empty();
 	this.selectedEdge = null;
+}
+
+EdgeWidgetHandler.prototype.getEdgeRequests = function(edge) {
+	if(edge instanceof DomainEdge) return edge.getLinks(DomainEdge.Type.REQUEST);
+	else if(edge instanceof ResourceEdge) return edge.getLinks(ResourceEdge.Type.REQUEST);
+	else throw new Error("Unsupported parameter type.");
+}
+
+EdgeWidgetHandler.prototype.getEdgeReferrals = function(edge) {
+	if(edge instanceof DomainEdge) return edge.getLinks(DomainEdge.Type.REFERRAL);
+	else if(edge instanceof ResourceEdge) return edge.getLinks(ResourceEdge.Type.REFERRAL);
+	else throw new Error("Unsupported parameter type.");
+}
+
+EdgeWidgetHandler.prototype.getEdgeRedirects = function(edge) {
+	if(edge instanceof DomainEdge) return edge.getLinks(DomainEdge.Type.REDIRECT);
+	else if(edge instanceof ResourceEdge) return edge.getLinks(ResourceEdge.Type.REDIRECT);
+	else throw new Error("Unsupported parameter type.");
 }
