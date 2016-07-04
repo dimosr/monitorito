@@ -80,10 +80,20 @@ Cluster.prototype.getOutgoingEdges = function() {
 	return edges;
 }
 
+Cluster.prototype.getOutgoingDomainEdges = function() {
+	var filterDomainEdges = function(edge) {return (edge instanceof DomainEdge);};
+	return this.getOutgoingEdges().filter(filterDomainEdges);
+}
+
 Cluster.prototype.getIncomingEdges = function() {
 	var edges = [];
 	for(var hostnameKey in this._incoming) edges.push(this._incoming[hostnameKey].edge);
 	return edges;
+}
+
+Cluster.prototype.getIncomingDomainEdges = function() {
+	var filterDomainEdges = function(edge) {return (edge instanceof DomainEdge);};
+	return this.getIncomingEdges().filter(filterDomainEdges);
 }
 
 Cluster.prototype.calculateCookies = function() {
