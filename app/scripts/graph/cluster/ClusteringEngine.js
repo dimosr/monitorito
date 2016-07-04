@@ -23,6 +23,7 @@ ClusteringEngine.prototype.clusterByDomain = function(domains, clusterID) {
 		if(regExp.test(nodes[i].getDomain()))
 			clusteredNodes.push(nodes[i]);
 	}
+	this.disallowNestedClustering(clusteredNodes);
 
 	if(clusteredNodes.length > 1) {
 		var cluster = new Cluster(clusterID, this.graph, clusteredNodes);
@@ -33,6 +34,16 @@ ClusteringEngine.prototype.clusterByDomain = function(domains, clusterID) {
 		throw new Error(errorMessage);
 	}
 
+}
+
+ClusteringEngine.prototype.disallowNestedClustering = function(clusteredNodes) {
+	for(var key in this.clusters) {
+		var cluster = this.clusters[key];
+		for(var i = 0; i < clusteredNodes.length; i++) {
+			if(cluster.containsNode(clusteredNodes[i]))
+				throw new Error("Cluster '" + cluster.getID() + "' already contains one of the matched nodes('" + clusteredNodes[i].getID() + "'). De-cluster it first, if you want to create another cluster, containing it.");
+		}
+	}
 }
 
 ClusteringEngine.prototype.getCluster = function(clusterID) {

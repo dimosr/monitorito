@@ -8,7 +8,6 @@ QUnit.module( "graph.cluster.ClusteringEngine", {
 		this.graph.createDomainNode("test.com");
 		this.graph.createDomainNode("dummy.com");
 		this.graph.createDomainNode("test.co.uk");
-		//this.graph = sinon.createStubInstance(Graph);
 
 		this.clusteringEngine = new ClusteringEngine(this.graph);
 	}

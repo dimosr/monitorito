@@ -46,6 +46,14 @@ Cluster.prototype.delete = function() {
 	this.graph.openCluster(this.id);
 }
 
+Cluster.prototype.getID = function() {
+	return this.id;
+}
+
+Cluster.prototype.containsNode = function(node) {
+	return node.getID() in this.nodes;
+}
+
 Cluster.prototype.getNodes = function() {
 	var nodes = [];
 	for(var key in this.nodes) nodes.push(this.nodes[key]);
