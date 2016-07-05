@@ -49,12 +49,8 @@ ChromeStorageService.prototype.storeRedirect = function(sessionID, redirect) {
 
 ChromeStorageService.prototype.extractData = function() {
 	this.controller.showLoader();
-	if(this.redirectsNo > 0) {
-		this._extractRedirect(0, this.redirectsNo, Converter.getRedirectColumnValuesCSV(), 1);
-	}
-	if(this.requestsNo > 0) {
-		this._extractRequest(0, this.requestsNo, Converter.getRequestsColumnValuesCSV(), 1);
-	}
+	this._extractRedirect(0, this.redirectsNo, Converter.getRedirectColumnValuesCSV(), 1);
+	this._extractRequest(0, this.requestsNo, Converter.getRequestsColumnValuesCSV(), 1);
 }
 
 ChromeStorageService.prototype._extractRequest = function(index, topLimit, requestData, batch) {

@@ -53,7 +53,7 @@ QUnit.test("storeRedirect() method, calling persistence storage successfully", f
 	mockStorageEndpoint.verify();
 });
 
-QUnit.test("extractData() called without stored data does nothing", function(assert) {
+QUnit.test("extractData() called without stored data does not search database", function(assert) {
 	var storageService = this.storageService;
 	var mockStorageEndpoint = this.mockStorageEndpoint;
 
@@ -92,8 +92,6 @@ QUnit.test("extractGraph()", function(assert) {
 	mockDownloader.expects("saveFileAs").exactly(4);  //1 call for each component of the graph
 
 	storageService.extractGraph(graph);
-
-	storageService.extractData();
 
 	mockDownloader.verify();
 });

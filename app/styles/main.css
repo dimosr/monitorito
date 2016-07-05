@@ -3,7 +3,7 @@ html,body {
 }
 
 #main-container {
-	margin: 1%;
+	margin: 1% 0% 0% 1%;
 	height: 95%;
 }
 
@@ -121,4 +121,8 @@ table {
 
 .noclose .ui-dialog-titlebar-close{
     display:none;
+}
+
+#decluster_all_button, #colapse_all_button {
+	font-size: 13px;
 }
