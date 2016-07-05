@@ -70,3 +70,18 @@ QUnit.test("collapsing DomainNode with other expanded maintains ResourceEdges wi
     assert.ok(graph.existsNode("http://test.com"), "ResourceNode of non-collapsed node already exists");
     assert.ok(graph.existsEdge("example.com", "http://test.com"), "ResourceEdge maintained between domain and non-collapsed ResourceDomain");
 });
+
+QUnit.test("collapseAllExpandedNodes()", function(assert) {
+    var resourcesExplorerEngine = this.resourcesExplorerEngine;
+    var graph = this.graph;
+
+    resourcesExplorerEngine.expand(graph.getNode("example.com"));
+    resourcesExplorerEngine.expand(graph.getNode("test.com"));
+
+    assert.ok(graph.existsNode("http://example.com"), "ResourceNode successfully created");
+    assert.ok(graph.existsNode("http://test.com"), "ResourceNode successfully created");
+
+    resourcesExplorerEngine.collapseAllExpandedNodes();
+
+    assert.equal(resourcesExplorerEngine.getExpandedDomainNodes(), 0, "All Resources nodes successfuly collapsed")
+});

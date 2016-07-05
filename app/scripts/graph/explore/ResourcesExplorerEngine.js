@@ -6,10 +6,13 @@
  */
 function ResourcesExplorerEngine(graph) {
     this.graph = graph;
+
+    this.expandedDomainNodes = {};
 }
 
 ResourcesExplorerEngine.prototype.expand = function(domainNode) {
     domainNode.setExpanded(true);
+    this.expandedDomainNodes[domainNode.getID()] = domainNode;
 
     var requests = domainNode.getRequests();
     for(var i = 0; i < requests.length; i++) {
@@ -40,6 +43,7 @@ ResourcesExplorerEngine.prototype.expand = function(domainNode) {
 
 ResourcesExplorerEngine.prototype.collapse = function(domainNode) {
     domainNode.setExpanded(false);
+    delete this.expandedDomainNodes[domainNode.getID()];
 
     var resourceNodes = domainNode.getChildrenNodes();
     for(var i = 0; i < resourceNodes.length; i++) {
@@ -149,4 +153,17 @@ ResourcesExplorerEngine.prototype.transferLinks = function(fromEdge, toEdge) {
         toEdge.addLink(referrals[i].from, referrals[i].link, ResourceEdge.Type.REFERRAL);
     for(var i = 0; i < redirects.length; i++)
         toEdge.addLink(redirects[i].from, redirects[i].link, ResourceEdge.Type.REDIRECT);
+}
+
+ResourcesExplorerEngine.prototype.getExpandedDomainNodes = function() {
+    var nodes = [];
+    for(var key in this.expandedDomainNodes) {
+        nodes.push(this.expandedDomainNodes[key]);
+    }
+    return nodes;
+}
+
+ResourcesExplorerEngine.prototype.collapseAllExpandedNodes = function() {
+    var expandedNodes = this.getExpandedDomainNodes();
+    for(var i = 0; i < expandedNodes.length; i++) this.collapse(expandedNodes[i]);
 }

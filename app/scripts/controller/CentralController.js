@@ -64,19 +64,33 @@ CentralController.prototype.hideLoader = function() {
 }
 
 CentralController.prototype.clusterByDomain = function(domains, clusterID) {
-	this.graphHandler.clusterByDomain(domains, clusterID);
+	if(this.graphHandler.getExpandedNodes().length > 0) throw new Error("Cannot create cluster, when there are expanded resources. Please collapse all resources first.");
+	else this.graphHandler.clusterByDomain(domains, clusterID);
 }
 
 CentralController.prototype.deleteCluster = function(clusterID) {
 	this.graphHandler.deleteCluster(clusterID);
 }
 
+CentralController.prototype.deleteAllClusters = function() {
+	this.graphHandler.deleteAllClusters();
+	this.interfaceHandler.emptyNodeInfo();
+	this.interfaceHandler.emptyEdgeInfo();
+}
+
 CentralController.prototype.expandDomainNode = function(nodeID) {
-	this.graphHandler.expandDomainNode(nodeID);
+	if(this.graphHandler.getClusters().length > 0) throw new Error("Cannot expand Resources, when there are active clusters. Please delete all clusters first.");
+	else this.graphHandler.expandDomainNode(nodeID);
 }
 
 CentralController.prototype.collapseDomainNode = function(nodeID) {
 	this.graphHandler.collapseDomainNode(nodeID);
+}
+
+CentralController.prototype.collapseExpandedNodes = function() {
+	this.graphHandler.collapseExpandedNodes();
+	this.interfaceHandler.emptyNodeInfo();
+	this.interfaceHandler.emptyEdgeInfo();
 }
 
 CentralController.prototype.setGraphMode = function(mode) {

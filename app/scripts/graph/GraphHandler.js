@@ -89,6 +89,14 @@ GraphHandler.prototype.deleteCluster = function(clusterID) {
 	this.clusteringEngine.deCluster(clusterID);
 }
 
+GraphHandler.prototype.getClusters = function() {
+	return this.clusteringEngine.getClusters();
+}
+
+GraphHandler.prototype.deleteAllClusters = function() {
+	this.clusteringEngine.deClusterAll();
+}
+
 GraphHandler.prototype.expandDomainNode = function(nodeID) {
 	if(!(this.graph.getNode(nodeID) instanceof DomainNode)) throw new Error("Only Domain Nodes can be expanded");
 	this.resourcesExplorerEngine.expand(this.graph.getNode(nodeID))
@@ -97,4 +105,12 @@ GraphHandler.prototype.expandDomainNode = function(nodeID) {
 GraphHandler.prototype.collapseDomainNode = function(nodeID) {
 	if(!(this.graph.getNode(nodeID) instanceof DomainNode)) throw new Error("Only Domain Nodes can be collapsed");
 	this.resourcesExplorerEngine.collapse(this.graph.getNode(nodeID));
+}
+
+GraphHandler.prototype.getExpandedNodes = function() {
+	return this.resourcesExplorerEngine.getExpandedDomainNodes();
+}
+
+GraphHandler.prototype.collapseExpandedNodes = function() {
+	this.resourcesExplorerEngine.collapseAllExpandedNodes();
 }

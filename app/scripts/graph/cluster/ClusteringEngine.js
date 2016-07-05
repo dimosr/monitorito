@@ -58,6 +58,18 @@ ClusteringEngine.prototype.deCluster = function(clusterID) {
 	delete this.clusters[clusterID];
 }
 
+ClusteringEngine.prototype.deClusterAll = function() {
+	var clusters = this.getClusters();
+	for(var i = 0; i < clusters.length; i++) this.deCluster(clusters[i].getID());
+}
+
 ClusteringEngine.prototype.isClusterEdge = function(ID) {
 	return ID.search("clusterEdge") >= 0;
+}
+
+ClusteringEngine.prototype.getClusters = function() {
+	var clusters = [];
+	for(var key in this.clusters)
+		clusters.push(this.clusters[key]);
+	return clusters;
 }

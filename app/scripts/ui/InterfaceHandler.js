@@ -32,7 +32,9 @@ InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 			$submitButton: $("#cluster-options .submit-button"),
 			$cancelButton: $("#cluster-options .cancel-button"),
 			$declusterButton: $("#decluster_button")
-		}
+		},
+		$declusterAllButton: $("#decluster_all_button"),
+		$collapseAllButton: $("#colapse_all_button")
 	}
 	this.manipulationWidgetHandler = new ManipulationWidgetHandler(this.controller, manipulationWidget, this.screenDimensions);
 }

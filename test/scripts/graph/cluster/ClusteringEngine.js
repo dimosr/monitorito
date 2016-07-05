@@ -62,3 +62,17 @@ QUnit.test("Clustering already clustered domain throws Error", function(assert) 
 		"cannot create nested clustering"
 	);
 });
+
+QUnit.test("deleteAllClusters()", function(assert) {
+	var clusteringEngine = this.clusteringEngine;
+
+	clusteringEngine.clusterByDomain(["example.com", "test.com"], "cluster-1");
+	clusteringEngine.clusterByDomain(["dummy.com", "test.co.uk"], "cluster-2");
+
+	assert.ok(clusteringEngine.getCluster("cluster-1") != null, "Cluster 1 was successfully created.");
+	assert.ok(clusteringEngine.getCluster("cluster-2") != null, "Cluster 2 was successfully created.");
+
+	clusteringEngine.deClusterAll();
+
+	assert.equal(clusteringEngine.getClusters().length, 0, "All Clusters were successfully deleted.");
+});

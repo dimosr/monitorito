@@ -52,15 +52,25 @@ NodeWidgetHandler.prototype.init = function() {
 
 	this.widget.$expandButton.click({handler: this}, function(event) {
 		var handler = event.data.handler;
-		handler.controller.expandDomainNode(handler.selectedNode.getID());
-		handler.widget.$expandButton.addClass("disabled");
-		handler.widget.$collapseButton.removeClass("disabled");
+		try {
+			handler.controller.expandDomainNode(handler.selectedNode.getID());
+			handler.widget.$expandButton.addClass("disabled");
+			handler.widget.$collapseButton.removeClass("disabled");
+		}
+		catch(err) {
+			$.alert(err.message, "Clustering Error");
+		}
 	});
 	this.widget.$collapseButton.click({handler: this}, function(event) {
 		var handler = event.data.handler;
-		handler.controller.collapseDomainNode(handler.selectedNode.getID());
-		handler.widget.$expandButton.removeClass("disabled");
-		handler.widget.$collapseButton.addClass("disabled");
+		try {
+			handler.controller.collapseDomainNode(handler.selectedNode.getID());
+			handler.widget.$expandButton.removeClass("disabled");
+			handler.widget.$collapseButton.addClass("disabled");
+		}
+		catch(err) {
+			$.alert(err.message, "Clustering Error");
+		}
 	});
 }
 

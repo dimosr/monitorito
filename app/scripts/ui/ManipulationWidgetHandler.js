@@ -34,6 +34,12 @@ ManipulationWidgetHandler.prototype.init = function() {
 	this.widget.clustering.$declusterButton.click({handler: this}, function(event) {
 		event.data.handler.controller.deleteCluster(event.data.handler.widget.clustering.$clusterID.html());
 	});
+	this.widget.$declusterAllButton.click({handler: this}, function(event) {
+		event.data.handler.controller.deleteAllClusters();
+	});
+	this.widget.$collapseAllButton.click({handler: this}, function(event) {
+		event.data.handler.controller.collapseExpandedNodes();
+	})
 }
 
 ManipulationWidgetHandler.prototype.executeClustering = function() {
