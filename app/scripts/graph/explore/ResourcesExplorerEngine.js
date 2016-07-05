@@ -9,7 +9,14 @@ function ResourcesExplorerEngine(graph) {
 
     this.expandedDomainNodes = {};
 }
-
+/*  @Docs
+    Expands a DomainNode, creating ResourceNodes and ResourceEdges
+    - Creates a ResourceNode for each request of a DomainNode
+    - Creates a ResourceEdge between:
+        - ResourceNodes belonging to the same expanded DomainNode
+        - ResourceNodes belonging to different domainNodes that are all expanded
+        - ResourceNode belonging to expanded DomainNode and DomainNodes that have not been expanded
+ */
 ResourcesExplorerEngine.prototype.expand = function(domainNode) {
     domainNode.setExpanded(true);
     this.expandedDomainNodes[domainNode.getID()] = domainNode;
@@ -41,6 +48,13 @@ ResourcesExplorerEngine.prototype.expand = function(domainNode) {
     }
 }
 
+/*  @Docs
+    Collapses a DomainNode, hiding ResourceNodes
+    - Deletes all ResourceNodes of the collapsed DomainNode
+    - Deletes ResourceEdges between ResourceNodes belonging to the same domain
+    - Deletes ResourceEdges, if their other side belongs to non expanded DomainNode
+    - Move ResourceEdges to DomainNode, if their other side belongs to expanded DomainNode
+ */
 ResourcesExplorerEngine.prototype.collapse = function(domainNode) {
     domainNode.setExpanded(false);
     delete this.expandedDomainNodes[domainNode.getID()];
@@ -82,6 +96,14 @@ ResourcesExplorerEngine.prototype.processResourceEdges = function(domainEdge, mo
         this.processResourceEdge(mode, redirects[i].from, redirects[i].link.getFinalURL(), redirects[i].link, ResourceEdge.Type.REDIRECT);
 }
 
+/*  @Docs
+    Process a new resourceEdge of an expanded DomainNode. The value of mode represents each case:
+    - "create": both sides of edge belong to the same DomainNode
+    - "moveFromSource": sourceNode of edge belongs to other DomainNode, that is expanded (so existing edge srcResource->dstDomain moved to srcResource->dstResource)
+    - "moveToDestination": destinationNode of edge belongs to other DomainNode, that is expanded (so existing edge srcDomain->dstResource is moved to srcResource->dstResource)
+    - "addFromDomain": sourceNode of edge belongs to other DomainNode, that is not expanded (so a new edge is created srcDomain->dstResource)
+    - "addToDomain": destinationNode of edge belongs to other DomainNode, that is not expanded (so a new edge is created srcResource->dstDomain)
+ */
 ResourcesExplorerEngine.prototype.processResourceEdge = function(mode, fromResourceURL, toResourceURL, linkToAdd, linkType) {
     if(mode == "create") {
         this._ensureResourceNodeExists(toResourceURL);
@@ -113,6 +135,12 @@ ResourcesExplorerEngine.prototype.processResourceEdge = function(mode, fromResou
     }
 }
 
+/*  @Docs
+    Process a removal of resourceEdge of a collapsed DomainNode. The value of mode represents each case:
+    - "delete": both sides of the edge belong to the same DomainNode, or 1 side belongs to other DomainNode, that is collapsed (so edge is deleted)
+    - "moveToDestination": sourceNode of edge belongs to other DomainNode,that is expanded (so move edge srcResource->dstResource to srcResource->dstDomain)
+    - "moveToSource": destinationNode of edge belongs to other DomainNode, that is expanded (so move edge srcResource->dstResource to srcDomain->dstResource)
+ */
 ResourcesExplorerEngine.prototype.removeResourceEdge = function(mode, edge) {
     if(mode == "delete")
         this.graph.deleteResourceEdge(edge.getID());
