@@ -75,7 +75,7 @@ NodeWidgetHandler.prototype.init = function() {
 }
 
 NodeWidgetHandler.prototype.showInfo = function(node) {
-	this.widget.$domainField.html(node.getID());
+	this.widget.$nodeID.html(node.getID());
 	this.widget.requests.$numberField.html(node.getRequests().length);
 	this.widget.firstPartyCookies.$numberField.html(Object.keys(node.getFirstPartyCookies()).length);
 	this.widget.thirdPartyCookies.$numberField.html(Object.keys(node.getThirdPartyCookies()).length);

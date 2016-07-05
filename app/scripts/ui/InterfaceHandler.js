@@ -107,7 +107,7 @@ InterfaceHandler.prototype.initNodeWidgetHandler = function() {
 		$expandButton: $("#expand_button"),
 		$collapseButton: $("#collapse_button"),
 		$explorerPanel: $("#explorer_panel"),
-		$domainField: $("#node_domain")
+		$nodeID: $("#node_id")
 	};
 	this.nodeWidgetHandler = new NodeWidgetHandler(this.controller, nodeWidget, this.screenDimensions);
 }
