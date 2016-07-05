@@ -50,8 +50,14 @@ ResourceNode.prototype.createVisualNode = function() {
         shape: 'diamond',
         size: this.type.size,
         borderWidth: 5,
-        'color.border': '#336600',
-        'color.highlight.border': '#73E600',
+        color: {
+        	background: '#999966',
+            border: '#3d3d29',
+            highlight:{
+                  background: '#999966',
+                  border: '#3d3d29'
+            }
+        },
         title: this.getID()
     }
     Node.prototype.createVisualNode.call(this, options);

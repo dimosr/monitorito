@@ -65,8 +65,6 @@ DomainNode.prototype.createVisualNode = function() {
         size: this.type.size,
         image: DomainNode.getFaviconURL(this.getID()),
         borderWidth: 5,
-        'color.border': '#04000F',
-        'color.highlight.border': '#CCC6E2',
         title: this.getID()
     }
     Node.prototype.createVisualNode.call(this, options);
