@@ -60,7 +60,6 @@ DomainNode.prototype.getDomain = function() {
 
 DomainNode.prototype.createVisualNode = function() {
     var options = {
-        id: this.getID(),
         shape: 'circularImage',
         size: this.type.size,
         image: DomainNode.getFaviconURL(this.getID()),
@@ -72,7 +71,6 @@ DomainNode.prototype.createVisualNode = function() {
 
 DomainNode.prototype.updateVisualNodeType = function() {
     var updateOptions = {
-        id: this.getID(),
         size: this.type.size
     }
     Node.prototype.updateVisualNodeType.call(this, updateOptions);

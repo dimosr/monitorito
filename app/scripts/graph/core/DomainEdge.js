@@ -38,12 +38,9 @@ DomainEdge.prototype.getType = function() {
 
 DomainEdge.prototype.createVisualEdge = function(){
     var options = {
-        id: this.getID(),
         arrows: {
             to: {scaleFactor: 1}
         },
-        from: this._from.getID(),
-        to: this._to.getID(),
         width: 3,
         dashes: this.type.dashes,
         color: this.type.color
@@ -53,7 +50,6 @@ DomainEdge.prototype.createVisualEdge = function(){
 
 DomainEdge.prototype.updateVisualEdgeType = function() {
     var options = {
-        id: this.getID(),
         dashes: this.type.dashes,
         color: this.type.color
     };

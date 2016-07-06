@@ -9,6 +9,8 @@ function Edge(id, fromNode, toNode, graph, networkEdges) {
 	this.graph = graph;
 	fromNode.addEdgeTo(toNode, this);
 	toNode.addEdgeFrom(fromNode, this);
+
+	this.visible = true;
 }
 
 Edge.prototype.getID = function() {
@@ -24,13 +26,19 @@ Edge.prototype.getDestinationNode = function() {
 }
 
 Edge.prototype.createVisualEdge = function(options){
-	if(this.graph.mode == Graph.Mode.ONLINE)
+	if(this.graph.mode == Graph.Mode.ONLINE) {
+		options.id = this.id;
+		options.from = this._from.getID();
+		options.to = this._to.getID();
 		this.networkEdges.add(options);
+	}
 }
 
 Edge.prototype.updateVisualEdge = function(options) {
-	if(this.graph.mode == Graph.Mode.ONLINE)
+	if(this.graph.mode == Graph.Mode.ONLINE) {
+		options.id = this.id;
 		this.networkEdges.update(options);
+	}
 }
 
 Edge.prototype.notifyForChange = function(fromType, toType) {
@@ -41,4 +49,18 @@ Edge.prototype.remove = function() {
 	this.getSourceNode().removeEdgeTo(this.getDestinationNode());
 	this.getDestinationNode().removeEdgeFrom(this.getSourceNode());
 	this.networkEdges.remove(this.getID());
+}
+
+Node.prototype.hide = function() {
+	if(this.visible) {
+		this.networkEdges.update({id: this.id, hidden: true});
+		this.visible = false;
+	}
+}
+
+Node.prototype.show = function() {
+	if(!this.visible) {
+		this.networkEdges.update({id: this.id, hidden: false});
+		this.visible = true;
+	}
 }

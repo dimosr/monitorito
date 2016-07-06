@@ -7,6 +7,8 @@ function Node(id, graph, networkNodes) {
 	this._incoming = {};
 	this.networkNodes = networkNodes;
 	this.graph = graph;
+
+	this.visible = true;
 }
 
 Node.prototype.getID = function() {
@@ -64,13 +66,17 @@ Node.prototype.getIncomingEdges = function(excludeSelfReferencing) {
 }
 
 Node.prototype.createVisualNode = function(options) {
-	if(this.graph.mode == Graph.Mode.ONLINE)
+	if(this.graph.mode == Graph.Mode.ONLINE) {
+		options.id = this.id;
 		this.networkNodes.add(options);
+	}
 }
 
 Node.prototype.updateVisualNodeType = function(options) {
-	if(this.graph.mode == Graph.Mode.ONLINE)
+	if(this.graph.mode == Graph.Mode.ONLINE) {
+		options.id = this.id;
 		this.networkNodes.update(options);
+	}
 }
 
 Node.prototype.notifyForChange = function(fromType, toType) {
@@ -79,4 +85,18 @@ Node.prototype.notifyForChange = function(fromType, toType) {
 
 Node.prototype.remove = function() {
 	this.networkNodes.remove(this.getID());
+}
+
+Node.prototype.hide = function() {
+	if(this.visible) {
+		this.networkNodes.update({id: this.id, hidden: true});
+		this.visible = false;
+	}
+}
+
+Node.prototype.show = function() {
+	if(!this.visible) {
+		this.networkNodes.update({id: this.id, hidden: false});
+		this.visible = true;
+	}
 }

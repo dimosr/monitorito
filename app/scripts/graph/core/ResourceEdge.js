@@ -38,12 +38,9 @@ ResourceEdge.prototype.getType = function() {
 
 ResourceEdge.prototype.createVisualEdge = function(){
     var options = {
-        id: this.getID(),
         arrows: {
             to: {scaleFactor: 1}
         },
-        from: this._from.getID(),
-        to: this._to.getID(),
         width: 3,
         color: this.type.color
     };
@@ -58,7 +55,6 @@ ResourceEdge.prototype.updateType = function(type) {
 
 ResourceEdge.prototype.updateVisualEdgeType = function() {
     var options = {
-        id: this.getID(),
         dashes: this.type.dashes,
         color: this.type.color
     };

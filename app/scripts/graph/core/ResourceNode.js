@@ -46,7 +46,6 @@ ResourceNode.prototype.getThirdPartyCookies = function() {
 
 ResourceNode.prototype.createVisualNode = function() {
     var options = {
-        id: this.getID(),
         shape: 'diamond',
         size: this.type.size,
         borderWidth: 5,
@@ -65,7 +64,6 @@ ResourceNode.prototype.createVisualNode = function() {
 
 ResourceNode.prototype.updateVisualNodeType = function() {
     var updateOptions = {
-        id: this.getID(),
         size: this.type.size
     }
     Node.prototype.updateVisualNodeType.call(this, updateOptions);
@@ -90,4 +88,18 @@ ResourceNode.prototype.createTempParentEdge = function() {
 
 ResourceNode.prototype.removeTempParentEdge = function() {
     this.networkEdges.remove(this.parentEdgeID);
+}
+
+ResourceNode.prototype.hide = function() {
+    if(this.visible) {
+        Node.prototype.hide.call(this);
+        this.networkEdges.update({id: this.parentEdgeID, hidden: true});
+    }
+}
+
+ResourceNode.prototype.show = function() {
+    if(!this.visible) {
+        Node.prototype.show.call(this);
+        this.networkEdges.update({id: this.parentEdgeID, hidden: false});
+    }
 }
