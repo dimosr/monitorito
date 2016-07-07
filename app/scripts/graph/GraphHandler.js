@@ -12,6 +12,7 @@ GraphHandler.prototype.setGraph = function(graph) {
 	this.graph.setClusteringEngine(this.clusteringEngine);
 
 	this.resourcesExplorerEngine = new ResourcesExplorerEngine(graph);
+	this.filteringEngine = new FilteringEngine(this.graph, this.graphStatsCalculator);
 }
 
 GraphHandler.prototype.getGraph = function() {
@@ -113,4 +114,12 @@ GraphHandler.prototype.getExpandedNodes = function() {
 
 GraphHandler.prototype.collapseExpandedNodes = function() {
 	this.resourcesExplorerEngine.collapseAllExpandedNodes();
+}
+
+GraphHandler.prototype.applyFilter = function(filterOptions) {
+	this.filteringEngine.filter(filterOptions);
+}
+
+GraphHandler.prototype.resetFilter = function(filterOptions) {
+	this.filteringEngine.resetFilter();
 }

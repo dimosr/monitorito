@@ -52,14 +52,14 @@ Edge.prototype.remove = function() {
 	this.networkEdges.remove(this.getID());
 }
 
-Node.prototype.hide = function() {
+Edge.prototype.hide = function() {
 	if(this.visible) {
 		this.networkEdges.update({id: this.id, hidden: true});
 		this.visible = false;
 	}
 }
 
-Node.prototype.show = function() {
+Edge.prototype.show = function() {
 	if(!this.visible) {
 		this.networkEdges.update({id: this.id, hidden: false});
 		this.visible = true;

@@ -93,6 +93,15 @@ CentralController.prototype.collapseExpandedNodes = function() {
 	this.interfaceHandler.emptyEdgeInfo();
 }
 
+CentralController.prototype.applyFilter = function(filterOptions) {
+	this.graphHandler.applyFilter(filterOptions);
+}
+
+CentralController.prototype.resetFilter = function() {
+	this.graphHandler.deleteAllClusters();
+	this.graphHandler.resetFilter();
+}
+
 CentralController.prototype.setGraphMode = function(mode) {
 	var graphHandler = this.graphHandler;
 	var interfaceHandler = this.interfaceHandler;
