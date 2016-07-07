@@ -80,12 +80,14 @@ Graph.prototype.createDomainEdge = function(fromHostname, toHostname) {
 	return edge;
 }
 
-Graph.prototype.getDomainEdges = function() {
+Graph.prototype.getEdges = function() {
 	var edges = [];
-	for(var key in this.edges) {
-		if(this.edges[key] instanceof DomainEdge) edges.push(this.edges[key]);
-	}
+	for(var key in this.edges) edges.push(this.edges[key]);
 	return edges;
+}
+
+Graph.prototype.getDomainEdges = function() {
+	return this.getEdges().filter(function(edge) {return edge instanceof DomainEdge;});
 }
 
 Graph.prototype.getEdgeBetweenNodes = function(fromNodeID, toNodeID) {
@@ -110,12 +112,14 @@ Graph.prototype.createDomainNode = function(hostname) {
 	return node;
 }
 
-Graph.prototype.getDomainNodes = function() {
+Graph.prototype.getNodes = function() {
 	var nodes = [];
-	for(var key in this.nodes) {
-		if(this.nodes[key] instanceof DomainNode) nodes.push(this.nodes[key]);
-	}
+	for(var key in this.nodes) nodes.push(this.nodes[key]);
 	return nodes;
+}
+
+Graph.prototype.getDomainNodes = function() {
+	return this.getNodes().filter(function(node) {return node instanceof DomainNode;});
 }
 
 Graph.prototype.getNode = function(ID) {
