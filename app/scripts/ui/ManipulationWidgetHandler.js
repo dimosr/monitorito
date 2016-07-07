@@ -19,7 +19,8 @@ ManipulationWidgetHandler.prototype.init = function() {
 	this.widget.clustering.$clusterOptions.dialog(dialogOptions);
 
 	this.widget.clustering.$clusterButton.click({handler: this}, function(event) {
-		event.data.handler.widget.clustering.$clusterOptions.dialog("open");
+		if(event.data.handler.controller.existExpandedNodes()) $.alert("Cannot create cluster, when there are expanded resources. Please collapse all resources first.", "Clustering Error");
+		else event.data.handler.widget.clustering.$clusterOptions.dialog("open");
 	});
 	this.widget.clustering.$addRowButton.click({handler: this}, function(event) {
 		event.data.handler.widget.clustering.$clusterForm.find("fieldset:nth-child(2)").append("<input class='domain' type='text'>");
@@ -40,24 +41,21 @@ ManipulationWidgetHandler.prototype.init = function() {
 }
 
 ManipulationWidgetHandler.prototype.executeClustering = function() {
-	var clusterID = this.widget.clustering.$clusterForm.find("input.cluster-id").val();
-	if(clusterID.trim() != "") {
-		try{
-			var domains = [];
-			this.widget.clustering.$clusterForm.find("input.domain").each(
-				function(idx, elem) {
-					if(elem.value.trim() != "") domains.push(elem.value);
-				}
-			);
-			this.controller.clusterByDomain(domains, clusterID);
-			this.widget.clustering.$clusterOptions.dialog("close");
-			this.resetForm();
-		}
-		catch(err) {
-			$.alert(err.message, "Clustering Error");
-		}
+	try{
+		var clusterID = this.widget.clustering.$clusterForm.find("input.cluster-id").val();
+		var domains = [];
+		this.widget.clustering.$clusterForm.find("input.domain").each(
+			function(idx, elem) {
+				if(elem.value.trim() != "") domains.push(elem.value);
+			}
+		);
+		this.controller.clusterByDomain(domains, clusterID);
+		this.widget.clustering.$clusterOptions.dialog("close");
+		this.resetForm();
 	}
-	else $.alert("Cluster ID field is empty! You have to provide a value.", "Required Field");
+	catch(err) {
+		$.alert(err.message, "Clustering Error");
+	}
 	
 }
 

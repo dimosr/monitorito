@@ -10,9 +10,8 @@ function ClusteringEngine(graph) {
 
 
 ClusteringEngine.prototype.clusterByDomain = function(domains, clusterID) {
-	if(clusterID in this.clusters) {
-		throw new Error("Cluster ID '" + clusterID + "' already exists. Cluster could not be created, because Cluster ID should be unique.");
-	}
+	if(clusterID.trim() == "") throw new Error("Cluster ID field is empty! You have to provide a value.");
+	if(clusterID in this.clusters) throw new Error("Cluster ID '" + clusterID + "' already exists. Cluster could not be created, because Cluster ID should be unique.");
 
 	var regExp = new RegExp(this.subdomainsRegExp.replace("domains", domains.join("|")));
 	var nodes = this.graph.getDomainNodes();

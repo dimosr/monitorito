@@ -64,7 +64,7 @@ CentralController.prototype.hideLoader = function() {
 }
 
 CentralController.prototype.clusterByDomain = function(domains, clusterID) {
-	if(this.graphHandler.getExpandedNodes().length > 0) throw new Error("Cannot create cluster, when there are expanded resources. Please collapse all resources first.");
+	if(this.existExpandedNodes()) throw new Error("Cannot create cluster, when there are expanded resources. Please collapse all resources first.");
 	else this.graphHandler.clusterByDomain(domains, clusterID);
 }
 
@@ -87,6 +87,10 @@ CentralController.prototype.collapseDomainNode = function(nodeID) {
 	this.graphHandler.collapseDomainNode(nodeID);
 }
 
+CentralController.prototype.existExpandedNodes = function() {
+	return (this.graphHandler.getExpandedNodes().length > 0);
+}
+
 CentralController.prototype.collapseExpandedNodes = function() {
 	this.graphHandler.collapseExpandedNodes();
 	this.interfaceHandler.emptyNodeInfo();
@@ -94,6 +98,7 @@ CentralController.prototype.collapseExpandedNodes = function() {
 }
 
 CentralController.prototype.applyFilter = function(filterOptions) {
+	this.graphHandler.deleteAllClusters();
 	this.graphHandler.applyFilter(filterOptions);
 }
 
