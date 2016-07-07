@@ -31,9 +31,6 @@ ManipulationWidgetHandler.prototype.init = function() {
 		event.data.handler.resetForm();
 		event.data.handler.widget.clustering.$clusterOptions.dialog("close");
 	});
-	this.widget.clustering.$declusterButton.click({handler: this}, function(event) {
-		event.data.handler.controller.deleteCluster(event.data.handler.widget.clustering.$clusterID.html());
-	});
 	this.widget.$declusterAllButton.click({handler: this}, function(event) {
 		event.data.handler.controller.deleteAllClusters();
 	});

@@ -21,6 +21,9 @@ ClusterWidgetHandler.prototype.init = function() {
 	this.widget.nodes.$opener.click({handler: this}, function(event) {
 		event.data.handler.widget.nodes.$dialogContent.dialog("open");
 	});
+	this.widget.$declusterButton.click({handler: this}, function(event) {
+		event.data.handler.controller.deleteCluster(event.data.handler.widget.$clusterID.html());
+	});
 }
 
 ClusterWidgetHandler.prototype.showInfo = function(cluster) {

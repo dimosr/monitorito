@@ -24,14 +24,12 @@ InterfaceHandler.prototype.setController = function(controller) {
 InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 	var manipulationWidget = {
 		clustering: {
-			$clusterID: $("#cluster_id"),
 			$clusterButton: $("#cluster-button"),
 			$clusterOptions: $("#cluster-options"),
 			$clusterForm: $("#cluster-options form"),
 			$addRowButton: $("#cluster-options .add-row-button"),
 			$submitButton: $("#cluster-options .submit-button"),
-			$cancelButton: $("#cluster-options .cancel-button"),
-			$declusterButton: $("#decluster_button")
+			$cancelButton: $("#cluster-options .cancel-button")
 		},
 		$declusterAllButton: $("#decluster_all_button"),
 		$collapseAllButton: $("#colapse_all_button")
@@ -48,7 +46,8 @@ InterfaceHandler.prototype.initClusterWidgetHandler = function() {
 			$opener: $("#cluster_nodes_opener"),
 			$dialogContent: $("#cluster_nodes_dialog"),
 			$dialogTableBody: $("#cluster_nodes_dialog tbody")
-		}
+		},
+		$declusterButton: $("#decluster_button")
 	};
 	this.clusterWidgetHandler = new ClusterWidgetHandler(this.controller, clusterWidget, this.screenDimensions);
 }
