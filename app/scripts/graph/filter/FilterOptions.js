@@ -29,24 +29,12 @@ FilterOptions.prototype.setDomainRegExp = function(domainRegExp) {
     this.domainRegExp = domainRegExp;
 }
 
-FilterOptions.prototype.setPhishingMetric = function(minValue, maxValue) {
-    this.metrics.phishing.from = minValue;
-    this.metrics.phishing.to = maxValue;
+FilterOptions.prototype.setMetricMin = function(metric, minValue) {
+    this.metrics[metric].from = minValue;
 }
 
-FilterOptions.prototype.setTrackingMetric = function(minValue, maxValue) {
-    this.metrics.tracking.from = minValue;
-    this.metrics.tracking.to = maxValue;
-}
-
-FilterOptions.prototype.setLeakingMetric = function(minValue, maxValue) {
-    this.metrics.leaking.from = minValue;
-    this.metrics.tracking.to = maxValue;
-}
-
-FilterOptions.prototype.setTrackingCookiesMetric = function(minValue, maxValue) {
-    this.metrics.trackingCookies.from = minValue;
-    this.metrics.trackingCookies.to = maxValue;
+FilterOptions.prototype.setMetricMax = function(metric, maxValue) {
+    this.metrics[metric].to = maxValue;
 }
 
 FilterOptions.prototype.setNeighboursDepth = function(maxDepth) {
