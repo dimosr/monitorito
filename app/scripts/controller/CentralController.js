@@ -28,7 +28,9 @@ CentralController.prototype.extractMonitoredData = function() {
 }
 
 CentralController.prototype.extractGraphData = function() {
-	this.storageService.extractGraph(this.graphHandler.getGraph());
+	var graph = this.graphHandler.getGraph();
+	var storageService = this.storageService;
+	this.interfaceHandler.executeWithLoader(function() { storageService.extractGraph(graph); });
 }
 
 CentralController.prototype.getGraphStatistics = function() {
@@ -67,7 +69,8 @@ CentralController.prototype.clusterByDomain = function(domains, clusterID) {
 	if(this.existExpandedNodes()) throw new Error("Cannot create cluster, when there are expanded resources. Please collapse all resources first.");
 	if(this.isFilterActive()) throw new Error("Cannot create cluster, because the graph is filtered. Please reset filter first.");
 
-	this.graphHandler.clusterByDomain(domains, clusterID);
+	var graphHandler = this.graphHandler;
+	this.interfaceHandler.executeWithLoader(function() { graphHandler.clusterByDomain(domains, clusterID); });
 }
 
 CentralController.prototype.deleteCluster = function(clusterID) {
@@ -75,7 +78,9 @@ CentralController.prototype.deleteCluster = function(clusterID) {
 }
 
 CentralController.prototype.deleteAllClusters = function() {
-	this.graphHandler.deleteAllClusters();
+	var graphHandler = this.graphHandler;
+	this.interfaceHandler.executeWithLoader(function() { graphHandler.deleteAllClusters(); });
+
 	this.interfaceHandler.emptyNodeInfo();
 	this.interfaceHandler.emptyEdgeInfo();
 }
@@ -98,7 +103,9 @@ CentralController.prototype.existExpandedNodes = function() {
 }
 
 CentralController.prototype.collapseExpandedNodes = function() {
-	this.graphHandler.collapseExpandedNodes();
+	var graphHandler = this.graphHandler;
+	this.interfaceHandler.executeWithLoader(function() { graphHandler.collapseExpandedNodes() });
+
 	this.interfaceHandler.emptyNodeInfo();
 	this.interfaceHandler.emptyEdgeInfo();
 }
