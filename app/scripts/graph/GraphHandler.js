@@ -120,6 +120,10 @@ GraphHandler.prototype.applyFilter = function(filterOptions) {
 	this.filteringEngine.filter(filterOptions);
 }
 
-GraphHandler.prototype.resetFilter = function(filterOptions) {
+GraphHandler.prototype.resetFilter = function() {
 	this.filteringEngine.resetFilter();
+}
+
+GraphHandler.prototype.isFilterActive = function() {
+	return this.filteringEngine.isFilterActive();
 }

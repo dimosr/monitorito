@@ -29,9 +29,17 @@ InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 			$clusterForm: $("#cluster-options form"),
 			$addRowButton: $("#cluster-options .add-row-button"),
 			$submitButton: $("#cluster-options .submit-button"),
-			$cancelButton: $("#cluster-options .cancel-button")
+			$cancelButton: $("#cluster-options .cancel-button"),
+			$declusterAllButton: $("#decluster_all_button")
 		},
-		$declusterAllButton: $("#decluster_all_button"),
+		filtering: {
+			$filterButton: $("#filter-button"),
+			$filterOptions: $("#filter-options"),
+			$filterForm: $("#filter-options form"),
+			$submitButton: $("#filter-options .submit-button"),
+			$cancelButton: $("#filter-options .cancel-button"),
+			$resetFilter: $("#reset-filter-button")
+		},
 		$collapseAllButton: $("#colapse_all_button")
 	}
 	this.manipulationWidgetHandler = new ManipulationWidgetHandler(this.controller, manipulationWidget, this.screenDimensions);
@@ -197,15 +205,38 @@ InterfaceHandler.prototype.hideLoader = function() {
 	this.loader.hide();
 }
 
+InterfaceHandler.prototype.executeWithLoader = function(callback) {
+	this.showLoader();
+	setTimeout(function(interfaceHandler) {
+		callback();
+		interfaceHandler.hideLoader();
+	}, 50, this);
+}
+
 InterfaceHandler.prototype.loadExtensions = function() {
-	$.extend({ alert: function (message, title) {
-		$("<div></div>").dialog( {
-			buttons: { "Ok": function () { $(this).dialog("close"); } },
-			close: function (event, ui) { $(this).remove(); },
-			resizable: false,
-			draggable: false,
-			title: title,
-			modal: true
-		}).text(message);
-	}});
+	$.extend({
+		alert: function (message, title) {
+			$("<div></div>").dialog( {
+				buttons: { "Ok": function () { $(this).dialog("close"); } },
+				close: function (event, ui) { $(this).remove(); },
+				resizable: false,
+				draggable: false,
+				title: title,
+				modal: true
+			}).text(message);
+		},
+		confirm: function(message, title, callback) {
+			$("<div></div>").dialog( {
+				buttons: {
+					"Ok": function () { $(this).dialog("close");callback(); },
+					"Cancel": function() { $(this).dialog("close");}
+				},
+				close: function (event, ui) { $(this).remove(); },
+				resizable: false,
+				draggable: false,
+				title: title,
+				modal: true
+			}).text(message);
+		}
+	});
 }

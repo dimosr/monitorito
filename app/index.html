@@ -123,7 +123,8 @@
 
 						<div id="manipulation_widget" class="row">
 							<div class="columns large-12">
-								<div id="cluster-button" class="button">Cluster By Domain</div>
+								<div id="cluster-button" class="button tiny columns large-5">Cluster By Domain</div>
+								<div id="decluster_all_button" class="button tiny alert columns large-5">Delete all Clusters</div>
 								<div id="cluster-options">
 									<div class="callout secondary">
 									  	Attention: The cluster will be created based on the existing monitored data. New incoming monitored data will not be integrated in the cluster, they will be visualised in the graph as normal Domain nodes. As a consequence, it is suggested that you cluster your graph, only after you have visited all the required resources. Alternatively, you can delete the cluster and re-create it.
@@ -144,7 +145,113 @@
 								</div>
 							</div>
 							<div class="columns large-12">
-								<div id="decluster_all_button" class="button tiny alert columns large-5">Delete all Clusters</div>
+								<div id="filter-button" class="button tiny columns large-5">Filter</div>
+								<div id="reset-filter-button" class="button tiny alert columns large-5">Reset Filter</div>
+								<div id="filter-options">
+									<form>
+										<div class="row">
+											<div class="callout secondary columns large-12">
+												Non-defined parameters will not be used in the filtering.
+											</div>
+											<h4>Node Attributes</h4>
+											<div class="columns large-12">
+												<div class="row">
+													<div class="columns large-5">
+														<label class="right">Regular Expression (to match Domains)</label>
+													</div>
+													<div class="columns large-7">
+														<input name="node-id" type="text" placeholder=".*       (will match all nodes)">
+													</div>
+												</div>
+											</div>
+										</div>
+										<fieldset name="metrics">
+											<h4>Node Metrics</h4>
+											<fieldset name="phishing">
+												<div class="row">
+													<div class="columns large-2">Phishing</div>
+													<div class="columns large-5">
+														<div class="input-group">
+															<span class="input-group-label">From</span>
+															<input name="min" class="input-group-field" type="number" min="0" max="100" placeholder="0">
+														</div>
+													</div>
+													<div class="columns large-5">
+														<div class="input-group">
+															<span class="input-group-label">To</span>
+															<input name="max" class="input-group-field" type="number" min="0" max="100" placeholder="100">
+														</div>
+													</div>
+												</div>
+											</fieldset>
+											<fieldset name="tracking">
+												<div class="row">
+													<div class="columns large-2">Tracking</div>
+													<div class="columns large-5">
+														<div class="input-group">
+															<span class="input-group-label">From</span>
+															<input name="min" class="input-group-field" type="number" min="0" max="100" placeholder="0">
+														</div>
+													</div>
+													<div class="columns large-5">
+														<div class="input-group">
+															<span class="input-group-label">To</span>
+															<input name="max" class="input-group-field" type="number" min="0" max="100" placeholder="100">
+														</div>
+													</div>
+												</div>
+											</fieldset>
+											<fieldset name="leaking">
+												<div class="row">
+													<div class="columns large-2">Leaking</div>
+													<div class="columns large-5">
+														<div class="input-group">
+															<span class="input-group-label">From</span>
+															<input name="min" class="input-group-field" type="number" min="0" max="100" placeholder="0">
+														</div>
+													</div>
+													<div class="columns large-5">
+														<div class="input-group">
+															<span class="input-group-label">To</span>
+															<input name="max" class="input-group-field" type="number" min="0" max="100" placeholder="100">
+														</div>
+													</div>
+												</div>
+											</fieldset>
+											<fieldset name="trackingCookies">
+												<div class="row">
+													<div class="columns large-2">Tracking Cookies</div>
+													<div class="columns large-5">
+														<div class="input-group">
+															<span class="input-group-label">From</span>
+															<input name="min" class="input-group-field" type="number" min="0" max="100" placeholder="0">
+														</div>
+													</div>
+													<div class="columns large-5">
+														<div class="input-group">
+															<span class="input-group-label">To</span>
+															<input name="max" class="input-group-field" type="number" min="0" max="100" placeholder="100">
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</fieldset>
+										<fieldset>
+											<h4>Additional Options</h4>
+											<div class="row">
+												<div class="columns large-8">Show also neighbours of matched nodes at depth:</div>
+												<div class="columns large-4">
+													<input name="depth" type="number" placeholder="0" min="0">
+												</div>
+											</div>
+										</fieldset>
+									</form>
+									<div class="submit-button button tiny success">Filter</div>
+									<div class="cancel-button button tiny secondary">Cancel</div>
+								</div>
+							</div>
+							<div class="columns large-12">
+								<div class="columns large-5"></div>
 								<div id="colapse_all_button" class="button tiny alert columns large-5">Collapse all Resources</div>
 							</div>
 						</div>

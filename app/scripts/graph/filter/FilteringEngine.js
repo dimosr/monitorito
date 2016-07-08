@@ -4,7 +4,11 @@ function FilteringEngine(graph, graphStatsCalculator) {
     this.graph = graph;
     this.graphStatsCalculator = graphStatsCalculator;
 
-    this.isFilterActive = false;
+    this.active = false;
+}
+
+FilteringEngine.prototype.isFilterActive = function() {
+    return this.active;
 }
 
 /*  @Docs
@@ -26,7 +30,7 @@ FilteringEngine.prototype.filter = function(filterOptions) {
     }
     this.showMatchedNodesAndEdges();
     
-    this.isFilterActive = true;
+    this.active = true;
 }
 
 /*  @Docs
@@ -37,7 +41,7 @@ FilteringEngine.prototype.resetFilter = function() {
     this.graph.getNodes().map(function(node){ node.show();});
     this.graph.getEdges().map(function(edge){ edge.show();});
 
-    this.isFilterActive = false;
+    this.active = false;
 }
 
 FilteringEngine.prototype.__hideAllGraph = function() {

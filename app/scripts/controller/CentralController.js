@@ -65,7 +65,9 @@ CentralController.prototype.hideLoader = function() {
 
 CentralController.prototype.clusterByDomain = function(domains, clusterID) {
 	if(this.existExpandedNodes()) throw new Error("Cannot create cluster, when there are expanded resources. Please collapse all resources first.");
-	else this.graphHandler.clusterByDomain(domains, clusterID);
+	if(this.isFilterActive()) throw new Error("Cannot create cluster, because the graph is filtered. Please reset filter first.");
+
+	this.graphHandler.clusterByDomain(domains, clusterID);
 }
 
 CentralController.prototype.deleteCluster = function(clusterID) {
@@ -78,9 +80,13 @@ CentralController.prototype.deleteAllClusters = function() {
 	this.interfaceHandler.emptyEdgeInfo();
 }
 
+CentralController.prototype.existClusters = function() {
+	return (this.graphHandler.getClusters().length > 0);
+}
+
 CentralController.prototype.expandDomainNode = function(nodeID) {
-	if(this.graphHandler.getClusters().length > 0) throw new Error("Cannot expand Resources, when there are active clusters. Please delete all clusters first.");
-	else this.graphHandler.expandDomainNode(nodeID);
+	if(this.existClusters()) throw new Error("Cannot expand Resources, when there are active clusters. Please delete all clusters first.");
+	this.graphHandler.expandDomainNode(nodeID);
 }
 
 CentralController.prototype.collapseDomainNode = function(nodeID) {
@@ -98,13 +104,19 @@ CentralController.prototype.collapseExpandedNodes = function() {
 }
 
 CentralController.prototype.applyFilter = function(filterOptions) {
-	this.graphHandler.deleteAllClusters();
-	this.graphHandler.applyFilter(filterOptions);
+	if(this.existClusters()) throw new Error("Cannot apply Filtering, when there are active clusters. Please delete all clusters first.");
+	var graphHandler = this.graphHandler;
+	this.interfaceHandler.executeWithLoader(function() {graphHandler.applyFilter(filterOptions);});
 }
 
 CentralController.prototype.resetFilter = function() {
-	this.graphHandler.deleteAllClusters();
-	this.graphHandler.resetFilter();
+	if(this.existClusters()) throw new Error("Cannot reset Filtering, when there are active clusters. Please delete all clusters first.");
+	var graphHandler = this.graphHandler;
+	this.interfaceHandler.executeWithLoader(function() {graphHandler.resetFilter();});
+}
+
+CentralController.prototype.isFilterActive = function() {
+	return this.graphHandler.isFilterActive();
 }
 
 CentralController.prototype.setGraphMode = function(mode) {

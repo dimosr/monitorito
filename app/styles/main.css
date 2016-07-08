@@ -123,6 +123,10 @@ table {
     display:none;
 }
 
-#decluster_all_button, #colapse_all_button {
+#cluster-button, #decluster_all_button, #filter-button, #reset-filter-button, #colapse_all_button {
 	font-size: 13px;
+}
+
+label {
+	color: white;
 }
