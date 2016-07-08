@@ -14,7 +14,8 @@ ManipulationWidgetHandler.prototype.init = function() {
 		autoOpen: false,
 		modal: true,
 		width: this.screenDimensions.width*0.6,
-		height: this.screenDimensions.height*0.8
+		height: this.screenDimensions.height*0.8,
+		draggable: false
 	};
 
 	this.initClusteringMapulation(dialogOptions);
@@ -48,6 +49,8 @@ ManipulationWidgetHandler.prototype.initClusteringMapulation = function(dialogOp
 
 ManipulationWidgetHandler.prototype.initFilteringManipulation = function(dialogOptions) {
 	this.widget.filtering.$filterOptions.dialog(dialogOptions);
+	this.widget.filtering.$filteringRules.dialog(dialogOptions);
+	this.widget.filtering.$filteringRules.dialog("option", "resizable", "false");
 	
 	this.widget.filtering.$filterButton.click({handler: this}, function(event) {
 		if(event.data.handler.controller.existClusters()) $.alert("Cannot apply Filtering, when there are active clusters. Please delete all clusters first.", "Filtering Error");
@@ -63,6 +66,7 @@ ManipulationWidgetHandler.prototype.initFilteringManipulation = function(dialogO
 	this.widget.filtering.$resetFilter.click({handler: this}, function(event) {
 		if(event.data.handler.controller.isFilterActive()) event.data.handler.controller.resetFilter();
 	});
+	this.setupFieldsValidation();
 }
 
 ManipulationWidgetHandler.prototype.initCollapseManipulation = function() {
@@ -98,51 +102,66 @@ ManipulationWidgetHandler.prototype.resetClusteringForm = function() {
 ManipulationWidgetHandler.prototype.executeFiltering = function() {
 	try{
 		var form = this.widget.filtering.$filterForm;
-		var filteringOptions = new FilterOptions();
-		
-		var nodeID = form.find("input[name='node-id']").val();
-		if(nodeID.trim() != "") filteringOptions.setDomainRegExp(new RegExp(nodeID));
 
-		var metrics = form.find("fieldset[name='metrics'] > fieldset");
-		for(var i = 0; i < metrics.length; i++) {
-			var metric = metrics.eq(i).attr("name");
-			var min = metrics.eq(i).find("input[name='min']").val();
-			var max = metrics.eq(i).find("input[name='max']").val();
-			if(min.trim() != "") {
-				this.validateMetricValue(min);
+		if(form[0].checkValidity() == false) {
+			this.showFilteringRules();
+		}
+		else {
+			var filteringOptions = new FilterOptions();
+
+			var nodeID = form.find("input[name='node-id']").val();
+			filteringOptions.setDomainRegExp(new RegExp(nodeID));
+
+			var inEdgesMin = form.find("#edges-in input[name='min']").val();
+			filteringOptions.setEdgesMin("incoming", parseInt(inEdgesMin, 10));
+			var inEdgesMax = form.find("#edges-in input[name='max']").val();
+			filteringOptions.setEdgesMax("incoming", parseInt(inEdgesMax, 10));
+			var outEdgesMin = form.find("#edges-out input[name='min']").val();
+			filteringOptions.setEdgesMin("outgoing", parseInt(outEdgesMin, 10));
+			var outEdgesMax = form.find("#edges-out input[name='max']").val();
+			filteringOptions.setEdgesMax("outgoing", parseInt(outEdgesMax, 10));
+
+			var metrics = form.find("fieldset[name='metrics'] > fieldset");
+			for(var i = 0; i < metrics.length; i++) {
+				var metric = metrics.eq(i).attr("name");
+				var min = metrics.eq(i).find("input[name='min']").val();
+				var max = metrics.eq(i).find("input[name='max']").val();
 				filteringOptions.setMetricMin(metric, parseInt(min, 10));
-			}
-			if(max.trim() != "") {
-				this.validateMetricValue(max);
 				filteringOptions.setMetricMax(metric, parseInt(max, 10));
 			}
-		}
 
-		var depth = form.find("input[name='depth']").val();
-		if(depth.trim() != "") {
-			this.validateDepth(depth);
+			var depth = form.find("input[name='depth']").val();
 			filteringOptions.setNeighboursDepth(parseInt(depth, 10));
+
+			this.controller.applyFilter(filteringOptions);
+			this.widget.filtering.$filterOptions.dialog("close");
+			this.resetFilteringForm();
 		}
 
-		this.controller.applyFilter(filteringOptions);
-		this.widget.filtering.$filterOptions.dialog("close");
-		this.resetFilteringForm();
 	}
 	catch(err) {
 		$.alert(err.message, "Filtering Error");
 	}
 }
 
-ManipulationWidgetHandler.prototype.validateMetricValue = function(value) {
-	var parsedValue = parseInt(value, 10);
-	if(isNaN(parsedValue)) throw new Error("Value '" + value + "' is not a valid value for metric.");
-	if(parsedValue < 0 || parsedValue > 100) throw new Error("Metric cannot take values greater than 100 and less than 0. So, value '" + value + "' is invalid.");
+ManipulationWidgetHandler.prototype.showFilteringRules = function() {
+	this.widget.filtering.$filteringRules.dialog("open");
 }
 
-ManipulationWidgetHandler.prototype.validateDepth = function(depth) {
-	var parsedValue = parseInt(depth, 10);
-	if(isNaN(parsedValue)) throw new Error("Value '" + depth + "' is not a valid value for depth.");
-	if(parsedValue < 0) throw new Error("Depth cannot take negative value. So, value '" + depth + "' is invalid.");
+ManipulationWidgetHandler.prototype.setupFieldsValidation = function() {
+	this.widget.filtering.$filterForm.find("input").blur(function() {
+		if($(this)[0].checkValidity() == true) $(this).removeClass("invalid");
+		else  $(this).addClass("invalid");
+	});
+	this.widget.filtering.$filterForm.find("input[name='node-id']").off("blur").blur(function() {
+		try{
+			new RegExp($(this).val());
+			$(this).removeClass("invalid");
+		}
+		catch(invalidRegExprError) {
+			$(this).addClass("invalid");
+		}
+	});
 }
 
 ManipulationWidgetHandler.prototype.resetFilteringForm = function() {

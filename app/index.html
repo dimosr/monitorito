@@ -163,6 +163,46 @@
 														<input name="node-id" type="text" placeholder=".*       (will match all nodes)">
 													</div>
 												</div>
+												<div id="edges-in" class="row">
+													<div class="columns large-4">Incoming Edges</div>
+													<div class="columns large-4">
+														<div class="input-group">
+															<span class="input-group-label">Min</span>
+															<input name="min" class="input-group-field" type="number" min="0" placeholder="0">
+														</div>
+													</div>
+													<div class="columns large-4">
+														<div class="input-group">
+															<span class="input-group-label">Max</span>
+															<input name="max" class="input-group-field" type="number" min="0">
+														</div>
+													</div>
+												</div>
+												<div id="edges-out" class="row">
+													<div class="columns large-4">Outgoing Edges</div>
+													<div class="columns large-4">
+														<div class="input-group">
+															<span class="input-group-label">Min</span>
+															<input name="min" class="input-group-field" type="number" min="0" placeholder="0">
+														</div>
+													</div>
+													<div class="columns large-4">
+														<div class="input-group">
+															<span class="input-group-label">Max</span>
+															<input name="max" class="input-group-field" type="number" min="0">
+														</div>
+													</div>
+												</div>
+											</div>
+											<div id="filtering-rules" title="Filtering cannot be applied with invalid values">
+												<h4>Valid Values</h4>
+												Each field must comply with the following rules, to apply filtering:
+												<ul>
+													<li>Node ID: A valid Regular Expression String</li>
+													<li>Node Edges values (min,max): non-negative integer (>=0)</li>
+													<li>Depth: non-negative integer (>=0)</li>
+													<li>Metric values (From,To): integer values in range [0,100]</li>
+												</ul>
 											</div>
 										</div>
 										<fieldset name="metrics">

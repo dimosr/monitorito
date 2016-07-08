@@ -130,3 +130,7 @@ table {
 label {
 	color: white;
 }
+
+input.invalid {
+	border: red 3px solid;
+}

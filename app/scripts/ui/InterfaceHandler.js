@@ -38,7 +38,8 @@ InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 			$filterForm: $("#filter-options form"),
 			$submitButton: $("#filter-options .submit-button"),
 			$cancelButton: $("#filter-options .cancel-button"),
-			$resetFilter: $("#reset-filter-button")
+			$resetFilter: $("#reset-filter-button"),
+			$filteringRules: $("#filtering-rules")
 		},
 		$collapseAllButton: $("#colapse_all_button")
 	}
