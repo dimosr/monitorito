@@ -100,3 +100,7 @@ Node.prototype.show = function() {
 		this.visible = true;
 	}
 }
+
+Node.prototype.isVisible = function() {
+	return this.visible;
+}

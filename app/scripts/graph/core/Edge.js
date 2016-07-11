@@ -65,3 +65,7 @@ Edge.prototype.show = function() {
 		this.visible = true;
 	}
 }
+
+Edge.prototype.isVisible = function() {
+	return this.visible;
+}
