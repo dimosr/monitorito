@@ -110,28 +110,28 @@ ManipulationWidgetHandler.prototype.executeFiltering = function() {
 			var filteringOptions = new FilterOptions();
 
 			var nodeID = form.find("input[name='node-id']").val();
-			filteringOptions.setDomainRegExp(new RegExp(nodeID));
+			if(nodeID.trim() != "") filteringOptions.setDomainRegExp(new RegExp(nodeID));
 
 			var inEdgesMin = form.find("#edges-in input[name='min']").val();
-			filteringOptions.setEdgesMin("incoming", parseInt(inEdgesMin, 10));
+			if(inEdgesMin.trim() != "") filteringOptions.setEdgesMin("incoming", parseInt(inEdgesMin, 10));
 			var inEdgesMax = form.find("#edges-in input[name='max']").val();
-			filteringOptions.setEdgesMax("incoming", parseInt(inEdgesMax, 10));
+			if(inEdgesMax.trim() != "") filteringOptions.setEdgesMax("incoming", parseInt(inEdgesMax, 10));
 			var outEdgesMin = form.find("#edges-out input[name='min']").val();
-			filteringOptions.setEdgesMin("outgoing", parseInt(outEdgesMin, 10));
+			if(outEdgesMin.trim() != "") filteringOptions.setEdgesMin("outgoing", parseInt(outEdgesMin, 10));
 			var outEdgesMax = form.find("#edges-out input[name='max']").val();
-			filteringOptions.setEdgesMax("outgoing", parseInt(outEdgesMax, 10));
+			if(outEdgesMax.trim() != "") filteringOptions.setEdgesMax("outgoing", parseInt(outEdgesMax, 10));
 
 			var metrics = form.find("fieldset[name='metrics'] > fieldset");
 			for(var i = 0; i < metrics.length; i++) {
 				var metric = metrics.eq(i).attr("name");
 				var min = metrics.eq(i).find("input[name='min']").val();
 				var max = metrics.eq(i).find("input[name='max']").val();
-				filteringOptions.setMetricMin(metric, parseInt(min, 10));
-				filteringOptions.setMetricMax(metric, parseInt(max, 10));
+				if(min.trim() != "") filteringOptions.setMetricMin(metric, parseInt(min, 10));
+				if(max.trim() != "") filteringOptions.setMetricMax(metric, parseInt(max, 10));
 			}
 
 			var depth = form.find("input[name='depth']").val();
-			filteringOptions.setNeighboursDepth(parseInt(depth, 10));
+			if(depth.trim() != "") filteringOptions.setNeighboursDepth(parseInt(depth, 10));
 
 			this.controller.applyFilter(filteringOptions);
 			this.widget.filtering.$filterOptions.dialog("close");
