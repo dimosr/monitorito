@@ -1,4 +1,6 @@
 QUnit.module( "controller.CentralController", {
+	before: function() {this.clock = sinon.useFakeTimers();},
+	after: function() {this.clock.restore();},
 	beforeEach: function() {
 		var interfaceHandler = new InterfaceHandler();
 		this.mockInterfaceHandler = sinon.mock(interfaceHandler);
@@ -174,11 +176,13 @@ QUnit.test("Clustering without expanded Resources, allowed", function(assert) {
 	var mockGraphHandler = this.mockGraphHandler;
 
 	mockGraphHandler.expects("getExpandedNodes").exactly(1).returns([]);
+	mockGraphHandler.expects("isFilterActive").exactly(1).returns(false);
 	mockGraphHandler.expects("clusterByDomain").exactly(1);
 
 	controller.clusterByDomain("cluster-1", ["example.com", "test.com"]);
-	mockGraphHandler.verify();
+	this.clock.tick(50);
 
+	mockGraphHandler.verify();
 });
 
 QUnit.test("Expanding DomainNode, while there are active clusters, not allowed", function(assert) {
