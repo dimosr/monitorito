@@ -7,6 +7,7 @@ function InterfaceHandler() {
 	};
 	this.graphContainer = $("#graph");
 	this.loader = $("#loader");
+	this.filterRibbon = $("#ribbon");
 	this.loadExtensions();
 }
 
@@ -212,6 +213,14 @@ InterfaceHandler.prototype.executeWithLoader = function(callback) {
 		callback();
 		interfaceHandler.hideLoader();
 	}, 50, this);
+}
+
+InterfaceHandler.prototype.showFilterRibbon = function() {
+	this.filterRibbon.show();
+}
+
+InterfaceHandler.prototype.hideFilterRibbon = function() {
+	this.filterRibbon.hide();
 }
 
 InterfaceHandler.prototype.loadExtensions = function() {

@@ -114,12 +114,14 @@ CentralController.prototype.applyFilter = function(filterOptions) {
 	if(this.existClusters()) throw new Error("Cannot apply Filtering, when there are active clusters. Please delete all clusters first.");
 	var graphHandler = this.graphHandler;
 	this.interfaceHandler.executeWithLoader(function() {graphHandler.applyFilter(filterOptions);});
+	this.interfaceHandler.showFilterRibbon();
 }
 
 CentralController.prototype.resetFilter = function() {
 	if(this.existClusters()) throw new Error("Cannot reset Filtering, when there are active clusters. Please delete all clusters first.");
 	var graphHandler = this.graphHandler;
 	this.interfaceHandler.executeWithLoader(function() {graphHandler.resetFilter();});
+	this.interfaceHandler.hideFilterRibbon();
 }
 
 CentralController.prototype.isFilterActive = function() {
