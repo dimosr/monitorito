@@ -167,3 +167,7 @@ ManipulationWidgetHandler.prototype.setupFieldsValidation = function() {
 ManipulationWidgetHandler.prototype.resetFilteringForm = function() {
 	this.widget.filtering.$filterForm[0].reset();
 }
+
+ManipulationWidgetHandler.prototype.hide = function() {
+	this.widget.$container.hide();
+}

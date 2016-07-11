@@ -24,6 +24,7 @@ InterfaceHandler.prototype.setController = function(controller) {
 
 InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 	var manipulationWidget = {
+		$container: $("#manipulation_widget"),
 		clustering: {
 			$clusterButton: $("#cluster-button"),
 			$clusterOptions: $("#cluster-options"),
@@ -165,6 +166,7 @@ InterfaceHandler.prototype.initModeWidgetHandler = function() {
 InterfaceHandler.prototype.disableVisualisation = function() {
 	this.graphContainer.addClass("disabled-panel");
 	this.controlWidgetHandler.hidePhysicsOption();
+	this.manipulationWidgetHandler.hide();
 }
 
 InterfaceHandler.prototype.showNodeInfo = function(node) {
