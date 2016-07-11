@@ -36,6 +36,7 @@ function FilterOptions() {
 }
 
 FilterOptions.prototype.setDomainRegExp = function(domainRegExp) {
+    if(!(domainRegExp instanceof RegExp)) throw new Error("Provided parameter is not regular expression");
     this.domainRegExp = domainRegExp;
 }
 
