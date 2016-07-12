@@ -70,7 +70,7 @@ SideWidgetHandler.prototype.initialiseStatisticsGraphs = function() {
 				ticks: {display: false, min: 0, max: 100}
 			}
 		},
-		data: this.generatePlotData(["Phishing.", "Tracking", "Tracking Cookies", "Leaking"], ["Node Metrics"], [{r:153,g:0,b:153}])
+		data: this.generatePlotData(NodeMetricsFactory.getInstance().getMetrics().map(function(metric) {return metric.getDisplayName();}), ["Node Metrics"], [{r:153,g:0,b:153}])
 	});
 }
 
@@ -163,7 +163,7 @@ SideWidgetHandler.prototype.updateSelectedNodeStats = function(node) {
 	this.incomingEdgesPlot.update();
 
 	var metrics = this.controller.getGraphNodeMetrics(node);
-	this.nodeMetricsPlot.data.datasets[0].data = [metrics.phishing, metrics.tracking, metrics.trackingCookies, metrics.leaking];
+	this.nodeMetricsPlot.data.datasets[0].data = NodeMetricsFactory.getInstance().getMetrics().map(function(metric) {return metrics[metric.getCodeName()]});
 	this.nodeMetricsPlot.update();
 }
 
@@ -175,7 +175,7 @@ SideWidgetHandler.prototype.resetSelectedNodeStats = function() {
 	this.outgoingEdgesPlot.update();
 	this.incomingEdgesPlot.update();
 
-	this.nodeMetricsPlot.data.datasets[0].data = [0, 0, 0];
+	this.nodeMetricsPlot.data.datasets[0].data.forEach(function(x, i, arr) {arr[i] = 0;});
 	this.nodeMetricsPlot.update();
 }
 

@@ -64,6 +64,8 @@
 		<script src="scripts/graph/statistics/GraphStatsCalculator.js"></script>
 		<script src="scripts/graph/statistics/NodeMetricsCalculator.js"></script>
 		<script src="scripts/graph/statistics/StatisticsHolder.js"></script>
+		<script src="scripts/graph/statistics/NodeMetric.js"></script>
+		<script src="scripts/graph/statistics/NodeMetricsFactory.js"></script>
 		<script src="scripts/graph/cluster/Cluster.js"></script>
 		<script src="scripts/graph/cluster/ClusteringEngine.js"></script>
 		<script src="scripts/graph/explore/ResourcesExplorerEngine.js"></script>
@@ -211,70 +213,19 @@
 										</div>
 										<fieldset name="metrics">
 											<h4>Node Metrics</h4>
-											<fieldset name="phishing">
+											<fieldset>
 												<div class="row">
-													<div class="columns large-2">Phishing</div>
+													<div class="columns large-2 metric-label"></div>
 													<div class="columns large-5">
 														<div class="input-group">
 															<span class="input-group-label">From</span>
-															<input name="min" class="input-group-field" type="number" min="0" max="100" placeholder="0">
+															<input name="min" class="input-group-field" type="number">
 														</div>
 													</div>
 													<div class="columns large-5">
 														<div class="input-group">
 															<span class="input-group-label">To</span>
-															<input name="max" class="input-group-field" type="number" min="0" max="100" placeholder="100">
-														</div>
-													</div>
-												</div>
-											</fieldset>
-											<fieldset name="tracking">
-												<div class="row">
-													<div class="columns large-2">Tracking</div>
-													<div class="columns large-5">
-														<div class="input-group">
-															<span class="input-group-label">From</span>
-															<input name="min" class="input-group-field" type="number" min="0" max="100" placeholder="0">
-														</div>
-													</div>
-													<div class="columns large-5">
-														<div class="input-group">
-															<span class="input-group-label">To</span>
-															<input name="max" class="input-group-field" type="number" min="0" max="100" placeholder="100">
-														</div>
-													</div>
-												</div>
-											</fieldset>
-											<fieldset name="leaking">
-												<div class="row">
-													<div class="columns large-2">Leaking</div>
-													<div class="columns large-5">
-														<div class="input-group">
-															<span class="input-group-label">From</span>
-															<input name="min" class="input-group-field" type="number" min="0" max="100" placeholder="0">
-														</div>
-													</div>
-													<div class="columns large-5">
-														<div class="input-group">
-															<span class="input-group-label">To</span>
-															<input name="max" class="input-group-field" type="number" min="0" max="100" placeholder="100">
-														</div>
-													</div>
-												</div>
-											</fieldset>
-											<fieldset name="trackingCookies">
-												<div class="row">
-													<div class="columns large-2">Tracking Cookies</div>
-													<div class="columns large-5">
-														<div class="input-group">
-															<span class="input-group-label">From</span>
-															<input name="min" class="input-group-field" type="number" min="0" max="100" placeholder="0">
-														</div>
-													</div>
-													<div class="columns large-5">
-														<div class="input-group">
-															<span class="input-group-label">To</span>
-															<input name="max" class="input-group-field" type="number" min="0" max="100" placeholder="100">
+															<input name="max" class="input-group-field" type="number">
 														</div>
 													</div>
 												</div>

@@ -66,6 +66,7 @@ ManipulationWidgetHandler.prototype.initFilteringManipulation = function(dialogO
 	this.widget.filtering.$resetFilter.click({handler: this}, function(event) {
 		if(event.data.handler.controller.isFilterActive()) event.data.handler.controller.resetFilter();
 	});
+	this.generateMetricsFormFields();
 	this.setupFieldsValidation();
 }
 
@@ -146,6 +147,30 @@ ManipulationWidgetHandler.prototype.executeFiltering = function() {
 
 ManipulationWidgetHandler.prototype.showFilteringRules = function() {
 	this.widget.filtering.$filteringRules.dialog("open");
+}
+
+ManipulationWidgetHandler.prototype.generateMetricsFormFields = function() {
+	var form = this.widget.filtering.$filterForm;
+	var metricsFields = form.find("fieldset[name='metrics']");
+	var metricFieldset = form.find("fieldset[name='metrics'] > fieldset");
+
+	NodeMetricsFactory.getInstance().getMetrics().forEach(function(metric) {
+		var newFieldset = metricFieldset.clone();
+		newFieldset.attr("name", metric.getCodeName());
+		newFieldset.find(".metric-label").text(metric.getDisplayName());
+		newFieldset.find("input[name='min']").attr({
+			"min": metric.getMinValue(),
+			"max": metric.getMaxValue(),
+			"placeholder": metric.getMinValue()
+		});
+		newFieldset.find("input[name='max']").attr({
+			"min": metric.getMinValue(),
+			"max": metric.getMaxValue(),
+			"placeholder": metric.getMaxValue()
+		});
+		metricsFields.append(newFieldset);
+	});
+	metricFieldset.remove();
 }
 
 ManipulationWidgetHandler.prototype.setupFieldsValidation = function() {

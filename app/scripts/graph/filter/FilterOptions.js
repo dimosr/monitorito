@@ -14,24 +14,16 @@ function FilterOptions() {
             max: Number.MAX_VALUE
         }
     };
-    this.metrics = {
-        phishing: {
-            from: 0,
-            to: 100
-        },
-        tracking: {
-            from: 0,
-            to: 100
-        },
-        leaking: {
-            from: 0,
-            to: 100
-        },
-        trackingCookies: {
-            from: 0,
-            to: 100
-        }
-    };
+
+    var metrics = {};
+    NodeMetricsFactory.getInstance().getMetrics().forEach(function(metric) {
+        metrics[metric.getCodeName()] = {
+            from: metric.getMinValue(),
+            to: metric.getMaxValue()
+        };
+    });
+    this.metrics = metrics;
+
     this.showNeighboursAtDepth = 0;
 }
 
@@ -50,12 +42,12 @@ FilterOptions.prototype.setEdgesMax = function(edgesType, max) {
     this.edges[edgesType].max = max;
 }
 
-FilterOptions.prototype.setMetricMin = function(metric, minValue) {
-    this.metrics[metric].from = minValue;
+FilterOptions.prototype.setMetricMin = function(metricCodeName, minValue) {
+    this.metrics[metricCodeName].from = minValue;
 }
 
-FilterOptions.prototype.setMetricMax = function(metric, maxValue) {
-    this.metrics[metric].to = maxValue;
+FilterOptions.prototype.setMetricMax = function(metricCodeName, maxValue) {
+    this.metrics[metricCodeName].to = maxValue;
 }
 
 FilterOptions.prototype.setNeighboursDepth = function(maxDepth) {
@@ -67,14 +59,16 @@ FilterOptions.prototype.getNeighboursDepth = function() {
 }
 
 FilterOptions.prototype.satisfiedByNode = function(domainNode, nodeMetrics) {
-    var flag = true;
+    var flag = true, filterOptions = this;
     if(!this.domainRegExp.test(domainNode.getID())) flag = false;
     if(!this.inRange(domainNode.getIncomingDomainEdges(true).length, this.edges.incoming.min, this.edges.incoming.max)) flag = false;
     if(!this.inRange(domainNode.getOutgoingDomainEdges(true).length, this.edges.outgoing.min, this.edges.outgoing.max)) flag = false;
-    if(!this.inRange(nodeMetrics.phishing, this.metrics.phishing.from, this.metrics.phishing.to)) flag = false;
-    if(!this.inRange(nodeMetrics.tracking, this.metrics.tracking.from, this.metrics.tracking.to)) flag = false;
-    if(!this.inRange(nodeMetrics.leaking, this.metrics.leaking.from, this.metrics.leaking.to)) flag = false;
-    if(!this.inRange(nodeMetrics.trackingCookies, this.metrics.trackingCookies.from, this.metrics.trackingCookies.to)) flag = false;
+    NodeMetricsFactory.getInstance().getMetrics().forEach(function(metric) {
+        var metricValue = nodeMetrics[metric.getCodeName()];
+        var minLimit = filterOptions.metrics[metric.getCodeName()].from;
+        var maxLimit = filterOptions.metrics[metric.getCodeName()].to;
+        if(!filterOptions.inRange(metricValue, minLimit, maxLimit)) flag = false;
+    });
     return flag;
 }
 
