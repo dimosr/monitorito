@@ -28,3 +28,13 @@ Util.getCookiesMap = function(cookiesString) {
 		return acc;
 	}, {});
 }
+
+/*	Array prototype extension
+	Help function for creating populated arrays
+ */
+Array.prototype.fill = function(val){
+	for (var i = 0; i < this.length; i++){
+		this[i] = val;
+	}
+	return this;
+};
