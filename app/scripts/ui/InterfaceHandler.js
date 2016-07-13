@@ -212,8 +212,15 @@ InterfaceHandler.prototype.hideLoader = function() {
 InterfaceHandler.prototype.executeWithLoader = function(callback) {
 	this.showLoader();
 	setTimeout(function(interfaceHandler) {
-		callback();
-		interfaceHandler.hideLoader();
+		try {
+			callback();
+		}
+		catch(err) {
+			$.alert(err.message, "Error");
+		}
+		finally {
+			interfaceHandler.hideLoader();
+		}
 	}, 50, this);
 }
 

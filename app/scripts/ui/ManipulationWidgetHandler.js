@@ -85,6 +85,8 @@ ManipulationWidgetHandler.prototype.executeClustering = function() {
 				if(elem.value.trim() != "") domains.push(elem.value);
 			}
 		);
+		if(clusterID.trim() == "") throw new Error("Cluster ID field is empty! You have to provide a value.");
+		
 		this.controller.clusterByDomain(domains, clusterID);
 		this.widget.clustering.$clusterOptions.dialog("close");
 		this.resetClusteringForm();
