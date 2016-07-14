@@ -5,7 +5,8 @@ function Converter() {}
 Converter.delimiter = "\"";
 Converter.separator = ",";
 
-Converter.quoteRegExp = new RegExp("\"", 'g');
+Converter.escapedQuoteRegExp = new RegExp("\\\\\"", 'g'); //matches escaped quote -> \"
+Converter.quoteRegExp = new RegExp("\"", 'g');  //matches single quote -> "
 
 Converter.getRedirectColumnValuesCSV = function() {
 	return Converter.createCSVRow(["SessionID", "From", "To", "Type", "Timestamp"]);
@@ -80,5 +81,7 @@ Converter.createCSVRow = function(columnValues) {
 
 Converter.csvEscape = function(value) {
 	if(typeof(value) != "string") return value;
-	return value.replace(Converter.quoteRegExp, "\"\"");
+
+	value = value.replace(Converter.escapedQuoteRegExp, "\""); //"unescape" incorrectly-escaped quotes
+	return value.replace(Converter.quoteRegExp, "\"\"");  //now correctly escape quotes
 }
