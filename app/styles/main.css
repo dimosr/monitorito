@@ -1,3 +1,7 @@
+.row.full-width {
+	max-width: 100%;
+}
+
 html,body {
 	background-color: grey;
 }
