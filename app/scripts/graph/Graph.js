@@ -145,7 +145,6 @@ Graph.prototype.empty = function() {
 	this.getEdges().forEach(function(edge) {graph.deleteEdge(edge.getID());});
 	this.getNodes().forEach(function(node) {graph.deleteNode(node.getID());});
 	this._edgesAutoIncrement = 1;
-	console.log(this);
 }
 
 /* No need to notify GraphStatsCalculator for ResourceNodes, ResourceEdges */
