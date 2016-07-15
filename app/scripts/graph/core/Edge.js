@@ -10,7 +10,7 @@ function Edge(id, fromNode, toNode, graph, networkEdges) {
 	fromNode.addEdgeTo(toNode, this);
 	toNode.addEdgeFrom(fromNode, this);
 
-	this.visible = true;
+	if(fromNode.isVisible() && toNode.isVisible()) this.visible = true;
 }
 
 Edge.prototype.getID = function() {
@@ -30,6 +30,7 @@ Edge.prototype.createVisualEdge = function(options){
 		options.id = this.id;
 		options.from = this._from.getID();
 		options.to = this._to.getID();
+		options.hidden = !this.visible;
 		this.networkEdges.add(options);
 		if(!this._from.visible || !this._to.visible) this.hide();
 	}
