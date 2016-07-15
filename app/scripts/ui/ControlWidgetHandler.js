@@ -29,6 +29,11 @@ ControlWidgetHandler.prototype.init = function() {
 		var controller = event.data.controller;
 		controller.extractGraphData();
 	});
+
+	this.widget.reset.$button.on("click", {controller: this.controller}, function(event) {
+		var controller = event.data.controller;
+		controller.resetData();
+	});
 }
 
 ControlWidgetHandler.prototype.hidePhysicsOption = function() {

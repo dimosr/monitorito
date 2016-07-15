@@ -33,6 +33,17 @@ CentralController.prototype.extractGraphData = function() {
 	this.interfaceHandler.executeWithLoader(function() { storageService.extractGraph(graph); });
 }
 
+CentralController.prototype.resetData = function() {
+	var graphHandler = this.graphHandler;
+	var storageService = this.storageService;
+	var monitoringService = this.monitoringService;
+	this.interfaceHandler.executeWithLoader(function() {
+		storageService.clearStorage();
+		graphHandler.emptyGraph();
+		monitoringService.reset();
+	});
+}
+
 CentralController.prototype.getGraphStatistics = function() {
 	return this.graphHandler.getGraphStatistics();
 }

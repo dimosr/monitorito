@@ -131,3 +131,9 @@ GraphHandler.prototype.resetFilter = function() {
 GraphHandler.prototype.isFilterActive = function() {
 	return this.filteringEngine.isFilterActive();
 }
+
+GraphHandler.prototype.emptyGraph = function() {
+	this.deleteAllClusters();
+	this.collapseAllNodes();
+	this.graph.empty();
+}

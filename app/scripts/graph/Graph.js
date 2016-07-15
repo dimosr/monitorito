@@ -105,6 +105,16 @@ Graph.prototype.existsEdge = function(fromNodeID, toNodeID) {
 	return this.getEdgeBetweenNodes(fromNodeID, toNodeID) != null;
 }
 
+Graph.prototype.deleteEdge = function(edgeID) {
+	this.edges[edgeID].remove();
+	delete this.edges[edgeID];
+}
+
+Graph.prototype.deleteNode = function(nodeID) {
+	this.nodes[nodeID].remove();
+	delete this.nodes[nodeID];
+}
+
 Graph.prototype.createDomainNode = function(hostname) {
 	var node = new DomainNode(hostname, this, this.mode == Graph.Mode.ONLINE ? this.visualisationNetwork.getNodesDataset() : null);
 	this.nodes[hostname] = node;
@@ -130,6 +140,14 @@ Graph.prototype.existsNode = function(ID) {
 	return ID in this.nodes;
 }
 
+Graph.prototype.empty = function() {
+	var graph = this;
+	this.getEdges().forEach(function(edge) {graph.deleteEdge(edge.getID());});
+	this.getNodes().forEach(function(node) {graph.deleteNode(node.getID());});
+	this._edgesAutoIncrement = 1;
+	console.log(this);
+}
+
 /* No need to notify GraphStatsCalculator for ResourceNodes, ResourceEdges */
 
 Graph.prototype.createResourceEdge = function(fromNodeID, toNodeID) {
@@ -142,18 +160,4 @@ Graph.prototype.createResourceEdge = function(fromNodeID, toNodeID) {
 Graph.prototype.createResourceNode = function(resourceURL) {
 	var node = new ResourceNode(resourceURL, this, this.visualisationNetwork.getNodesDataset(), this.visualisationNetwork.getEdgesDataset(), this.nodes[Util.getUrlHostname(resourceURL)], this._edgesAutoIncrement++);
 	this.nodes[resourceURL] = node;
-}
-
-Graph.prototype.deleteResourceNode = function(nodeID) {
-	var node = this.nodes[nodeID];
-	if(!(node instanceof ResourceNode)) throw new Error("Only Resource Nodes can be deleted");
-	delete this.nodes[nodeID];
-	node.remove();
-}
-
-Graph.prototype.deleteResourceEdge = function(edgeID) {
-	var edge = this.edges[edgeID];
-	if(!(edge instanceof ResourceEdge)) throw new Error("Only Resource Edges can be deleted");
-	delete this.edges[edgeID];
-	edge.remove();
 }

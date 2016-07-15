@@ -74,7 +74,8 @@ InterfaceHandler.prototype.initControlWidgetHandler = function() {
 		export: {
 			data: {$button: $("#export-data-button")},
 			graph: {$button: $("#export-graph-button")}
-		}
+		},
+		reset: {$button: $("#reset-data-button")}
 	};
 	this.controlWidgetHandler = new ControlWidgetHandler(this.controller, controlWidget);
 }

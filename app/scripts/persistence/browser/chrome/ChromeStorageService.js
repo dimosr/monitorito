@@ -8,11 +8,10 @@ function ChromeStorageService(storageEndpoint, downloader) {
 	this.redirectID = "redirect-";
 
 	this.storageEndpoint = storageEndpoint;
+	this.storageEndpoint.clear();
 	this.downloader = downloader;
 
 	this.maxBatchSize = 200000000;		/* 400 MB limit (for UTF-16 encoded strings) */
-
-	this.clearStorage();
 }
 
 ChromeStorageService.prototype.setController = function(controller) {
@@ -21,6 +20,8 @@ ChromeStorageService.prototype.setController = function(controller) {
 
 ChromeStorageService.prototype.clearStorage = function() {
 	this.storageEndpoint.clear();
+	this.requestsNo = 0;
+	this.redirectsNo = 0;
 }
 
 ChromeStorageService.prototype.storeRequest = function(sessionID, request) {

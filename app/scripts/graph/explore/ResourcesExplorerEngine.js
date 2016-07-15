@@ -79,7 +79,7 @@ ResourcesExplorerEngine.prototype.collapse = function(domainNode) {
                 else this.removeResourceEdge("moveToSource", outEdges[j]);
             }
         }
-        this.graph.deleteResourceNode(node.getID());
+        this.graph.deleteNode(node.getID());
     }
 }
 
@@ -143,7 +143,7 @@ ResourcesExplorerEngine.prototype.processResourceEdge = function(mode, fromResou
  */
 ResourcesExplorerEngine.prototype.removeResourceEdge = function(mode, edge) {
     if(mode == "delete")
-        this.graph.deleteResourceEdge(edge.getID());
+        this.graph.deleteEdge(edge.getID());
     else if(mode == "moveToDestination") {
         this._ensureResourceEdgeNotExists(edge.getSourceNode().getID(), edge.getDestinationNode().getID());
         var newEdge = this._ensureResourceEdgeExists(edge.getSourceNode().getID(), Util.getUrlHostname(edge.getDestinationNode().getID()));
@@ -167,7 +167,7 @@ ResourcesExplorerEngine.prototype._ensureResourceEdgeExists = function(fromNodeI
 }
 
 ResourcesExplorerEngine.prototype._ensureResourceEdgeNotExists = function(fromNodeID, toNodeID) {
-    if(this.graph.existsEdge(fromNodeID, toNodeID)) this.graph.deleteResourceEdge(this.graph.getEdgeBetweenNodes(fromNodeID, toNodeID).getID());
+    if(this.graph.existsEdge(fromNodeID, toNodeID)) this.graph.deleteEdge(this.graph.getEdgeBetweenNodes(fromNodeID, toNodeID).getID());
 }
 
 ResourcesExplorerEngine.prototype.transferLinks = function(fromEdge, toEdge) {

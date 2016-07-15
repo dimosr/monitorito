@@ -213,3 +213,19 @@ QUnit.test("Expanding DomainNode, while there are active clusters, not allowed",
 	controller.expandDomainNode(1);
 	mockGraphHandler.verify();
 });
+
+QUnit.test("Reset Data resets all components", function(assert) {
+	var controller = this.controller;
+	var mockGraphHandler = this.mockGraphHandler;
+	var mockStorageService = this.mockStorageService;
+	var mockMonitoringService = this.mockMonitoringService;
+
+	mockStorageService.expects("clearStorage").exactly(1);
+	mockGraphHandler.expects("emptyGraph").exactly(1);
+	mockMonitoringService.expects("reset");
+
+	controller.resetData();
+	this.clock.tick(50);
+
+	mockGraphHandler.verify();
+});

@@ -49,7 +49,7 @@ Edge.prototype.notifyForChange = function(fromType, toType) {
 Edge.prototype.remove = function() {
 	this.getSourceNode().removeEdgeTo(this.getDestinationNode());
 	this.getDestinationNode().removeEdgeFrom(this.getSourceNode());
-	this.networkEdges.remove(this.getID());
+	if(this.graph.mode == Graph.Mode.ONLINE) this.networkEdges.remove(this.getID());
 }
 
 Edge.prototype.hide = function() {

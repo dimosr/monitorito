@@ -84,7 +84,7 @@ Node.prototype.notifyForChange = function(fromType, toType) {
 }
 
 Node.prototype.remove = function() {
-	this.networkNodes.remove(this.getID());
+	if(this.graph.mode == Graph.Mode.ONLINE) this.networkNodes.remove(this.getID());
 }
 
 Node.prototype.hide = function() {

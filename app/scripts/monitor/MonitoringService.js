@@ -119,3 +119,9 @@ MonitoringService.prototype._getTabSession = function(tabID) {
 	if(tabID in this._tabSessionMap) return this._tabSessionMap[tabID].session;
 	else return null;
 }
+
+MonitoringService.prototype.reset = function() {
+	this._tabSessionMap = {};
+	this._openRequests = {};
+	this.sessionIncrement = 1;
+}
