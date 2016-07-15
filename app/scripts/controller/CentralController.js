@@ -102,12 +102,18 @@ CentralController.prototype.existExpandedNodes = function() {
 	return (this.graphHandler.getExpandedNodes().length > 0);
 }
 
-CentralController.prototype.collapseExpandedNodes = function() {
+CentralController.prototype.collapseAllNodes = function() {
 	var graphHandler = this.graphHandler;
-	this.interfaceHandler.executeWithLoader(function() { graphHandler.collapseExpandedNodes() });
+	this.interfaceHandler.executeWithLoader(function() { graphHandler.collapseAllNodes() });
 
 	this.interfaceHandler.emptyNodeInfo();
 	this.interfaceHandler.emptyEdgeInfo();
+}
+
+CentralController.prototype.expandAllNodes = function() {
+	if(this.existClusters()) throw new Error("Cannot expand Resources, when there are active clusters. Please delete all clusters first.");
+	var graphHandler = this.graphHandler;
+	this.interfaceHandler.executeWithLoader(function() { graphHandler.expandAllNodes() });
 }
 
 CentralController.prototype.applyFilter = function(filterOptions) {

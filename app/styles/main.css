@@ -123,7 +123,7 @@ table {
     display:none;
 }
 
-#cluster-button, #decluster_all_button, #filter-button, #reset-filter-button, #colapse_all_button {
+.button.big_font {
 	font-size: 13px;
 }
 

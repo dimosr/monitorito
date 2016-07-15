@@ -20,7 +20,7 @@ ManipulationWidgetHandler.prototype.init = function() {
 
 	this.initClusteringMapulation(dialogOptions);
 	this.initFilteringManipulation(dialogOptions);
-	this.initCollapseManipulation();
+	this.initExpandCollapseManipulation();
 
 }
 
@@ -70,10 +70,18 @@ ManipulationWidgetHandler.prototype.initFilteringManipulation = function(dialogO
 	this.setupFieldsValidation();
 }
 
-ManipulationWidgetHandler.prototype.initCollapseManipulation = function() {
+ManipulationWidgetHandler.prototype.initExpandCollapseManipulation = function() {
 	this.widget.$collapseAllButton.click({handler: this}, function(event) {
-		event.data.handler.controller.collapseExpandedNodes();
-	})
+		event.data.handler.controller.collapseAllNodes();
+	});
+	this.widget.$expandAllButton.click({handler: this}, function(event) {
+		try {
+			event.data.handler.controller.expandAllNodes();
+		}
+		catch(err) {
+			$.alert(err.message, "Resource Expanding Error");
+		}
+	});
 }
 
 ManipulationWidgetHandler.prototype.executeClustering = function() {

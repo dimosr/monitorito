@@ -43,7 +43,8 @@ InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 			$resetFilter: $("#reset-filter-button"),
 			$filteringRules: $("#filtering-rules")
 		},
-		$collapseAllButton: $("#colapse_all_button")
+		$collapseAllButton: $("#colapse_all_button"),
+		$expandAllButton: $("#expand_all_button")
 	}
 	this.manipulationWidgetHandler = new ManipulationWidgetHandler(this.controller, manipulationWidget, this.screenDimensions);
 }

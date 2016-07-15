@@ -114,7 +114,7 @@ QUnit.test("Expanding DomainNode with edges between included resourceNodes", fun
     assert.ok(graph.existsEdge("http://example.com", "http://example.com/dependency"), "ResourceEdge created between resourceNodes, included in same DomainNode");
 });
 
-QUnit.test("collapseAllExpandedNodes()", function(assert) {
+QUnit.test("collapseAllNodes()", function(assert) {
     var resourcesExplorerEngine = this.resourcesExplorerEngine;
     var graph = this.graph;
 
@@ -124,7 +124,7 @@ QUnit.test("collapseAllExpandedNodes()", function(assert) {
     assert.ok(graph.existsNode("http://example.com"), "ResourceNode successfully created");
     assert.ok(graph.existsNode("http://test.com"), "ResourceNode successfully created");
 
-    resourcesExplorerEngine.collapseAllExpandedNodes();
+    resourcesExplorerEngine.collapseAllNodes();
 
     assert.equal(resourcesExplorerEngine.getExpandedDomainNodes(), 0, "All Resources nodes successfuly collapsed")
 });

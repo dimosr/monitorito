@@ -112,8 +112,12 @@ GraphHandler.prototype.getExpandedNodes = function() {
 	return this.resourcesExplorerEngine.getExpandedDomainNodes();
 }
 
-GraphHandler.prototype.collapseExpandedNodes = function() {
-	this.resourcesExplorerEngine.collapseAllExpandedNodes();
+GraphHandler.prototype.collapseAllNodes = function() {
+	this.resourcesExplorerEngine.collapseAllNodes();
+}
+
+GraphHandler.prototype.expandAllNodes = function() {
+	this.resourcesExplorerEngine.expandAllNodes();
 }
 
 GraphHandler.prototype.applyFilter = function(filterOptions) {

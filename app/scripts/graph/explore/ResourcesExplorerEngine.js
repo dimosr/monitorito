@@ -191,7 +191,16 @@ ResourcesExplorerEngine.prototype.getExpandedDomainNodes = function() {
     return nodes;
 }
 
-ResourcesExplorerEngine.prototype.collapseAllExpandedNodes = function() {
+ResourcesExplorerEngine.prototype.collapseAllNodes = function() {
     var expandedNodes = this.getExpandedDomainNodes();
-    for(var i = 0; i < expandedNodes.length; i++) this.collapse(expandedNodes[i]);
+    for(var i = 0; i < expandedNodes.length; i++) {
+        if(expandedNodes[i].isVisible())this.collapse(expandedNodes[i]);
+    }
+}
+
+ResourcesExplorerEngine.prototype.expandAllNodes = function() {
+    var nodes = this.graph.getDomainNodes();
+    for(var i = 0; i < nodes.length; i++) {
+        if(nodes[i].isVisible() && (!nodes[i].isExpanded())) this.expand(nodes[i]);
+    }
 }
