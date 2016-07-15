@@ -28,10 +28,20 @@ Cluster.prototype.createVisualCluster = function() {
 		clusterNodeProperties: {
 			id: this.id,
 			title: this.id,
-			label: "Cluster",
-			shape: "database",
+			label: this.id,
+			shape: "dot",
+			size: 60,
+			color: {
+				background: "#66ffd9",
+				border: "#00b386",
+				highlight: {
+					background: "#00e6ac",
+					border: "#004d39"
+				}
+			},
 			font: {
-				size: 30
+				size: 50,
+				background: "white"
 			}
 		},
 		processProperties: function (clusterOptions, childNodes, childEdges) {
