@@ -162,6 +162,10 @@
 											<div class="callout secondary columns large-12">
 												Non-defined parameters will not be used in the filtering.
 											</div>
+											<fieldset class="columns large-12">
+													<input type="radio" name="operation" value="and" id="and" required checked><label for="and">Match ALL of the provided conditions</label>
+													<input type="radio" name="operation" value="or" id="or"><label for="or">Match ANY of the provided conditions</label>
+											</fieldset>
 											<h4>Node Attributes</h4>
 											<div class="columns large-12">
 												<div class="row">
@@ -210,8 +214,9 @@
 													<li>Node ID: A valid Regular Expression String</li>
 													<li>Node Edges values (min,max): non-negative integer (>=0)</li>
 													<li>Depth: non-negative integer (>=0)</li>
-													<li>Metric values (From,To): integer values in range [0,100]</li>
+													<li>Metric values (From,To): integer values inside the range provided in the fields</li>
 												</ul>
+												<div>**You must also define whether ALL or ANY of the conditions should be matched</div>
 											</div>
 										</div>
 										<fieldset name="metrics">

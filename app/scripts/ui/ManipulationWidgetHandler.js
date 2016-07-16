@@ -119,6 +119,10 @@ ManipulationWidgetHandler.prototype.executeFiltering = function() {
 		}
 		else {
 			var filteringOptions = new FilterOptions();
+			
+			var operationType = form.find("input[name='operation']:checked").val();
+			if(operationType == "and") filteringOptions.setOperationType(FilterOptions.operationType.AND);
+			else if(operationType == "or") filteringOptions.setOperationType(FilterOptions.operationType.OR);
 
 			var nodeID = form.find("input[name='node-id']").val();
 			if(nodeID.trim() != "") filteringOptions.setDomainRegExp(new RegExp(nodeID));

@@ -20,6 +20,10 @@ QUnit.test("Default filterOptions match any node", function(assert) {
     var metrics = this.randomMetrics;
 
     assert.ok(this.filterOptions.satisfiedByNode(node, metrics), "node not filtered out.");
+
+    this.filterOptions.setOperationType(FilterOptions.operationType.OR);
+
+    assert.ok(this.filterOptions.satisfiedByNode(node, metrics), "node not filtered out.");
 });
 
 QUnit.test("Filtering nodes with domain including example.com", function(assert) {
@@ -61,4 +65,23 @@ QUnit.test("Filtering nodes with specific ranges in metrics", function(assert) {
     this.filterOptions.setMetricMin("tracking", 80);
     this.filterOptions.setMetricMax("tracking", 100);
     assert.notOk(this.filterOptions.satisfiedByNode(node, metrics), "node filtered out.");
+});
+
+QUnit.test("Filtering with OR and some of the conditions matching", function(assert) {
+    var node = this.node;
+    var metrics = {};
+    NodeMetricsFactory.getInstance().getMetrics().forEach(function(metric) {
+        metrics[metric.getCodeName()] = 50; //all metrics value assigned to 50
+    });
+
+    this.filterOptions.setOperationType(FilterOptions.operationType.AND);
+    this.filterOptions.setMetricMin("phishing", 30);
+    this.filterOptions.setMetricMax("phishing", 60);
+    this.filterOptions.setMetricMin("tracking", 80);
+    this.filterOptions.setMetricMax("tracking", 100);
+
+    assert.notOk(this.filterOptions.satisfiedByNode(node, metrics), "node filtered out.");
+
+    this.filterOptions.setOperationType(FilterOptions.operationType.OR);
+    assert.ok(this.filterOptions.satisfiedByNode(node, metrics), "node not filtered out.");
 });

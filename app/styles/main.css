@@ -140,5 +140,6 @@ label {
 }
 
 input.invalid {
-	border: red 3px solid;
+	border: 3px solid red;
+	outline: 1px solid red;
 }
