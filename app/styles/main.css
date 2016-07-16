@@ -131,6 +131,10 @@ table {
 	font-size: 13px;
 }
 
+.button.medium_font{
+	font-size: 11px;
+}
+
 label {
 	color: white;
 }
