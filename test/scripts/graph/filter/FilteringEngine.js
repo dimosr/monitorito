@@ -1,10 +1,11 @@
-QUnit.module( "graph.filter.FilterOptions", {
+QUnit.module( "graph.filter.FilteringEngine", {
     beforeEach: function() {
         var factory = new GraphFactory();
         var graph = factory.buildGraph(Graph.Mode.ONLINE, jQuery("<canvas>")[0]);
         this.stubGraphStatsCalculator = sinon.createStubInstance(GraphStatsCalculator);
 
         this.filteringEngine = new FilteringEngine(graph, this.stubGraphStatsCalculator);
+        this.filteringEngine.resetFilter();
         this.mockGraph = sinon.mock(graph);
 
         graph.createDomainNode("example.com");
@@ -73,4 +74,26 @@ QUnit.test("applying filter with traversing neighbours to depth 1, showing the w
     assert.ok(graph.getEdgeBetweenNodes("foo.com", "test.com").isVisible(), "Edge foo.com --> test.com shown");
     assert.ok(graph.getEdgeBetweenNodes("https://test.com", "https://test.com/lib").isVisible(), "Edge 'https://test.com' --> 'https://test.com/lib' shown");
     assert.ok(graph.getEdgeBetweenNodes("foo.com", "bar.com").isVisible(), "Edge foo.com --> bar.com shown");
+});
+
+QUnit.test("Multiple filters apply recursively over each other", function(assert) {
+    var graph = this.graph;
+    this.filterOptions.getNeighboursDepth.returns(0);
+
+    var filterOptions = sinon.createStubInstance(FilterOptions);
+    filterOptions.satisfiedByNode.withArgs(graph.getNode("example.com")).returns(false);
+    filterOptions.satisfiedByNode.withArgs(graph.getNode("test.com")).returns(true);
+    filterOptions.satisfiedByNode.withArgs(graph.getNode("foo.com")).returns(true);
+    filterOptions.satisfiedByNode.withArgs(graph.getNode("bar.com")).returns(false);
+
+    this.filteringEngine.filter(filterOptions);
+
+    filterOptions.satisfiedByNode.withArgs(graph.getNode("example.com")).returns(true);
+    filterOptions.satisfiedByNode.withArgs(graph.getNode("test.com")).returns(false);
+
+    this.filteringEngine.filter(filterOptions);
+
+    assert.notOk(graph.getNode("test.com").isVisible(), "test.com not visible, since it was filtered out in 2nd filtering");
+    assert.notOk(graph.getNode("example.com").isVisible(), "example.com not visible, since it was filtered out in 1nd filtering");
+    assert.ok(graph.getNode("foo.com").isVisible(), "foo.com visible, since it was not filtered out in either filtering");
 });

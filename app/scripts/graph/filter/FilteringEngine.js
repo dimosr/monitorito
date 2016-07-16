@@ -13,17 +13,19 @@ FilteringEngine.prototype.isFilterActive = function() {
 
 /*  @Docs
     Applies the filterOptions to the graph
-    - First, resets the filtering on the graph
-    - Then, hides any part of the graph that does not match the filter options
+    - First, gets all the currently visible nodes (existing from previous filters)
+    - Hides all of these nodes and their edges
+    - Iterates over them and maintains the set of the matched nodes
+    - Then, shows only the matched nodes and edges between matched nodes
     Note: Clusters should be deleted before applying the filter, for compatibility
  */
 FilteringEngine.prototype.filter = function(filterOptions) {
-    this.__hideAllGraph();
+    var visibleDomainNodes = this.graph.getDomainNodes().filter(function(node) {return node.isVisible()});
+    this._hideNodesWithEdges(visibleDomainNodes);
     this.matchedNodes = {};
 
-    var domainNodes = this.graph.getDomainNodes();
-    for(var i = 0; i < domainNodes.length; i++) {
-        var domainNode = domainNodes[i];
+    for(var i = 0; i < visibleDomainNodes.length; i++) {
+        var domainNode = visibleDomainNodes[i];
         if(filterOptions.satisfiedByNode(domainNode, this.graphStatsCalculator.getNodeMetrics(domainNode))) {
             this.traverseDomainNodeEnvironment(domainNode, filterOptions.getNeighboursDepth());
         }
@@ -44,9 +46,12 @@ FilteringEngine.prototype.resetFilter = function() {
     this.active = false;
 }
 
-FilteringEngine.prototype.__hideAllGraph = function() {
-    this.graph.getNodes().map(function(node){ node.hide();});
-    this.graph.getEdges().map(function(edge){ edge.hide();});
+FilteringEngine.prototype._hideNodesWithEdges = function(nodes) {
+    nodes.forEach(function(node) {
+        node.hide();
+        node.getOutgoingEdges().map(function(edge) {edge.hide();});
+        node.getIncomingEdges().map(function(edge) {edge.hide();});
+    });
 }
 
 /*  @Docs
