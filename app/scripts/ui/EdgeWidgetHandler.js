@@ -123,19 +123,19 @@ EdgeWidgetHandler.prototype.emptyInfo = function() {
 }
 
 EdgeWidgetHandler.prototype.getEdgeRequests = function(edge) {
-	if(edge instanceof DomainEdge) return edge.getLinks(DomainEdge.Type.REQUEST);
-	else if(edge instanceof ResourceEdge) return edge.getLinks(ResourceEdge.Type.REQUEST);
+	if(edge instanceof DomainEdge) return edge.getLinks(DomainEdge.LinkType.REQUEST);
+	else if(edge instanceof ResourceEdge) return edge.getLinks(DomainEdge.LinkType.REQUEST);
 	else throw new Error("Unsupported parameter type.");
 }
 
 EdgeWidgetHandler.prototype.getEdgeReferrals = function(edge) {
-	if(edge instanceof DomainEdge) return edge.getLinks(DomainEdge.Type.REFERRAL);
-	else if(edge instanceof ResourceEdge) return edge.getLinks(ResourceEdge.Type.REFERRAL);
+	if(edge instanceof DomainEdge) return edge.getLinks(DomainEdge.LinkType.REFERRAL);
+	else if(edge instanceof ResourceEdge) return edge.getLinks(DomainEdge.LinkType.REFERRAL);
 	else throw new Error("Unsupported parameter type.");
 }
 
 EdgeWidgetHandler.prototype.getEdgeRedirects = function(edge) {
-	if(edge instanceof DomainEdge) return edge.getLinks(DomainEdge.Type.REDIRECT);
-	else if(edge instanceof ResourceEdge) return edge.getLinks(ResourceEdge.Type.REDIRECT);
+	if(edge instanceof DomainEdge) return edge.getLinks(DomainEdge.LinkType.REDIRECT);
+	else if(edge instanceof ResourceEdge) return edge.getLinks(DomainEdge.LinkType.REDIRECT);
 	else throw new Error("Unsupported parameter type.");
 }

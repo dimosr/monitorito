@@ -4,27 +4,49 @@ function DomainEdge(id, fromNode, toNode, graph, networkEdges) {
     Edge.call(this, id, fromNode, toNode, graph, networkEdges);
 
     this._links = {};
-    for(var key in DomainEdge.Type) {
-        var type = DomainEdge.Type[key];
+    for(var key in DomainEdge.LinkType) {
+        var type = DomainEdge.LinkType[key];
         this._links[type.name] = [];
     }
-    this.type = DomainEdge.Type.DEFAULT;
+    this.type = DomainEdge.Type.NON_REFERRING;
+
 
     this.createVisualEdge();
 }
 
 DomainEdge.prototype = Object.create(Edge.prototype);
+DomainEdge.prototype.constructor = DomainEdge;
 
 DomainEdge.Type = {
-    DEFAULT: {name: "Default", rank: 4,dashes: false, color: "grey"},
-    REQUEST: {name: "Request", rank: 2,dashes: false, color: "grey"},
-    REDIRECT: {name: "Redirect", rank: 3,dashes: true, color: "grey"},
-    REFERRAL: {name: "Referral", rank: 1,dashes: false, color: "red"}
+    NON_REFERRING: {
+        name: "Non Referring",
+        color: {
+            domain: "grey",
+            resource: "#77773c"
+        },
+        rank: 2
+    },
+    REFERRING: {
+        name: "Referring",
+        color: {
+            domain: "red",
+            resource: "#FF8000"
+        },
+        rank: 1
+    }
+}
+
+DomainEdge.LinkType = {
+    REQUEST: {name: "Request"},
+    REDIRECT: {name: "Redirect"},
+    REFERRAL: {name: "Referral"}
 }
 
 DomainEdge.prototype.addLink = function(fromURL, link, linkType) {
+    if(linkType == DomainEdge.LinkType.REFERRAL && this.type == DomainEdge.Type.NON_REFERRING) this.updateType(DomainEdge.Type.REFERRING);
+    this.updateStyle(linkType);
+
     this._links[linkType.name].push({from: fromURL, link: link});
-    if(this.type.rank > linkType.rank) this.updateType(linkType);
 }
 
 DomainEdge.prototype.getLinks = function(linkType) {
@@ -42,16 +64,14 @@ DomainEdge.prototype.createVisualEdge = function(){
             to: {scaleFactor: 1}
         },
         width: 3,
-        dashes: this.type.dashes,
-        color: this.type.color
+        color: this.type.color.domain
     };
     Edge.prototype.createVisualEdge.call(this, options);
 }
 
 DomainEdge.prototype.updateVisualEdgeType = function() {
     var options = {
-        dashes: this.type.dashes,
-        color: this.type.color
+        color: this.type.color.domain
     };
     Edge.prototype.updateVisualEdge.call(this, options);
 }
@@ -63,6 +83,17 @@ DomainEdge.prototype.updateType = function(type) {
     this.updateVisualEdgeType();
 
     this.notifyForChange(previousType, newType);
+}
+
+DomainEdge.prototype.updateStyle = function(addedLinkType) {
+    if( (this.getLinks(DomainEdge.LinkType.REQUEST).length == 0) && (this.getLinks(DomainEdge.LinkType.REDIRECT).length == 0) ) { //edge will now include only requests or only redirects
+        if(addedLinkType == DomainEdge.LinkType.REQUEST) Edge.prototype.updateVisualEdge.call(this, {dashes: false});
+        else if(addedLinkType == DomainEdge.LinkType.REDIRECT) Edge.prototype.updateVisualEdge.call(this, {dashes: [1,10]}); //dotted
+    }
+    else if( ((this.getLinks(DomainEdge.LinkType.REDIRECT).length == 0) && (addedLinkType == DomainEdge.LinkType.REDIRECT)) ||
+        ((this.getLinks(DomainEdge.LinkType.REQUEST).length == 0) && (addedLinkType == DomainEdge.LinkType.REQUEST)) ) {    //edge will now include both requests and redirects
+        Edge.prototype.updateVisualEdge.call(this, {dashes: [10,10]}); //dashed
+    }
 }
 
 DomainEdge.groupEdgesByType = function(edges) {

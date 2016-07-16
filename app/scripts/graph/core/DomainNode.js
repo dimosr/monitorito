@@ -101,21 +101,21 @@ DomainNode.prototype.removeChildNode = function(id) {
 }
 
 DomainNode.prototype.getIncomingDomainEdges = function(excludeSelfReferencing) {
-    var filterDomainEdges = function(edge) {return (edge instanceof DomainEdge);};
+    var filterDomainEdges = function(edge) {return (edge.constructor == DomainEdge);};
     return this.getIncomingEdges(excludeSelfReferencing).filter(filterDomainEdges);
 }
 
 DomainNode.prototype.getIncomingResourceEdges = function(excludeSelfReferencing) {
-    var filterResourceEdges = function(edge) {return (edge instanceof ResourceEdge);};
+    var filterResourceEdges = function(edge) {return (edge.constructor == ResourceEdge);};
     return this.getIncomingEdges(excludeSelfReferencing).filter(filterResourceEdges);
 }
 
 DomainNode.prototype.getOutgoingDomainEdges = function(excludeSelfReferencing) {
-    var filterDomainEdges = function(edge) {return (edge instanceof DomainEdge);};
+    var filterDomainEdges = function(edge) {return (edge.constructor == DomainEdge);};
     return this.getOutgoingEdges(excludeSelfReferencing).filter(filterDomainEdges);
 }
 
 DomainNode.prototype.getOutgoingResourceEdges = function(excludeSelfReferencing) {
-    var filterResourceEdges = function(edge) {return (edge instanceof ResourceEdge);};
+    var filterResourceEdges = function(edge) {return (edge.constructor == ResourceEdge);};
     return this.getOutgoingEdges(excludeSelfReferencing).filter(filterResourceEdges);
 }

@@ -13,10 +13,10 @@ QUnit.test("createEdge(), existsEdge(), addRequestToEdge() methods", function(as
 	var graph = this.graph;
 	graph.createDomainNode("www.example.com");
 	graph.createDomainNode("www.dependency.com");
-	graph.createDomainEdge("www.example.com", "www.dependency.com", DomainEdge.Type.REQUEST);
+	graph.createDomainEdge("www.example.com", "www.dependency.com");
 
 	assert.ok(graph.existsEdge("www.example.com", "www.dependency.com"), "Added edge exists in the graph");
-	assert.equal(graph.getEdgeBetweenNodes("www.example.com", "www.dependency.com").getType(), DomainEdge.Type.DEFAULT, "Initial edge type is default");
+	assert.equal(graph.getEdgeBetweenNodes("www.example.com", "www.dependency.com").getType(), DomainEdge.Type.NON_REFERRING, "Initial edge type is non referring");
 });
 
 QUnit.test("createNode(), existsNode(), addRequestToNode() methods", function(assert) {
@@ -39,12 +39,12 @@ QUnit.test("notifyForNewNode(), notifyForNewEdge() methods", function(assert) {
 	mockGraphStatsCalculator.expects("onNewNode").exactly(1).withArgs(srcNode);
 	mockGraphStatsCalculator.expects("onNodeChange").exactly(1).withArgs(DomainNode.Type.default, DomainNode.Type[HttpRequest.Type.ROOT], srcNode);
 	mockGraphStatsCalculator.expects("onNewEdge").exactly(1).withArgs( edge);
-	mockGraphStatsCalculator.expects("onEdgeChange").exactly(1).withArgs(DomainEdge.Type.DEFAULT, DomainEdge.Type.REQUEST, edge);
+	mockGraphStatsCalculator.expects("onEdgeChange").exactly(1).withArgs(DomainEdge.Type.NON_REFERRING, DomainEdge.Type.REFERRING, edge);
 
 	graph.notifyForNewNode(srcNode);
 	graph.notifyForNodeChange(DomainNode.Type.default, DomainNode.Type[HttpRequest.Type.ROOT], srcNode);
 	graph.notifyForNewEdge(edge);
-	graph.notifyForEdgeChange(DomainEdge.Type.DEFAULT, DomainEdge.Type.REQUEST, edge);
+	graph.notifyForEdgeChange(DomainEdge.Type.NON_REFERRING, DomainEdge.Type.REFERRING, edge);
 
 	mockGraphStatsCalculator.verify();
 });

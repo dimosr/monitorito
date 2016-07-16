@@ -84,16 +84,16 @@ ResourcesExplorerEngine.prototype.collapse = function(domainNode) {
 }
 
 ResourcesExplorerEngine.prototype.processResourceEdges = function(domainEdge, mode) {
-    var requests = domainEdge.getLinks(DomainEdge.Type.REQUEST);
-    var referrals = domainEdge.getLinks(DomainEdge.Type.REFERRAL);
-    var redirects = domainEdge.getLinks(DomainEdge.Type.REDIRECT);
+    var requests = domainEdge.getLinks(DomainEdge.LinkType.REQUEST);
+    var referrals = domainEdge.getLinks(DomainEdge.LinkType.REFERRAL);
+    var redirects = domainEdge.getLinks(DomainEdge.LinkType.REDIRECT);
 
     for(var i = 0; i < requests.length; i++)
-        this.processResourceEdge(mode, requests[i].from, requests[i].link.url, requests[i].link, ResourceEdge.Type.REQUEST);
+        this.processResourceEdge(mode, requests[i].from, requests[i].link.url, requests[i].link, DomainEdge.LinkType.REQUEST);
     for(var i = 0; i < referrals.length; i++)
-        this.processResourceEdge(mode, referrals[i].from, referrals[i].link.url, referrals[i].link, ResourceEdge.Type.REFERRAL);
+        this.processResourceEdge(mode, referrals[i].from, referrals[i].link.url, referrals[i].link, DomainEdge.LinkType.REFERRAL);
     for(var i = 0; i < redirects.length; i++)
-        this.processResourceEdge(mode, redirects[i].from, redirects[i].link.getFinalURL(), redirects[i].link, ResourceEdge.Type.REDIRECT);
+        this.processResourceEdge(mode, redirects[i].from, redirects[i].link.getFinalURL(), redirects[i].link, DomainEdge.LinkType.REDIRECT);
 }
 
 /*  @Docs
@@ -171,16 +171,16 @@ ResourcesExplorerEngine.prototype._ensureResourceEdgeNotExists = function(fromNo
 }
 
 ResourcesExplorerEngine.prototype.transferLinks = function(fromEdge, toEdge) {
-    var requests = fromEdge.getLinks(ResourceEdge.Type.REQUEST);
-    var referrals = fromEdge.getLinks(ResourceEdge.Type.REFERRAL);
-    var redirects = fromEdge.getLinks(ResourceEdge.Type.REDIRECT);
+    var requests = fromEdge.getLinks(DomainEdge.LinkType.REQUEST);
+    var referrals = fromEdge.getLinks(DomainEdge.LinkType.REFERRAL);
+    var redirects = fromEdge.getLinks(DomainEdge.LinkType.REDIRECT);
 
     for(var i = 0; i < requests.length; i++)
-        toEdge.addLink(requests[i].from, requests[i].link, ResourceEdge.Type.REQUEST);
+        toEdge.addLink(requests[i].from, requests[i].link, DomainEdge.LinkType.REQUEST);
     for(var i = 0; i < referrals.length; i++)
-        toEdge.addLink(referrals[i].from, referrals[i].link, ResourceEdge.Type.REFERRAL);
+        toEdge.addLink(referrals[i].from, referrals[i].link, DomainEdge.LinkType.REFERRAL);
     for(var i = 0; i < redirects.length; i++)
-        toEdge.addLink(redirects[i].from, redirects[i].link, ResourceEdge.Type.REDIRECT);
+        toEdge.addLink(redirects[i].from, redirects[i].link, DomainEdge.LinkType.REDIRECT);
 }
 
 ResourcesExplorerEngine.prototype.getExpandedDomainNodes = function() {

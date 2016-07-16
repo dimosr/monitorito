@@ -51,7 +51,7 @@ var NodeMetricsFactory = (function(){
     function getTrackingMetric() {
         var calculationCallback = function(node, graphStatistics) {
             var maxIncomingEdges = graphStatistics.inEdges.referral.max;
-            var inEdges = DomainEdge.groupEdgesByType(node.getIncomingDomainEdges(true))[DomainEdge.Type.REFERRAL.name].length;
+            var inEdges = DomainEdge.groupEdgesByType(node.getIncomingDomainEdges(true))[DomainEdge.Type.REFERRING.name].length;
             return (maxIncomingEdges > 0) ? (inEdges/maxIncomingEdges)*100 : 0;
         };
 
@@ -61,11 +61,11 @@ var NodeMetricsFactory = (function(){
     function getLeakingMetric() {
         var calculationCallback = function(node, graphStatistics) {
             var maxIncomingEdges = graphStatistics.inEdges.referral.max;
-            var outEdges = DomainEdge.groupEdgesByType(node.getOutgoingDomainEdges(true))[DomainEdge.Type.REFERRAL.name];
+            var outEdges = DomainEdge.groupEdgesByType(node.getOutgoingDomainEdges(true))[DomainEdge.Type.REFERRING.name];
             var sum = 0;
             for(var i = 0; i < outEdges.length; i++) {
                 var neighbourNode = outEdges[i].getDestinationNode();
-                var neighbourIncomingEdges = DomainEdge.groupEdgesByType(neighbourNode.getIncomingDomainEdges(true))[DomainEdge.Type.REFERRAL.name].length;
+                var neighbourIncomingEdges = DomainEdge.groupEdgesByType(neighbourNode.getIncomingDomainEdges(true))[DomainEdge.Type.REFERRING.name].length;
                 var neighbourWeight = (maxIncomingEdges > 0) ? Math.pow(neighbourIncomingEdges / maxIncomingEdges,2) : 0;
                 sum += neighbourWeight;
             }

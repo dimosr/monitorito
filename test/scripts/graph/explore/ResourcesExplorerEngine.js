@@ -17,8 +17,8 @@ QUnit.module( "graph.explore.ResourcesExplorerEngine", {
         node1.addRequest(request1);
         node2.addRequest(request2);
         node3.addRequest(request3);
-        edge1.addLink("http://example.com", redirect, DomainEdge.Type.REDIRECT);
-        edge2.addLink("http://example.com", request3, DomainEdge.Type.REQUEST);
+        edge1.addLink("http://example.com", redirect, DomainEdge.LinkType.REDIRECT);
+        edge2.addLink("http://example.com", request3, DomainEdge.LinkType.REQUEST);
     }
 });
 
@@ -105,7 +105,7 @@ QUnit.test("Expanding DomainNode with edges between included resourceNodes", fun
 
     var selfEdge = this.graph.createDomainEdge("example.com", "example.com");
     var request = new HttpRequest(4, "GET", "http://example.com/dependency", Date.now(), {}, HttpRequest.Type.EMBEDDED, "script");
-    selfEdge.addLink("http://example.com", request, DomainEdge.Type.REFERRAL);
+    selfEdge.addLink("http://example.com", request, DomainEdge.LinkType.REFERRAL);
 
     resourcesExplorerEngine.expand(graph.getNode("example.com"));
 

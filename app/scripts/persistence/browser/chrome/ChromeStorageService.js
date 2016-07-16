@@ -164,7 +164,7 @@ ChromeStorageService.prototype._extractEdges = function(edges) {
 	var fileIndex = 1;
 	var edgesData = Converter.getEdgesColumnValuesCSV();
 	for(var i = 0; i < edges.length; i++) {
-		var requests = edges[i].getLinks(DomainEdge.Type.REQUESTS), redirects = edges[i].getLinks(DomainEdge.Type.REDIRECT), referrals = edges[i].getLinks(DomainEdge.Type.REFERRAL), links = [];
+		var requests = edges[i].getLinks(DomainEdge.LinkType.REQUEST), redirects = edges[i].getLinks(DomainEdge.LinkType.REDIRECT), referrals = edges[i].getLinks(DomainEdge.LinkType.REFERRAL), links = [];
 		for(var j = 0; j < requests.length; j++) links.push({from: requests[j].from, request: requests[j].link, type: "REQUEST"});
 		for(var j = 0; j < redirects.length; j++) links.push({redirect: redirects[j].link, type: "REDIRECT"});
 		for(var j = 0; j < referrals.length; j++) links.push({from: referrals[j].from, request: referrals[j].link, type: "REFERRAL"});

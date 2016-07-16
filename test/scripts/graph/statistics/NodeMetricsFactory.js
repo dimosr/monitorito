@@ -41,20 +41,20 @@ QUnit.test("testing Leaking Metric properties", function(assert) {
 
     var neighbourNode1 = sinon.createStubInstance(DomainNode);
     var edges = new Array(2).fill(sinon.createStubInstance(DomainEdge));
-    edges.map(function(edge) { edge.getType.returns(DomainEdge.Type.REFERRAL)});
+    edges.map(function(edge) { edge.getType.returns(DomainEdge.Type.REFERRING)});
     neighbourNode1.getIncomingDomainEdges.returns(edges);
 
     var neighbourNode2 = sinon.createStubInstance(DomainNode);
     var edges = new Array(3).fill(sinon.createStubInstance(DomainEdge));
-    edges.map(function(edge) { edge.getType.returns(DomainEdge.Type.REFERRAL)});
+    edges.map(function(edge) { edge.getType.returns(DomainEdge.Type.REFERRING)});
     neighbourNode2.getIncomingDomainEdges.returns(edges);
 
     var edge1 = sinon.createStubInstance(DomainEdge);
     edge1.getDestinationNode.returns(neighbourNode1);
-    edge1.getType.returns(DomainEdge.Type.REFERRAL);
+    edge1.getType.returns(DomainEdge.Type.REFERRING);
     var edge2 = sinon.createStubInstance(DomainEdge);
     edge2.getDestinationNode.returns(neighbourNode2);
-    edge2.getType.returns(DomainEdge.Type.REFERRAL);
+    edge2.getType.returns(DomainEdge.Type.REFERRING);
     rootNode.getOutgoingDomainEdges.returns([edge1, edge2]);
 
     var metricValue = leakingMetric.calculate(rootNode, mockStatistics);
@@ -72,7 +72,7 @@ QUnit.test("testing Tracking Metric properties", function(assert) {
 
     var rootNode = sinon.createStubInstance(DomainNode);
     var edges = new Array(4).fill(sinon.createStubInstance(DomainEdge));
-    edges.map(function(edge) {edge.getType.returns(DomainEdge.Type.REFERRAL)});
+    edges.map(function(edge) {edge.getType.returns(DomainEdge.Type.REFERRING)});
     rootNode.getIncomingDomainEdges.returns(edges);
 
     var metricValue = trackingMetric.calculate(rootNode, mockStatistics);
