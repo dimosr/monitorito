@@ -4,21 +4,18 @@ function ClusteringEngine(graph) {
 	this.graph = graph;
 
 	this.clusters = {};
-
-	this.subdomainsRegExp = "^((.+[.])?)(domains)$";
 }
 
 
-ClusteringEngine.prototype.clusterByDomain = function(domains, clusterID) {
+ClusteringEngine.prototype.clusterByDomain = function(clusterOptions, clusterID) {
 	if(clusterID in this.clusters) throw new Error("Cluster ID '" + clusterID + "' already exists. Cluster could not be created, because Cluster ID should be unique.");
-	
-	var regExp = new RegExp(this.subdomainsRegExp.replace("domains", domains.join("|")));
+
 	var nodes = this.graph.getDomainNodes();
 	var clusteredNodes = [];
 
 
 	for(var i = 0; i < nodes.length; i++) {
-		if(regExp.test(nodes[i].getDomain()))
+		if(clusterOptions.belongsInCluster(nodes[i]))
 			clusteredNodes.push(nodes[i]);
 	}
 	this.disallowNestedClustering(clusteredNodes);

@@ -94,8 +94,11 @@ ManipulationWidgetHandler.prototype.executeClustering = function() {
 			}
 		);
 		if(clusterID.trim() == "") throw new Error("Cluster ID field is empty! You have to provide a value.");
-		
-		this.controller.clusterByDomain(domains, clusterID);
+
+		var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+		clusterOptions.setDomains(domains);
+
+		this.controller.clusterByDomain(clusterOptions, clusterID);
 		this.widget.clustering.$clusterOptions.dialog("close");
 		this.resetClusteringForm();
 	}

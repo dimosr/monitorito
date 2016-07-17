@@ -7,7 +7,6 @@ QUnit.module( "graph.cluster.ClusteringEngine", {
 		this.graph.createDomainNode("another.example.com");
 		this.graph.createDomainNode("test.com");
 		this.graph.createDomainNode("dummy.com");
-		this.graph.createDomainNode("test.co.uk");
 
 		this.clusteringEngine = new ClusteringEngine(this.graph);
 	}
@@ -16,7 +15,13 @@ QUnit.module( "graph.cluster.ClusteringEngine", {
 QUnit.test("Cluster creation and deletion work successfully", function(assert) {
 	var clusteringEngine = this.clusteringEngine;
 
-	clusteringEngine.clusterByDomain(["example.com", "test.com"], "cluster-1");
+	var clusterOptions = sinon.createStubInstance(ClusterOptions);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("www.example.com")).returns(true);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("another.example.com")).returns(true);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("test.com")).returns(false);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("dummy.com")).returns(true);
+
+	clusteringEngine.clusterByDomain(clusterOptions, "cluster-1");
 
 	var cluster = clusteringEngine.getCluster("cluster-1");
 	assert.ok(cluster != null, "Cluster was successfully created.");
@@ -29,10 +34,13 @@ QUnit.test("Cluster creation and deletion work successfully", function(assert) {
 
 QUnit.test("Error thrown when attempting to create cluster with existing ID", function(assert) {
 	var clusteringEngine = this.clusteringEngine;
-	clusteringEngine.clusterByDomain(["example.com", "test.com"], "cluster-1");
+	var clusterOptions = sinon.createStubInstance(ClusterOptions);
+	clusterOptions.belongsInCluster.returns(true);
+
+	clusteringEngine.clusterByDomain(clusterOptions, "cluster-1");
 	assert.throws(
 		function() {
-			clusteringEngine.clusterByDomain(["example.com", "dummy.com"], "cluster-1");
+			clusteringEngine.clusterByDomain(clusterOptions, "cluster-1");
 		},
 		Error,
 		"cannot create cluster with existing ID"
@@ -41,9 +49,15 @@ QUnit.test("Error thrown when attempting to create cluster with existing ID", fu
 
 QUnit.test("Error thrown when attempting to create cluster with only 1 contained node", function(assert) {
 	var clusteringEngine = this.clusteringEngine;
+	var clusterOptions = sinon.createStubInstance(ClusterOptions);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("www.example.com")).returns(true);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("another.example.com")).returns(false);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("test.com")).returns(false);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("dummy.com")).returns(false);
+
 	assert.throws(
 		function() {
-			clusteringEngine.clusterByDomain(["test"], "cluster-2");
+			clusteringEngine.clusterByDomain(clusterOptions, "cluster-2");
 		},
 		Error,
 		"cannot create cluster with only 1 containing node"
@@ -52,11 +66,19 @@ QUnit.test("Error thrown when attempting to create cluster with only 1 contained
 
 QUnit.test("Clustering already clustered domain throws Error", function(assert) {
 	var clusteringEngine = this.clusteringEngine;
+	var clusterOptions = sinon.createStubInstance(ClusterOptions);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("www.example.com")).returns(true);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("another.example.com")).returns(false);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("test.com")).returns(true);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("dummy.com")).returns(false);
 
-	clusteringEngine.clusterByDomain(["example.com", "test.com"], "cluster-1");
+	clusteringEngine.clusterByDomain(clusterOptions, "cluster-1");
+
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("test.com")).returns(false);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("dummy.com")).returns(true);
 	assert.throws(
 		function() {
-			clusteringEngine.clusterByDomain(["example.com", "dummy.com"], "cluster-2");
+			clusteringEngine.clusterByDomain(clusterOptions, "cluster-2");
 		},
 		Error,
 		"cannot create nested clustering"
@@ -65,9 +87,20 @@ QUnit.test("Clustering already clustered domain throws Error", function(assert) 
 
 QUnit.test("deleteAllClusters()", function(assert) {
 	var clusteringEngine = this.clusteringEngine;
+	var clusterOptions = sinon.createStubInstance(ClusterOptions);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("www.example.com")).returns(true);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("another.example.com")).returns(true);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("test.com")).returns(false);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("dummy.com")).returns(false);
 
-	clusteringEngine.clusterByDomain(["example.com", "test.com"], "cluster-1");
-	clusteringEngine.clusterByDomain(["dummy.com", "test.co.uk"], "cluster-2");
+	clusteringEngine.clusterByDomain(clusterOptions, "cluster-1");
+
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("www.example.com")).returns(false);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("another.example.com")).returns(false);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("test.com")).returns(true);
+	clusterOptions.belongsInCluster.withArgs(this.graph.getNode("dummy.com")).returns(true);
+
+	clusteringEngine.clusterByDomain(clusterOptions, "cluster-2");
 
 	assert.ok(clusteringEngine.getCluster("cluster-1") != null, "Cluster 1 was successfully created.");
 	assert.ok(clusteringEngine.getCluster("cluster-2") != null, "Cluster 2 was successfully created.");
