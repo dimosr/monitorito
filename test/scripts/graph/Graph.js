@@ -26,6 +26,16 @@ QUnit.test("createNode(), existsNode(), addRequestToNode() methods", function(as
 	assert.ok(graph.existsNode("www.example.com"), "Added node exists in the graph");
 });
 
+QUnit.test("deleteNode() on ResourceNode removes succesfully all references from parent node", function(assert) {
+	var graph = this.graph;
+	graph.createDomainNode("www.example.com");
+	graph.createResourceNode("http://www.example.com");
+	assert.ok(graph.getNode("www.example.com").getChildrenNodes().length == 1, "Resource node included");
+
+	graph.deleteNode("http://www.example.com");
+	assert.ok(graph.getNode("www.example.com").getChildrenNodes().length == 0, "Resource node not included");
+});
+
 QUnit.test("notifyForNewNode(), notifyForNewEdge() methods", function(assert) {
 	var graphStatsCalculator = new GraphStatsCalculator();
 	var mockGraphStatsCalculator = sinon.mock(graphStatsCalculator);

@@ -96,8 +96,8 @@ DomainNode.prototype.getChildrenNodes = function() {
     return children;
 }
 
-DomainNode.prototype.removeChildNode = function(id) {
-    delete this._children[id];
+DomainNode.prototype.removeChildNode = function(resourceNode) {
+    delete this._children[resourceNode.getID()];
 }
 
 DomainNode.prototype.getIncomingDomainEdges = function(excludeSelfReferencing) {
