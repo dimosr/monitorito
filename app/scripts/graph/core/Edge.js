@@ -55,14 +55,14 @@ Edge.prototype.remove = function() {
 
 Edge.prototype.hide = function() {
 	if(this.visible) {
-		this.networkEdges.update({id: this.id, hidden: true});
+		this.networkEdges.update({id: this.id, hidden: true, physics: false});
 		this.visible = false;
 	}
 }
 
 Edge.prototype.show = function() {
 	if(!this.visible) {
-		this.networkEdges.update({id: this.id, hidden: false});
+		this.networkEdges.update({id: this.id, hidden: false, physics: true});
 		this.visible = true;
 	}
 }

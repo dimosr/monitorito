@@ -89,14 +89,14 @@ Node.prototype.remove = function() {
 
 Node.prototype.hide = function() {
 	if(this.visible) {
-		this.networkNodes.update({id: this.id, hidden: true});
+		this.networkNodes.update({id: this.id, hidden: true, physics: false});
 		this.visible = false;
 	}
 }
 
 Node.prototype.show = function() {
 	if(!this.visible) {
-		this.networkNodes.update({id: this.id, hidden: false});
+		this.networkNodes.update({id: this.id, hidden: false, physics: true});
 		this.visible = true;
 	}
 }
