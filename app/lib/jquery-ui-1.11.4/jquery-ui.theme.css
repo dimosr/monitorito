@@ -408,3 +408,8 @@
 	filter: Alpha(Opacity=30); /* support: IE8 */
 	border-radius: 8px;
 }
+
+/* Tabs Theming */
+.ui-tabs {
+	margin-bottom: 15px;
+}

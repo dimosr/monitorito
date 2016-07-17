@@ -142,13 +142,27 @@
 									<form>
 										<fieldset>
 											<legend>Cluster ID/Name</legend>
-											<input class="cluster-id" type="text" placeholder="My-Cluster">
+											<input name="cluster-id" type="text" placeholder="My-Cluster">
 										</fieldset>
-										<fieldset>
-											<legend>Domains</legend>
-											<input class="domain" type="text" placeholder="www.example.com">
-										</fieldset>
-										<div class="add-row-button button tiny secondary">+ Add Domain</div>
+										<div id="tabs-container">
+											<ul>
+												<li><a href="#domains-tab">Use multiple domains</a></li>
+												<li><a href="#regexp-tab">Use Regular Expression</a></li>
+											</ul>
+											<div id="domains-tab">
+												<fieldset>
+													<legend>Domains</legend>
+													<input class="domain" type="text" placeholder="www.example.com          (matches www.example.com and all its subdomains)">
+												</fieldset>
+												<div class="add-row-button button tiny secondary">+ Add Domain</div>
+											</div>
+											<div id="regexp-tab">
+												<fieldset>
+													<legend>RegularExpression</legend>
+													<input name="regexp" type="text" placeholder="(.*)(example)(.*)          (matches all domains containing the word 'example')">
+												</fieldset>
+											</div>
+										</div>
 									</form>
 									<div class="submit-button button tiny success">Cluster</div>
 									<div class="cancel-button button tiny secondary">Cancel</div>

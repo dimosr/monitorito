@@ -8,6 +8,9 @@ function InterfaceHandler() {
 	this.graphContainer = $("#graph");
 	this.loader = $("#loader");
 	this.filterRibbon = $("#ribbon");
+	this.tabs = $("#tabs-container");
+
+	this.initialiseTabs();
 	this.loadExtensions();
 }
 
@@ -29,6 +32,7 @@ InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 			$clusterButton: $("#cluster-button"),
 			$clusterOptions: $("#cluster-options"),
 			$clusterForm: $("#cluster-options form"),
+			$tabs: this.tabs,
 			$addRowButton: $("#cluster-options .add-row-button"),
 			$submitButton: $("#cluster-options .submit-button"),
 			$cancelButton: $("#cluster-options .cancel-button"),
@@ -45,7 +49,7 @@ InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 		},
 		$collapseAllButton: $("#colapse_all_button"),
 		$expandAllButton: $("#expand_all_button")
-	}
+	};
 	this.manipulationWidgetHandler = new ManipulationWidgetHandler(this.controller, manipulationWidget, this.screenDimensions);
 }
 
@@ -232,6 +236,10 @@ InterfaceHandler.prototype.showFilterRibbon = function() {
 
 InterfaceHandler.prototype.hideFilterRibbon = function() {
 	this.filterRibbon.hide();
+}
+
+InterfaceHandler.prototype.initialiseTabs = function() {
+	this.tabs.tabs();
 }
 
 InterfaceHandler.prototype.loadExtensions = function() {

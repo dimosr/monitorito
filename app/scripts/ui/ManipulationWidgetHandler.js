@@ -14,17 +14,17 @@ ManipulationWidgetHandler.prototype.init = function() {
 		autoOpen: false,
 		modal: true,
 		width: this.screenDimensions.width*0.6,
-		height: this.screenDimensions.height*0.8,
+		height: this.screenDimensions.height*0.85,
 		draggable: false
 	};
 
-	this.initClusteringMapulation(dialogOptions);
+	this.initClusteringManipulation(dialogOptions);
 	this.initFilteringManipulation(dialogOptions);
 	this.initExpandCollapseManipulation();
 
 }
 
-ManipulationWidgetHandler.prototype.initClusteringMapulation = function(dialogOptions) {
+ManipulationWidgetHandler.prototype.initClusteringManipulation = function(dialogOptions) {
 	this.widget.clustering.$clusterOptions.dialog(dialogOptions);
 
 	this.widget.clustering.$clusterButton.click({handler: this}, function(event) {
@@ -33,7 +33,7 @@ ManipulationWidgetHandler.prototype.initClusteringMapulation = function(dialogOp
 		else event.data.handler.widget.clustering.$clusterOptions.dialog("open");
 	});
 	this.widget.clustering.$addRowButton.click({handler: this}, function(event) {
-		event.data.handler.widget.clustering.$clusterForm.find("fieldset:nth-child(2)").append("<input class='domain' type='text'>");
+		event.data.handler.widget.clustering.$clusterForm.find("fieldset").eq(1).append("<input class='domain' type='text'>");
 	});
 	this.widget.clustering.$submitButton.click({handler: this}, function(event) {
 		event.data.handler.executeClustering();
@@ -86,26 +86,42 @@ ManipulationWidgetHandler.prototype.initExpandCollapseManipulation = function() 
 
 ManipulationWidgetHandler.prototype.executeClustering = function() {
 	try{
-		var clusterID = this.widget.clustering.$clusterForm.find("input.cluster-id").val();
-		var domains = [];
-		this.widget.clustering.$clusterForm.find("input.domain").each(
-			function(idx, elem) {
-				if(elem.value.trim() != "") domains.push(elem.value);
-			}
-		);
+		var clusterID = this.widget.clustering.$clusterForm.find("input[name='cluster-id']").val();
 		if(clusterID.trim() == "") throw new Error("Cluster ID field is empty! You have to provide a value.");
 
-		var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
-		clusterOptions.setDomains(domains);
-
-		this.controller.clusterByDomain(clusterOptions, clusterID);
-		this.widget.clustering.$clusterOptions.dialog("close");
-		this.resetClusteringForm();
+		if(this.widget.clustering.$tabs.tabs("option", "active") == 0)
+			this.executeClusteringWithDomains(clusterID);
+		else if(this.widget.clustering.$tabs.tabs("option", "active") == 1)
+			this.executeClusteringWithRegExp(clusterID);
 	}
 	catch(err) {
 		$.alert(err.message, "Clustering Error");
 	}
-	
+}
+
+ManipulationWidgetHandler.prototype.executeClusteringWithDomains = function(clusterID) {
+	var domains = [];
+	this.widget.clustering.$clusterForm.find("input.domain").each(
+		function(idx, elem) {
+			if(elem.value.trim() != "") domains.push(elem.value);
+		}
+	);
+	var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+	clusterOptions.setDomains(domains);
+
+	this.controller.clusterByDomain(clusterOptions, clusterID);
+	this.widget.clustering.$clusterOptions.dialog("close");
+	this.resetClusteringForm();
+}
+
+ManipulationWidgetHandler.prototype.executeClusteringWithRegExp = function(clusterID) {
+	var regExp = new RegExp(this.widget.clustering.$clusterForm.find("input[name='regexp']").val());
+	var clusterOptions = new ClusterOptions(ClusterOptions.operationType.REGEXP);
+	clusterOptions.setRegExp(regExp);
+
+	this.controller.clusterByDomain(clusterOptions, clusterID);
+	this.widget.clustering.$clusterOptions.dialog("close");
+	this.resetClusteringForm();
 }
 
 ManipulationWidgetHandler.prototype.resetClusteringForm = function() {
