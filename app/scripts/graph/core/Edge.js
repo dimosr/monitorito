@@ -32,6 +32,7 @@ Edge.prototype.createVisualEdge = function(options){
 		options.from = this._from.getID();
 		options.to = this._to.getID();
 		options.hidden = !this.visible;
+		options.physics = this.visible;
 		this.networkEdges.add(options);
 		if(!this._from.visible || !this._to.visible) this.hide();
 	}
