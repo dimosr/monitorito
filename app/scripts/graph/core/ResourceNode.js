@@ -103,3 +103,7 @@ ResourceNode.prototype.show = function() {
         this.networkEdges.update({id: this.parentEdgeID, hidden: false});
     }
 }
+
+ResourceNode.prototype.getParentNode = function() {
+    return this._parent;
+}

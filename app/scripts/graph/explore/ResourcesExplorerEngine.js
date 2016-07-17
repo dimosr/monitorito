@@ -110,6 +110,7 @@ ResourcesExplorerEngine.prototype.processResourceEdge = function(mode, fromResou
         this._ensureResourceNodeExists(fromResourceURL);
         var edge = this._ensureResourceEdgeExists(fromResourceURL, toResourceURL);
         edge.addLink(fromResourceURL, linkToAdd, linkType);
+
     }
     else if(mode == "moveFromSource") {
         this._ensureResourceNodeExists(toResourceURL);
@@ -133,6 +134,12 @@ ResourcesExplorerEngine.prototype.processResourceEdge = function(mode, fromResou
         var edge = this._ensureResourceEdgeExists(fromResourceURL, Util.getUrlHostname(toResourceURL));
         edge.addLink(fromResourceURL, linkToAdd, linkType);
     }
+
+    if(["create", "addFromDomain", "addToDomain"].indexOf(mode) >= 0) { //when creating new ResourceEdge
+        var edge = this.getInterDomainEdge(this.graph.getNode(Util.getUrlHostname(fromResourceURL)), this.graph.getNode(Util.getUrlHostname(toResourceURL)));
+        edge.hide();
+        edge.lock();
+    }
 }
 
 /*  @Docs
@@ -142,8 +149,9 @@ ResourcesExplorerEngine.prototype.processResourceEdge = function(mode, fromResou
     - "moveToSource": destinationNode of edge belongs to other DomainNode, that is expanded (so move edge srcResource->dstResource to srcDomain->dstResource)
  */
 ResourcesExplorerEngine.prototype.removeResourceEdge = function(mode, edge) {
-    if(mode == "delete")
+    if(mode == "delete") {
         this.graph.deleteEdge(edge.getID());
+    }
     else if(mode == "moveToDestination") {
         this._ensureResourceEdgeNotExists(edge.getSourceNode().getID(), edge.getDestinationNode().getID());
         var newEdge = this._ensureResourceEdgeExists(edge.getSourceNode().getID(), Util.getUrlHostname(edge.getDestinationNode().getID()));
@@ -153,6 +161,12 @@ ResourcesExplorerEngine.prototype.removeResourceEdge = function(mode, edge) {
         this._ensureResourceEdgeNotExists(edge.getSourceNode().getID(), edge.getDestinationNode().getID());
         var newEdge = this._ensureResourceEdgeExists(Util.getUrlHostname(edge.getSourceNode().getID()), edge.getDestinationNode().getID());
         this.transferLinks(edge, newEdge);
+    }
+
+    if(mode == "delete") {
+        var edge = this.getInterDomainEdge(edge.getSourceNode(), edge.getDestinationNode());
+        edge.unlock();
+        edge.checkAndShow();
     }
 }
 
@@ -181,6 +195,12 @@ ResourcesExplorerEngine.prototype.transferLinks = function(fromEdge, toEdge) {
         toEdge.addLink(referrals[i].from, referrals[i].link, DomainEdge.LinkType.REFERRAL);
     for(var i = 0; i < redirects.length; i++)
         toEdge.addLink(redirects[i].from, redirects[i].link, DomainEdge.LinkType.REDIRECT);
+}
+
+ResourcesExplorerEngine.prototype.getInterDomainEdge = function(srcNode, dstNode) {
+    var sourceDomainNode = (srcNode instanceof DomainNode) ? srcNode : srcNode.getParentNode();
+    var dstDomainNode = (dstNode instanceof DomainNode) ? dstNode : dstNode.getParentNode();
+    return this.graph.getEdgeBetweenNodes(sourceDomainNode.getID(), dstDomainNode.getID());
 }
 
 ResourcesExplorerEngine.prototype.getExpandedDomainNodes = function() {

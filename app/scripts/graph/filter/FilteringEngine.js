@@ -46,18 +46,29 @@ FilteringEngine.prototype.resetFilter = function() {
     this.active = false;
 }
 
+/*  @Docs
+    Hides all domainNodes, corresponding to parameter nodes
+    Hides also:
+    - their edges
+    - their children resource nodes
+    - the edges of their children resource nodes
+ */
 FilteringEngine.prototype._hideNodesWithEdges = function(nodes) {
     nodes.forEach(function(node) {
         node.hide();
         node.getOutgoingEdges().map(function(edge) {edge.hide();});
         node.getIncomingEdges().map(function(edge) {edge.hide();});
+        node.getChildrenNodes().map(function(resourceNode) {
+            resourceNode.hide();
+            resourceNode.getOutgoingEdges().map(function(resourceEdge) {resourceEdge.hide()});
+            resourceNode.getIncomingEdges().map(function(resourceEdge) {resourceEdge.hide()});
+        });
     });
 }
 
 /*  @Docs
     Traverses a domainNode and its environment:
     @param environmentDepth: defines the depth to which neighbours will be recursively shown
-    - ResourceNodes
     - Neighbour DomainNodes
  */
 FilteringEngine.prototype.traverseDomainNodeEnvironment = function(domainNode, environmentDepth) {
@@ -74,21 +85,25 @@ FilteringEngine.prototype.traverseDomainNodeEnvironment = function(domainNode, e
             filteringEngine.traverseDomainNodeEnvironment(edge.getDestinationNode(), environmentDepth-1);
         }
     });
-    domainNode.getChildrenNodes().map(function(resourceNode) {
-        filteringEngine.matchedNodes[resourceNode.getID()] = resourceNode;
-    });
 }
 
+/*  @Docs
+ Shows all domainNodes, corresponding to parameter nodes
+ Shows also:
+ - their edges (if the other node is also visible)
+ - their children resource nodes
+ - the edges of their children resource nodes (if the other node is also visible)
+ */
 FilteringEngine.prototype.showMatchedNodesAndEdges = function() {
     var matchedNodes = this.matchedNodes;
     for(var key in matchedNodes) {
         var node = matchedNodes[key];
         node.show();
-        node.getOutgoingEdges().map(function(edge) {
-           if(edge.getDestinationNode().getID() in matchedNodes) edge.show();
-        });
-        node.getIncomingEdges().map(function(edge) {
-            if(edge.getSourceNode().getID() in matchedNodes) edge.show();
+        node.getChildrenNodes().map(function(resourceNode) {
+            resourceNode.show();
         });
     }
+    this.graph.getEdges().forEach(function(edge) {
+        if(edge.getDestinationNode().isVisible() && edge.getSourceNode().isVisible()) edge.show();
+    });
 }

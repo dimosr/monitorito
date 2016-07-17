@@ -11,6 +11,7 @@ function Edge(id, fromNode, toNode, graph, networkEdges) {
 	toNode.addEdgeFrom(fromNode, this);
 
 	if(fromNode.isVisible() && toNode.isVisible()) this.visible = true;
+	this.locked = false;
 }
 
 Edge.prototype.getID = function() {
@@ -54,17 +55,40 @@ Edge.prototype.remove = function() {
 }
 
 Edge.prototype.hide = function() {
-	if(this.visible) {
+	if(this.visible && !this.locked) {
 		this.networkEdges.update({id: this.id, hidden: true, physics: false});
 		this.visible = false;
 	}
 }
 
 Edge.prototype.show = function() {
-	if(!this.visible) {
+	if(!this.visible && !this.locked) {
 		this.networkEdges.update({id: this.id, hidden: false, physics: true});
 		this.visible = true;
 	}
+}
+
+/*	@Docs
+	Shows the edge, only if both nodes are visible
+ */
+Edge.prototype.checkAndShow = function() {
+	if(this.getDestinationNode().isVisible() & this.getSourceNode().isVisible()) this.show();
+}
+
+/* 	@Docs
+	Locks an edge.
+	show(),hide() have no effect on it.
+ */
+Edge.prototype.lock = function() {
+	if(!this.locked) this.locked = true;
+}
+
+/* 	@Docs
+ 	Unlocks an edge.
+ 	show(),hide() have now effect on it.
+ */
+Edge.prototype.unlock = function() {
+	if(this.locked) this.locked = false;
 }
 
 Edge.prototype.isVisible = function() {

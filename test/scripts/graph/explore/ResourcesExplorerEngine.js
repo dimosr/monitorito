@@ -62,6 +62,23 @@ QUnit.test("expanding 2 domain nodes creates ResourceEdge between the correspond
     assert.ok(graph.existsEdge("http://example.com", "http://test.com"), "ResourceEdge created between ResourceNodes");
 });
 
+QUnit.test("expanding-collapsing DomainNode hides-shows corresponding inter-domain edges", function(assert) {
+    var resourcesExplorerEngine = this.resourcesExplorerEngine;
+    var graph = this.graph;
+
+    resourcesExplorerEngine.expand(graph.getNode("example.com"));
+    assert.notOk(graph.getEdgeBetweenNodes("example.com", "test.com").isVisible(), "Inter-domain edge hidden");
+
+    resourcesExplorerEngine.expand(graph.getNode("test.com"));
+    assert.notOk(graph.getEdgeBetweenNodes("example.com", "test.com").isVisible(), "Inter-domain edge still hidden");
+
+    resourcesExplorerEngine.collapse(graph.getNode("test.com"));
+    assert.notOk(graph.getEdgeBetweenNodes("example.com", "test.com").isVisible(), "Inter-domain edge still hidden");
+
+    resourcesExplorerEngine.collapse(graph.getNode("example.com"));
+    assert.ok(graph.getEdgeBetweenNodes("example.com", "test.com").isVisible(), "Inter-domain edge shown again");
+});
+
 QUnit.test("collapsing DomainNode removes ResourceNodes", function(assert) {
     var resourcesExplorerEngine = this.resourcesExplorerEngine;
     var graph = this.graph;

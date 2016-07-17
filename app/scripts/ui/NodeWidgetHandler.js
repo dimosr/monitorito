@@ -58,7 +58,7 @@ NodeWidgetHandler.prototype.init = function() {
 			handler.widget.$collapseButton.removeClass("disabled");
 		}
 		catch(err) {
-			$.alert(err.message, "Clustering Error");
+			$.alert(err.message, "Expand Error");
 		}
 	});
 	this.widget.$collapseButton.click({handler: this}, function(event) {
@@ -69,7 +69,7 @@ NodeWidgetHandler.prototype.init = function() {
 			handler.widget.$collapseButton.addClass("disabled");
 		}
 		catch(err) {
-			$.alert(err.message, "Clustering Error");
+			$.alert(err.message, "Collapse Error");
 		}
 	});
 }
