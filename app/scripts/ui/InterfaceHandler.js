@@ -9,6 +9,7 @@ function InterfaceHandler() {
 	this.loader = $("#loader");
 	this.filterRibbon = $("#ribbon");
 	this.tabs = $("#tabs-container");
+	this.batchImport = $("#batch-import");
 
 	this.initialiseTabs();
 	this.loadExtensions();
@@ -16,6 +17,7 @@ function InterfaceHandler() {
 
 InterfaceHandler.prototype.setController = function(controller) {
 	this.controller = controller;
+	this.initBatchImportWidgetHandler();
 	this.initManipulationWidgetHandler();
 	this.initClusterWidgetHandler();
 	this.initNodeWidgetHandler();
@@ -23,6 +25,15 @@ InterfaceHandler.prototype.setController = function(controller) {
 	this.initControlWidgetHandler();
 	this.initSideWidgetHandler();
 	this.initModeWidgetHandler();
+}
+
+InterfaceHandler.prototype.initBatchImportWidgetHandler = function() {
+	var batchImportWidget = {
+		$batchImport: $("#batch-import"),
+		$submit: $("#batch-import .submit-button"),
+		$cancel: $("#batch-import .cancel-button")
+	};
+	this.batchImportWidgetHandler = new BatchImportWidgetHandler(this.controller, batchImportWidget, this.screenDimensions);
 }
 
 InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
@@ -34,6 +45,7 @@ InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 			$clusterForm: $("#create-cluster-options form"),
 			$tabs: this.tabs,
 			$addRowButton: $("#create-cluster-options .add-row-button"),
+			$batchImportButton: $("#create-cluster-options .batch-import-button"),
 			$submitButton: $("#create-cluster-options .submit-button"),
 			$cancelButton: $("#create-cluster-options .cancel-button"),
 			$declusterAllButton: $("#decluster_all_button")
@@ -50,7 +62,7 @@ InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 		$collapseAllButton: $("#colapse_all_button"),
 		$expandAllButton: $("#expand_all_button")
 	};
-	this.manipulationWidgetHandler = new ManipulationWidgetHandler(this.controller, manipulationWidget, this.screenDimensions);
+	this.manipulationWidgetHandler = new ManipulationWidgetHandler(this.controller, manipulationWidget, this.screenDimensions, this.batchImportWidgetHandler);
 }
 
 InterfaceHandler.prototype.initClusterWidgetHandler = function() {
@@ -68,12 +80,13 @@ InterfaceHandler.prototype.initClusterWidgetHandler = function() {
 			$clusterOptions: $("#edit-cluster-options"),
 			$clusterForm: $("#edit-cluster-options form"),
 			$addRowButton: $("#edit-cluster-options .add-row-button"),
+			$batchImportButton: $("#edit-cluster-options .batch-import-button"),
 			$submitButton: $("#edit-cluster-options .submit-button"),
 			$cancelButton: $("#edit-cluster-options .cancel-button")
 		},
 		$declusterButton: $("#decluster_button")
 	};
-	this.clusterWidgetHandler = new ClusterWidgetHandler(this.controller, clusterWidget, this.screenDimensions);
+	this.clusterWidgetHandler = new ClusterWidgetHandler(this.controller, clusterWidget, this.screenDimensions, this.batchImportWidgetHandler);
 }
 
 InterfaceHandler.prototype.initControlWidgetHandler = function() {

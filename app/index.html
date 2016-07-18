@@ -32,6 +32,7 @@
 
 		<script src="scripts/util/Util.js"></script>
 		<script src="scripts/ui/InterfaceHandler.js"></script>
+		<script src="scripts/ui/BatchImportWidgetHandler.js"></script>
 		<script src="scripts/ui/ManipulationWidgetHandler.js"></script>
 		<script src="scripts/ui/ClusterWidgetHandler.js"></script>
 		<script src="scripts/ui/NodeWidgetHandler.js"></script>
@@ -155,6 +156,7 @@
 													<input class="domain" type="text" placeholder="www.example.com          (matches www.example.com and all its subdomains)">
 												</fieldset>
 												<div class="add-row-button button tiny secondary">+ Add Domain</div>
+												<div class="batch-import-button button tiny">Batch Import</div>
 											</div>
 											<div id="regexp-tab">
 												<fieldset>
@@ -320,6 +322,7 @@
 												<input class="domain" type="text">
 											</fieldset>
 											<div class="add-row-button button tiny secondary">+ Add Domain</div>
+											<div class="batch-import-button button tiny">Batch Import</div>
 										</div>
 										<div id="regexp-options">
 											<fieldset>
@@ -528,7 +531,16 @@
 				</div>
 			</div>
 		</div>
-		
+
+		<div id="batch-import">
+			<div class="callout secondary">Copy-paste all your domains in the text field, one domain per each line</div>
+			<form>
+				<textarea rows="10" cols="80" name="batch-domains"></textarea>
+			</form>
+			<div class="submit-button button tiny success">Cluster</div>
+			<div class="cancel-button button tiny secondary">Cancel</div>
+		</div>
+
 		<div id="loader">
 			<div></div>
 		</div>

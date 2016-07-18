@@ -1,9 +1,10 @@
 "use strict";
 
 /* For reference of the widget structure, check InterfaceHandler.initClusterWidgetHandler */
-function ClusterWidgetHandler(controller, widget, screenDimensions) {
+function ClusterWidgetHandler(controller, widget, screenDimensions, batchImportWidgetHandler) {
 	this.widget = widget;
 	this.controller = controller;
+	this.batchImportWidgetHandler = batchImportWidgetHandler;
 
 	this.cluster = null;
 
@@ -42,6 +43,12 @@ ClusterWidgetHandler.prototype.init = function() {
 	this.widget.clustering.$addRowButton.click({handler: this}, function(event) {
 		event.data.handler.addDomainInputRow();
 	});
+	this.widget.clustering.$batchImportButton.click({handler: this}, function(event) {
+		var handler = event.data.handler;
+		handler.batchImportWidgetHandler.openBatchImport(function callback(domains) {
+			handler.setDomains(domains);
+		}, handler.getDomains());
+	});
 }
 
 ClusterWidgetHandler.prototype.showInfo = function(cluster) {
@@ -76,10 +83,7 @@ ClusterWidgetHandler.prototype.configureClusterForm = function() {
 		this.widget.clustering.$clusterForm.find("#domains-options").show();
 		this.widget.clustering.$clusterForm.find("#regexp-options").hide();
 		var domains = clusterOptions.getDomains();
-		for(var i = 0; i < domains.length; i++) {
-			if(i != 0) this.addDomainInputRow();
-			this.widget.clustering.$clusterForm.find("input.domain").eq(i).val(domains[i]);
-		}
+		this.setDomains(domains);
 	}
 	else if(clusterOptions.getOperationType() == ClusterOptions.operationType.REGEXP) {
 		this.widget.clustering.$clusterForm.find("#domains-options").hide();
@@ -104,6 +108,14 @@ ClusterWidgetHandler.prototype.executeClustering = function() {
 	}
 }
 
+ClusterWidgetHandler.prototype.setDomains = function(domains) {
+	this.resetDomains();
+	for(var i = 0; i < domains.length; i++) {
+		if(i != 0) this.addDomainInputRow();
+		this.widget.clustering.$clusterForm.find("input.domain").eq(i).val(domains[i]);
+	}
+}
+
 ClusterWidgetHandler.prototype.getClusterOptions = function() {
 	if(this.cluster.getClusterOptions().getOperationType() == ClusterOptions.operationType.DOMAINS)
 		var clusterOptions = this.getDomainsClusterOptions();
@@ -114,15 +126,19 @@ ClusterWidgetHandler.prototype.getClusterOptions = function() {
 }
 
 ClusterWidgetHandler.prototype.getDomainsClusterOptions = function() {
+	var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+	clusterOptions.setDomains(this.getDomains());
+	return clusterOptions;
+}
+
+ClusterWidgetHandler.prototype.getDomains = function() {
 	var domains = [];
 	this.widget.clustering.$clusterForm.find("input.domain").each(
 		function(idx, elem) {
 			if(elem.value.trim() != "") domains.push(elem.value);
 		}
 	);
-	var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
-	clusterOptions.setDomains(domains);
-	return clusterOptions;
+	return domains;
 }
 
 ClusterWidgetHandler.prototype.getRegExpClusterOptions = function() {
@@ -134,7 +150,12 @@ ClusterWidgetHandler.prototype.getRegExpClusterOptions = function() {
 
 ClusterWidgetHandler.prototype.resetClusteringForm = function() {
 	this.widget.clustering.$clusterForm[0].reset();
+	this.resetDomains();
+}
+
+ClusterWidgetHandler.prototype.resetDomains = function() {
 	this.widget.clustering.$clusterForm.find("input.domain").not(":first").remove();
+	this.widget.clustering.$clusterForm.find("input.domain").val("");
 }
 
 ClusterWidgetHandler.prototype.addDomainInputRow = function() {
