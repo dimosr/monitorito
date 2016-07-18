@@ -11,6 +11,7 @@ function ManipulationWidgetHandler(controller, widget, screenDimensions) {
 
 ManipulationWidgetHandler.prototype.init = function() {
 	var dialogOptions = {
+		dialogClass: "no-close",
 		autoOpen: false,
 		modal: true,
 		width: this.screenDimensions.width*0.6,
@@ -32,15 +33,15 @@ ManipulationWidgetHandler.prototype.initClusteringManipulation = function(dialog
 		else if(event.data.handler.controller.isFilterActive()) $.alert("Cannot create cluster, because the graph is filtered. Please reset filter first.", "Clustering Error");
 		else event.data.handler.widget.clustering.$clusterOptions.dialog("open");
 	});
-	this.widget.clustering.$addRowButton.click({handler: this}, function(event) {
-		event.data.handler.widget.clustering.$clusterForm.find("fieldset").eq(1).append("<input class='domain' type='text'>");
-	});
 	this.widget.clustering.$submitButton.click({handler: this}, function(event) {
 		event.data.handler.executeClustering();
 	});
 	this.widget.clustering.$cancelButton.click({handler: this}, function(event) {
 		event.data.handler.resetClusteringForm();
 		event.data.handler.widget.clustering.$clusterOptions.dialog("close");
+	});
+	this.widget.clustering.$addRowButton.click({handler: this}, function(event) {
+		event.data.handler.widget.clustering.$clusterForm.find("fieldset").eq(1).append("<input class='domain' type='text'>");
 	});
 	this.widget.clustering.$declusterAllButton.click({handler: this}, function(event) {
 		event.data.handler.controller.deleteAllClusters();
@@ -89,17 +90,25 @@ ManipulationWidgetHandler.prototype.executeClustering = function() {
 		var clusterID = this.widget.clustering.$clusterForm.find("input[name='cluster-id']").val();
 		if(clusterID.trim() == "") throw new Error("Cluster ID field is empty! You have to provide a value.");
 
-		if(this.widget.clustering.$tabs.tabs("option", "active") == 0)
-			this.executeClusteringWithDomains(clusterID);
-		else if(this.widget.clustering.$tabs.tabs("option", "active") == 1)
-			this.executeClusteringWithRegExp(clusterID);
+		var clusterOptions = this.getClusterOptions();
+		this.controller.cluster(clusterOptions, clusterID);
+		this.widget.clustering.$clusterOptions.dialog("close");
+		this.resetClusteringForm();
 	}
 	catch(err) {
 		$.alert(err.message, "Clustering Error");
 	}
 }
 
-ManipulationWidgetHandler.prototype.executeClusteringWithDomains = function(clusterID) {
+ManipulationWidgetHandler.prototype.getClusterOptions = function() {
+	if(this.widget.clustering.$tabs.tabs("option", "active") == 0)
+		var clusterOptions = this.getDomainsClusterOptions();
+	else if(this.widget.clustering.$tabs.tabs("option", "active") == 1)
+		var clusterOptions = this.getRegExpClusterOptions();
+	return clusterOptions;
+}
+
+ManipulationWidgetHandler.prototype.getDomainsClusterOptions = function() {
 	var domains = [];
 	this.widget.clustering.$clusterForm.find("input.domain").each(
 		function(idx, elem) {
@@ -108,20 +117,14 @@ ManipulationWidgetHandler.prototype.executeClusteringWithDomains = function(clus
 	);
 	var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
 	clusterOptions.setDomains(domains);
-
-	this.controller.clusterByDomain(clusterOptions, clusterID);
-	this.widget.clustering.$clusterOptions.dialog("close");
-	this.resetClusteringForm();
+	return clusterOptions;
 }
 
-ManipulationWidgetHandler.prototype.executeClusteringWithRegExp = function(clusterID) {
+ManipulationWidgetHandler.prototype.getRegExpClusterOptions = function() {
 	var regExp = new RegExp(this.widget.clustering.$clusterForm.find("input[name='regexp']").val());
 	var clusterOptions = new ClusterOptions(ClusterOptions.operationType.REGEXP);
 	clusterOptions.setRegExp(regExp);
-
-	this.controller.clusterByDomain(clusterOptions, clusterID);
-	this.widget.clustering.$clusterOptions.dialog("close");
-	this.resetClusteringForm();
+	return clusterOptions;
 }
 
 ManipulationWidgetHandler.prototype.resetClusteringForm = function() {

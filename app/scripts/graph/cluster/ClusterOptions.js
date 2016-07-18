@@ -17,15 +17,27 @@ ClusterOptions.operationType = {
     REGEXP: 2
 }
 
+ClusterOptions.prototype.getOperationType = function() {
+    return this.operationType;
+}
+
 ClusterOptions.prototype.setDomains = function(domains) {
     if(!(domains instanceof Array)) throw new Error("Provided parameter is not array.");
     this.domains = domains;
     this.subDomainsRegexp = new RegExp("^((.+[.])?)(domains)$".replace("domains", this.domains.join("|")));
 }
 
+ClusterOptions.prototype.getDomains = function() {
+    return this.domains;
+}
+
 ClusterOptions.prototype.setRegExp = function(regExp) {
     if(!(regExp instanceof RegExp)) throw new Error("Provided parameter is not regular expression.");
     this.userRegExp = regExp;
+}
+
+ClusterOptions.prototype.getRegExp = function() {
+    return this.userRegExp;
 }
 
 ClusterOptions.prototype.belongsInCluster = function(node) {

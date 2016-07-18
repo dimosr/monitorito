@@ -82,8 +82,12 @@ GraphHandler.prototype.addGraphListeners = function(selectNodeFn, selectEdgeFn, 
 	this.graph.addListeners(selectNodeFn, selectEdgeFn, deselectNodeFn, deselectEdgeFn);
 }
 
-GraphHandler.prototype.clusterByDomain = function(domains, clusterID) {
-	this.clusteringEngine.clusterByDomain(domains, clusterID);
+GraphHandler.prototype.cluster = function(clusterOptions, clusterID) {
+	this.clusteringEngine.cluster(clusterOptions, clusterID);
+}
+
+GraphHandler.prototype.editCluster = function(clusterOptions, clusterID) {
+	this.clusteringEngine.editCluster(clusterOptions, clusterID);
 }
 
 GraphHandler.prototype.deleteCluster = function(clusterID) {

@@ -1,6 +1,6 @@
 "use strict";
 
-function Cluster(id, graph, containedNodes) {
+function Cluster(id, graph, containedNodes, clusterOptions) {
 	this.id = id;
 	this.graph = graph;
 
@@ -16,6 +16,12 @@ function Cluster(id, graph, containedNodes) {
 	this.createVisualCluster();
 	this.calculateEdges();
 	this.calculateCookies();
+
+	this.clusterOptions = clusterOptions;
+}
+
+Cluster.prototype.getClusterOptions = function() {
+	return this.clusterOptions;
 }
 
 Cluster.prototype.createVisualCluster = function() {

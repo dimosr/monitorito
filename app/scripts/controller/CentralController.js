@@ -76,12 +76,17 @@ CentralController.prototype.hideLoader = function() {
 	this.interfaceHandler.hideLoader();
 }
 
-CentralController.prototype.clusterByDomain = function(domains, clusterID) {
+CentralController.prototype.cluster = function(clusterOptions, clusterID) {
 	if(this.existExpandedNodes()) throw new Error("Cannot create cluster, when there are expanded resources. Please collapse all resources first.");
 	if(this.isFilterActive()) throw new Error("Cannot create cluster, because the graph is filtered. Please reset filter first.");
 
 	var graphHandler = this.graphHandler;
-	this.interfaceHandler.executeWithLoader(function() { graphHandler.clusterByDomain(domains, clusterID); });
+	this.interfaceHandler.executeWithLoader(function() { graphHandler.cluster(clusterOptions, clusterID); });
+}
+
+CentralController.prototype.editCluster = function(clusterOptions, clusterID) {
+	var graphHandler = this.graphHandler;
+	this.interfaceHandler.executeWithLoader(function() { graphHandler.editCluster(clusterOptions, clusterID); });
 }
 
 CentralController.prototype.deleteCluster = function(clusterID) {

@@ -30,12 +30,12 @@ InterfaceHandler.prototype.initManipulationWidgetHandler = function() {
 		$container: $("#manipulation_widget"),
 		clustering: {
 			$clusterButton: $("#cluster-button"),
-			$clusterOptions: $("#cluster-options"),
-			$clusterForm: $("#cluster-options form"),
+			$clusterOptions: $("#create-cluster-options"),
+			$clusterForm: $("#create-cluster-options form"),
 			$tabs: this.tabs,
-			$addRowButton: $("#cluster-options .add-row-button"),
-			$submitButton: $("#cluster-options .submit-button"),
-			$cancelButton: $("#cluster-options .cancel-button"),
+			$addRowButton: $("#create-cluster-options .add-row-button"),
+			$submitButton: $("#create-cluster-options .submit-button"),
+			$cancelButton: $("#create-cluster-options .cancel-button"),
 			$declusterAllButton: $("#decluster_all_button")
 		},
 		filtering: {
@@ -62,6 +62,14 @@ InterfaceHandler.prototype.initClusterWidgetHandler = function() {
 			$opener: $("#cluster_nodes_opener"),
 			$dialogContent: $("#cluster_nodes_dialog"),
 			$dialogTableBody: $("#cluster_nodes_dialog tbody")
+		},
+		clustering: {
+			$editClusterButton: $("#edit_cluster_button"),
+			$clusterOptions: $("#edit-cluster-options"),
+			$clusterForm: $("#edit-cluster-options form"),
+			$addRowButton: $("#edit-cluster-options .add-row-button"),
+			$submitButton: $("#edit-cluster-options .submit-button"),
+			$cancelButton: $("#edit-cluster-options .cancel-button")
 		},
 		$declusterButton: $("#decluster_button")
 	};

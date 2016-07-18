@@ -158,11 +158,11 @@ QUnit.test("Clustering with expanded Resources, not allowed", function(assert) {
 	var mockGraphHandler = this.mockGraphHandler;
 
 	mockGraphHandler.expects("getExpandedNodes").exactly(1).returns([sinon.createStubInstance(DomainNode)]);
-	mockGraphHandler.expects("clusterByDomain").never();
+	mockGraphHandler.expects("cluster").never();
 
 	assert.throws(
 		function() {
-			controller.clusterByDomain("cluster-1", ["example.com", "test.com"]);
+			controller.cluster("cluster-1", ["example.com", "test.com"]);
 		},
 		Error,
 		"Cannot create cluster, when there are expanded Resource nodes"
@@ -177,9 +177,9 @@ QUnit.test("Clustering without expanded Resources, allowed", function(assert) {
 
 	mockGraphHandler.expects("getExpandedNodes").exactly(1).returns([]);
 	mockGraphHandler.expects("isFilterActive").exactly(1).returns(false);
-	mockGraphHandler.expects("clusterByDomain").exactly(1);
+	mockGraphHandler.expects("cluster").exactly(1);
 
-	controller.clusterByDomain("cluster-1", ["example.com", "test.com"]);
+	controller.cluster("cluster-1", ["example.com", "test.com"]);
 	this.clock.tick(50);
 
 	mockGraphHandler.verify();

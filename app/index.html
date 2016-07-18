@@ -135,7 +135,7 @@
 							<div class="columns large-12">
 								<div id="cluster-button" class="button medium_font tiny columns large-5">Cluster By Domain</div>
 								<div id="decluster_all_button" class="button medium_font tiny alert columns large-5">Delete all Clusters</div>
-								<div id="cluster-options">
+								<div id="create-cluster-options">
 									<div class="callout secondary">
 									  	Attention: The cluster will be created based on the existing monitored data. New incoming monitored data will not be integrated in the cluster, they will be visualised in the graph as normal Domain nodes. As a consequence, it is suggested that you cluster your graph, only after you have visited all the required resources. Alternatively, you can delete the cluster and re-create it.
 									</div>
@@ -302,8 +302,34 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="columns large-12">
+								<div class="columns large-6">
 									<div id="decluster_button" class="button tiny secondary">De-cluster</div>
+								</div>
+								<div class="columns large-6">
+									<div id="edit_cluster_button" class="button tiny secondary">Edit</div>
+								</div>
+								<div id="edit-cluster-options">
+									<form>
+										<fieldset>
+											<legend>Cluster ID/Name</legend>
+											<input name="cluster-id" type="text" disabled>
+										</fieldset>
+										<div id="domains-options">
+											<fieldset>
+												<legend>Domains</legend>
+												<input class="domain" type="text">
+											</fieldset>
+											<div class="add-row-button button tiny secondary">+ Add Domain</div>
+										</div>
+										<div id="regexp-options">
+											<fieldset>
+												<legend>RegularExpression</legend>
+												<input name="regexp" type="text">
+											</fieldset>
+										</div>
+									</form>
+									<div class="submit-button button tiny success">Edit</div>
+									<div class="cancel-button button tiny secondary">Cancel</div>
 								</div>
 							</div>
 						</div>

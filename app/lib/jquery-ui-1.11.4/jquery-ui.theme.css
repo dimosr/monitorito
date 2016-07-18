@@ -413,3 +413,8 @@
 .ui-tabs {
 	margin-bottom: 15px;
 }
+
+/* Dialogs Theming */
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
