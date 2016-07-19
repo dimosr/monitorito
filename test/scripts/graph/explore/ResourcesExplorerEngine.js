@@ -145,3 +145,21 @@ QUnit.test("collapseAllNodes()", function(assert) {
 
     assert.equal(resourcesExplorerEngine.getExpandedDomainNodes(), 0, "All Resources nodes successfuly collapsed")
 });
+
+QUnit.test("Expanding hidden node (due to filter), expands resources but hides them", function(assert) {
+    var resourcesExplorerEngine = this.resourcesExplorerEngine;
+    var graph = this.graph;
+
+    graph.getNode("example.com").hide();
+
+    resourcesExplorerEngine.expand(graph.getNode("example.com"));
+    resourcesExplorerEngine.expand(graph.getNode("www.example.com"));
+
+    assert.notOk(graph.getNode("http://example.com").isVisible(), "resource hidden");
+    assert.notOk(graph.getEdgeBetweenNodes("http://example.com", "http://www.example.com").isVisible(), "resource edge hidden");
+
+    resourcesExplorerEngine.collapse(graph.getNode("example.com"));
+
+    assert.notOk(graph.getNode("example.com").isVisible(), "domain node still hidden");
+    assert.notOk(graph.getEdgeBetweenNodes("example.com", "http://www.example.com").isVisible(), "resource edge hidden");
+});

@@ -15,6 +15,8 @@ function ResourceNode(id, graph, networkNodes, networkEdges, parentNode, parentE
     this._parent.addChildNode(this);
     this.parentEdgeID = parentEdgeID;
     this.createTempParentEdge();
+
+    if(!parentNode.isVisible()) this.hide();
 }
 
 ResourceNode.prototype = Object.create(Node.prototype);
