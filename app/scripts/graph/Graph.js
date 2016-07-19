@@ -74,7 +74,7 @@ Graph.prototype.notifyForEdgeChange = function(fromType, toType, edge) {
 Graph.prototype.createDomainEdge = function(fromHostname, toHostname) {
 	var fromNode = this.getNode(fromHostname);
 	var toNode = this.getNode(toHostname);
-	var edge = new DomainEdge(this._edgesAutoIncrement++, fromNode, toNode, this, this.mode == Graph.Mode.ONLINE ? this.visualisationNetwork.getEdgesDataset() : null);
+	var edge = new DomainEdge(this._edgesAutoIncrement++, fromNode, toNode, this);
 	this.edges[edge.getID()] = edge;
 	this.notifyForNewEdge(edge);
 	return edge;
@@ -116,7 +116,7 @@ Graph.prototype.deleteNode = function(nodeID) {
 }
 
 Graph.prototype.createDomainNode = function(hostname) {
-	var node = new DomainNode(hostname, this, this.mode == Graph.Mode.ONLINE ? this.visualisationNetwork.getNodesDataset() : null);
+	var node = new DomainNode(hostname, this);
 	this.nodes[hostname] = node;
 	this.notifyForNewNode(node);
 	return node;
@@ -152,11 +152,11 @@ Graph.prototype.empty = function() {
 Graph.prototype.createResourceEdge = function(fromNodeID, toNodeID) {
 	var fromNode = this.getNode(fromNodeID);
 	var toNode = this.getNode(toNodeID);
-	var edge = new ResourceEdge("resourceEdge-" + this._edgesAutoIncrement++, fromNode, toNode, this, this.mode == Graph.Mode.ONLINE ? this.visualisationNetwork.getEdgesDataset() : null);
+	var edge = new ResourceEdge("resourceEdge-" + this._edgesAutoIncrement++, fromNode, toNode, this);
 	this.edges[edge.getID()] = edge;
 }
 
 Graph.prototype.createResourceNode = function(resourceURL) {
-	var node = new ResourceNode(resourceURL, this, this.visualisationNetwork.getNodesDataset(), this.visualisationNetwork.getEdgesDataset(), this.nodes[Util.getUrlHostname(resourceURL)], this._edgesAutoIncrement++);
+	var node = new ResourceNode(resourceURL, this, this.nodes[Util.getUrlHostname(resourceURL)], this._edgesAutoIncrement++);
 	this.nodes[resourceURL] = node;
 }

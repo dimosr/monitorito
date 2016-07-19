@@ -1,14 +1,14 @@
 "use strict";
 
-function ResourceNode(id, graph, networkNodes, networkEdges, parentNode, parentEdgeID) {
-    Node.call(this, id, graph, networkNodes);
+function ResourceNode(id, graph, parentNode, parentEdgeID) {
+    Node.call(this, id, graph);
 
     this.type = ResourceNode.Type.default;
     this.cookies = {};
     this.cookies[HttpRequest.Type.ROOT] = {};
     this.cookies[HttpRequest.Type.EMBEDDED] = {};
     this._requests = [];
-    this.networkEdges = networkEdges;
+    this.networkEdges = graph.mode == Graph.Mode.ONLINE ? graph.visualisationNetwork.getEdgesDataset() : null;
     this.createVisualNode();
 
     this._parent = parentNode;

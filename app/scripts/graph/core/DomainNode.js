@@ -1,7 +1,7 @@
 "use strict";
 
-function DomainNode(id, graph, networkNodes) {
-    Node.call(this, id, graph, networkNodes);
+function DomainNode(id, graph) {
+    Node.call(this, id, graph);
 
     this.type = DomainNode.Type.default;
     this.cookies = {};

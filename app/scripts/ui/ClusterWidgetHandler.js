@@ -121,7 +121,6 @@ ClusterWidgetHandler.prototype.getClusterOptions = function() {
 		var clusterOptions = this.getDomainsClusterOptions();
 	else if(this.cluster.getClusterOptions().getOperationType() == ClusterOptions.operationType.REGEXP)
 		var clusterOptions = this.getRegExpClusterOptions();
-	console.log(clusterOptions);
 	return clusterOptions;
 }
 

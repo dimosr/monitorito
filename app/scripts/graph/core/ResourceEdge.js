@@ -1,7 +1,7 @@
 "use strict";
 
-function ResourceEdge(id, fromNode, toNode, graph, networkEdges) {
-    DomainEdge.call(this, id, fromNode, toNode, graph, networkEdges);
+function ResourceEdge(id, fromNode, toNode, graph) {
+    DomainEdge.call(this, id, fromNode, toNode, graph);
 }
 
 ResourceEdge.prototype = Object.create(DomainEdge.prototype);

@@ -1,7 +1,7 @@
 "use strict";
 
-function DomainEdge(id, fromNode, toNode, graph, networkEdges) {
-    Edge.call(this, id, fromNode, toNode, graph, networkEdges);
+function DomainEdge(id, fromNode, toNode, graph) {
+    Edge.call(this, id, fromNode, toNode, graph);
 
     this._links = {};
     for(var key in DomainEdge.LinkType) {

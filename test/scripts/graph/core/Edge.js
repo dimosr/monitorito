@@ -5,13 +5,13 @@ QUnit.module( "graph.Edge", {
 		var graph = new Graph(visualisationNetwork);
 		this.mockGraph = sinon.mock(graph);
 
-		this.fromNode = new DomainNode("www.example.com", graph, visualisationNetwork.getNodesDataset());
-		this.toNode = new DomainNode("www.dependency.com", graph, visualisationNetwork.getNodesDataset());
+		this.fromNode = new DomainNode("www.example.com", graph);
+		this.toNode = new DomainNode("www.dependency.com", graph);
 
-		this.edge = new DomainEdge(1, this.fromNode, this.toNode, graph, visualisationNetwork.getEdgesDataset());
+		this.edge = new DomainEdge(1, this.fromNode, this.toNode, graph);
 
-		var redirectToNode = new DomainNode( "www.example2.com", graph, visualisationNetwork.getNodesDataset());
-		this.edge2 = new DomainEdge(2, this.fromNode, redirectToNode, graph, visualisationNetwork.getEdgesDataset());
+		var redirectToNode = new DomainNode( "www.example2.com", graph);
+		this.edge2 = new DomainEdge(2, this.fromNode, redirectToNode, graph);
 	}
 });
 

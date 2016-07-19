@@ -1,11 +1,11 @@
 "use strict";
 
-function Edge(id, fromNode, toNode, graph, networkEdges) {
+function Edge(id, fromNode, toNode, graph) {
 	this.id = id.toString();
 	
 	this._from = fromNode;
 	this._to = toNode;
-	this.networkEdges = networkEdges;
+	this.networkEdges = graph.mode == Graph.Mode.ONLINE ? graph.visualisationNetwork.getEdgesDataset() : null;
 	this.graph = graph;
 	fromNode.addEdgeTo(toNode, this);
 	toNode.addEdgeFrom(fromNode, this);

@@ -1,11 +1,11 @@
 "use strict";
 
-function Node(id, graph, networkNodes) {
+function Node(id, graph) {
 	this.id = id;
 
 	this._outgoing = {};
 	this._incoming = {};
-	this.networkNodes = networkNodes;
+	this.networkNodes = graph.mode == Graph.Mode.ONLINE ? graph.visualisationNetwork.getNodesDataset() : null;
 	this.graph = graph;
 
 	this.visible = true;

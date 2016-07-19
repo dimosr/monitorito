@@ -4,10 +4,10 @@ QUnit.module( "graph.Node", {
 		var graph = new Graph(visualisationNetwork);
 		this.mockGraph = sinon.mock(graph);
 
-		this.fromNode = new DomainNode("www.example.com", graph, visualisationNetwork.getNodesDataset());
-		this.toNode = new DomainNode("www.dependency.com", graph, visualisationNetwork.getNodesDataset());
+		this.fromNode = new DomainNode("www.example.com", graph);
+		this.toNode = new DomainNode("www.dependency.com", graph);
 
-		this.edge = new DomainEdge(1, this.fromNode, this.toNode, graph, visualisationNetwork.getNodesDataset());
+		this.edge = new DomainEdge(1, this.fromNode, this.toNode, graph);
 	}
 });
 
