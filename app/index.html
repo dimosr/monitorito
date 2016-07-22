@@ -68,6 +68,7 @@
 		<script src="scripts/graph/statistics/NodeMetric.js"></script>
 		<script src="scripts/graph/statistics/NodeMetricsFactory.js"></script>
 		<script src="scripts/graph/cluster/ClusterOptions.js"></script>
+		<script src="scripts/graph/cluster/ClusterEdge.js"></script>
 		<script src="scripts/graph/cluster/Cluster.js"></script>
 		<script src="scripts/graph/cluster/ClusteringEngine.js"></script>
 		<script src="scripts/graph/explore/ResourcesExplorerEngine.js"></script>
@@ -187,7 +188,7 @@
 											<div class="columns large-12">
 												<div class="row">
 													<div class="columns large-5">
-														<label class="right">Regular Expression (to match Domains)</label>
+														<label class="right">Regular Expression for Node IDs<br> (Domains & Cluster IDs)</label>
 													</div>
 													<div class="columns large-7">
 														<input name="node-id" type="text" placeholder=".*       (will match all nodes)">
@@ -537,7 +538,7 @@
 			<form>
 				<textarea rows="10" cols="80" name="batch-domains"></textarea>
 			</form>
-			<div class="submit-button button tiny success">Cluster</div>
+			<div class="submit-button button tiny success">Add</div>
 			<div class="cancel-button button tiny secondary">Cancel</div>
 		</div>
 
