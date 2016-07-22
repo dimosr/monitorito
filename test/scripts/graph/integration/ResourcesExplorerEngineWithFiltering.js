@@ -5,6 +5,9 @@ QUnit.module( "graph.integration.ResourcesExplorerEngineWithFiltering", {
 
         this.resourcesExplorerEngine = new ResourcesExplorerEngine(this.graph);
 
+        var clusteringEngine = new ClusteringEngine(this.graph, this.resourcesExplorerEngine);
+        this.graph.setClusteringEngine(clusteringEngine);
+
         this.graphStatsCalculator = new GraphStatsCalculator();
         this.filteringEngine = new FilteringEngine(this.graph, this.graphStatsCalculator);
         this.filteringEngine.resetFilter();
