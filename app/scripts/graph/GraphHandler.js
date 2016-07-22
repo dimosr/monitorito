@@ -8,11 +8,11 @@ GraphHandler.prototype.setGraph = function(graph) {
 	this.graph = graph;
 	this.graph.register(this.graphStatsCalculator);
 
-	this.clusteringEngine = new ClusteringEngine(graph);
-	this.graph.setClusteringEngine(this.clusteringEngine);
-
 	this.resourcesExplorerEngine = new ResourcesExplorerEngine(graph);
 	this.filteringEngine = new FilteringEngine(this.graph, this.graphStatsCalculator);
+
+	this.clusteringEngine = new ClusteringEngine(graph, this.resourcesExplorerEngine);
+	this.graph.setClusteringEngine(this.clusteringEngine);
 }
 
 GraphHandler.prototype.getGraph = function() {

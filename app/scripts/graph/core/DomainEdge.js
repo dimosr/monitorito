@@ -10,8 +10,9 @@ function DomainEdge(id, fromNode, toNode, graph) {
     }
     this.type = DomainEdge.Type.NON_REFERRING;
 
-
     this.createVisualEdge();
+
+    this.detached = false;      //used to detect detached edges from graph (belonging to clustered nodes)
 }
 
 DomainEdge.prototype = Object.create(Edge.prototype);
@@ -107,4 +108,21 @@ DomainEdge.groupEdgesByType = function(edges) {
         groupedEdges[edge.getType().name].push(edge);
     }
     return groupedEdges;
+}
+
+DomainEdge.prototype.getLinksFromEdge = function(originalEdge) {
+    for(var key in DomainEdge.LinkType) {
+        var links = originalEdge.getLinks(DomainEdge.LinkType[key]);
+        for(var i = 0; i < links.length; i++) this.addLink(links[i].from, links[i].link, DomainEdge.LinkType[key]);
+    }
+}
+
+DomainEdge.prototype.isDetached = function() {
+    return this.detached;
+}
+
+DomainEdge.prototype.setDetached = function(detached) {
+    if(detached == true) this.hide();
+    else this.show();
+    this.detached = detached;
 }

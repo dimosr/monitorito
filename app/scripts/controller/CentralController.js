@@ -77,9 +77,6 @@ CentralController.prototype.hideLoader = function() {
 }
 
 CentralController.prototype.cluster = function(clusterOptions, clusterID) {
-	if(this.existExpandedNodes()) throw new Error("Cannot create cluster, when there are expanded resources. Please collapse all resources first.");
-	if(this.isFilterActive()) throw new Error("Cannot create cluster, because the graph is filtered. Please reset filter first.");
-
 	var graphHandler = this.graphHandler;
 	this.interfaceHandler.executeWithLoader(function() { graphHandler.cluster(clusterOptions, clusterID); });
 }
@@ -106,7 +103,6 @@ CentralController.prototype.existClusters = function() {
 }
 
 CentralController.prototype.expandDomainNode = function(nodeID) {
-	if(this.existClusters()) throw new Error("Cannot expand Resources, when there are active clusters. Please delete all clusters first.");
 	this.graphHandler.expandDomainNode(nodeID);
 }
 
@@ -127,20 +123,17 @@ CentralController.prototype.collapseAllNodes = function() {
 }
 
 CentralController.prototype.expandAllNodes = function() {
-	if(this.existClusters()) throw new Error("Cannot expand Resources, when there are active clusters. Please delete all clusters first.");
 	var graphHandler = this.graphHandler;
 	this.interfaceHandler.executeWithLoader(function() { graphHandler.expandAllNodes() });
 }
 
 CentralController.prototype.applyFilter = function(filterOptions) {
-	if(this.existClusters()) throw new Error("Cannot apply Filtering, when there are active clusters. Please delete all clusters first.");
 	var graphHandler = this.graphHandler;
 	this.interfaceHandler.executeWithLoader(function() {graphHandler.applyFilter(filterOptions);});
 	this.interfaceHandler.showFilterRibbon();
 }
 
 CentralController.prototype.resetFilter = function() {
-	if(this.existClusters()) throw new Error("Cannot reset Filtering, when there are active clusters. Please delete all clusters first.");
 	var graphHandler = this.graphHandler;
 	this.interfaceHandler.executeWithLoader(function() {graphHandler.resetFilter();});
 	this.interfaceHandler.hideFilterRibbon();
@@ -160,13 +153,13 @@ CentralController.prototype.setGraphMode = function(mode) {
 	    graphHandler.setGraph(graph);
 		var selectNodeCallback = function(selectedNode) {
 			interfaceHandler.emptyEdgeInfo();
-			if(selectedNode instanceof Node) {
-				interfaceHandler.emptyClusterInfo();
-				interfaceHandler.showNodeInfo(selectedNode);
-			}
-			else if(selectedNode instanceof Cluster) {
+			if(selectedNode instanceof Cluster) {
 				interfaceHandler.emptyNodeInfo();
 				interfaceHandler.showClusterInfo(selectedNode);
+			}
+			else if(selectedNode instanceof Node) {
+				interfaceHandler.emptyClusterInfo();
+				interfaceHandler.showNodeInfo(selectedNode);
 			}
 		};
 		var selectEdgeCallback = function(selectedEdge) {

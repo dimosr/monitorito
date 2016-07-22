@@ -1,6 +1,8 @@
 "use strict";
 
 function Edge(id, fromNode, toNode, graph) {
+	if(fromNode.hasEdgeTo(toNode)) throw new Error("Cannot create duplicate edge " + id + ". There is existing edge between these nodes.");
+
 	this.id = id.toString();
 	
 	this._from = fromNode;

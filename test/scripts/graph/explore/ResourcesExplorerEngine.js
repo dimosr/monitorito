@@ -3,7 +3,11 @@ QUnit.module( "graph.explore.ResourcesExplorerEngine", {
         this.visualisationNetwork = new VisualisationNetwork(jQuery("<canvas>")[0]);
         this.graph = new Graph(this.visualisationNetwork);
 
+
         this.resourcesExplorerEngine = new ResourcesExplorerEngine(this.graph);
+
+        var clusteringEngine = new ClusteringEngine(this.graph, this.resourcesExplorerEngine);
+        this.graph.setClusteringEngine(clusteringEngine);
 
         var node1 = this.graph.createDomainNode("www.example.com");
         var node2 = this.graph.createDomainNode("example.com");

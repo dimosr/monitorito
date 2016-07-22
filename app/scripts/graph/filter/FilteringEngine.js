@@ -20,14 +20,14 @@ FilteringEngine.prototype.isFilterActive = function() {
     Note: Clusters should be deleted before applying the filter, for compatibility
  */
 FilteringEngine.prototype.filter = function(filterOptions) {
-    var visibleDomainNodes = this.graph.getDomainNodes().filter(function(node) {return node.isVisible()});
-    this._hideNodesWithEdges(visibleDomainNodes);
+    var filterableNodes = this._getFilterableNodes();
+    this._hideNodesWithEdges(filterableNodes);
     this.matchedNodes = {};
 
-    for(var i = 0; i < visibleDomainNodes.length; i++) {
-        var domainNode = visibleDomainNodes[i];
-        if(filterOptions.satisfiedByNode(domainNode, this.graphStatsCalculator.getNodeMetrics(domainNode))) {
-            this.traverseDomainNodeEnvironment(domainNode, filterOptions.getNeighboursDepth());
+    for(var i = 0; i < filterableNodes.length; i++) {
+        var node = filterableNodes[i];
+        if(filterOptions.satisfiedByNode(node, this.graphStatsCalculator.getNodeMetrics(node))) {
+            this.traverseDomainNodeEnvironment(node, filterOptions.getNeighboursDepth());
         }
     }
     this.showMatchedNodesAndEdges();
@@ -36,51 +36,73 @@ FilteringEngine.prototype.filter = function(filterOptions) {
 }
 
 /*  @Docs
-    Resets the filtering, showing again all nodes and edges of the graph
-    Note: Clusters should be deleted before reseting the filter, for compatibility
+    Resets the filtering, showing again all nodes and edges of the graph for:
+    - ResourceNodes
+    - Clusters
+    - Domain Nodes (except the clustered ones that are detached)
  */
 FilteringEngine.prototype.resetFilter = function() {
-    this.graph.getNodes().map(function(node){ node.show();});
-    this.graph.getEdges().map(function(edge){ edge.show();});
-
+    this.graph.getNodes()
+        .filter(function(node) {
+            if (node instanceof DomainNode) return !node.isClustered();
+            else return true;
+        })
+        .map(function(node){
+            node.show();
+            node.getOutgoingEdges()
+                .filter(function(edge) { return !edge.isDetached(); })
+                .forEach(function(edge) {
+                edge.show();
+            });
+            node.getIncomingEdges()
+                .filter(function(edge) { return !edge.isDetached(); })
+                .forEach(function(edge) {
+                edge.show();
+            });
+        });
     this.active = false;
 }
 
 /*  @Docs
-    Hides all domainNodes, corresponding to parameter nodes
+    Hides all nodes provided
     Hides also:
     - their edges
-    - their children resource nodes
-    - the edges of their children resource nodes
+    - their children resource nodes (if domain nodes)
+    - the edges of their children resource nodes (if domain nodes)
  */
 FilteringEngine.prototype._hideNodesWithEdges = function(nodes) {
     nodes.forEach(function(node) {
         node.hide();
         node.getOutgoingEdges().map(function(edge) {edge.hide();});
         node.getIncomingEdges().map(function(edge) {edge.hide();});
-        node.getChildrenNodes().map(function(resourceNode) {
-            resourceNode.hide();
-            resourceNode.getOutgoingEdges().map(function(resourceEdge) {resourceEdge.hide()});
-            resourceNode.getIncomingEdges().map(function(resourceEdge) {resourceEdge.hide()});
-        });
+        if(node instanceof DomainNode) {
+            node.getChildrenNodes().map(function (resourceNode) {
+                resourceNode.hide();
+                resourceNode.getOutgoingEdges().map(function (resourceEdge) {
+                    resourceEdge.hide()
+                });
+                resourceNode.getIncomingEdges().map(function (resourceEdge) {
+                    resourceEdge.hide()
+                });
+            });
+        }
     });
 }
 
 /*  @Docs
-    Traverses a domainNode and its environment:
+    Traverses a node and its environment:
     @param environmentDepth: defines the depth to which neighbours will be recursively shown
-    - Neighbour DomainNodes
+    - Neighbour node
  */
-FilteringEngine.prototype.traverseDomainNodeEnvironment = function(domainNode, environmentDepth) {
+FilteringEngine.prototype.traverseDomainNodeEnvironment = function(node, environmentDepth) {
     var filteringEngine = this;
-
-    this.matchedNodes[domainNode.getID()] = domainNode;
-    domainNode.getIncomingDomainEdges().map(function(edge) {
+    this.matchedNodes[node.getID()] = node;
+    node.getIncomingDomainEdges().map(function(edge) {
         if(environmentDepth > 0){
             filteringEngine.traverseDomainNodeEnvironment(edge.getSourceNode(), environmentDepth-1);
         }
     });
-    domainNode.getOutgoingDomainEdges().map(function(edge) {
+    node.getOutgoingDomainEdges().map(function(edge) {
         if(environmentDepth > 0){
             filteringEngine.traverseDomainNodeEnvironment(edge.getDestinationNode(), environmentDepth-1);
         }
@@ -88,22 +110,37 @@ FilteringEngine.prototype.traverseDomainNodeEnvironment = function(domainNode, e
 }
 
 /*  @Docs
- Shows all domainNodes, corresponding to parameter nodes
+ Shows all nodes matched by the applied filter
  Shows also:
  - their edges (if the other node is also visible)
- - their children resource nodes
- - the edges of their children resource nodes (if the other node is also visible)
+ - their children resource nodes (if domain nodes)
+ - the edges of their children resource nodes (if domain nodes && if the other node is also visible)
  */
 FilteringEngine.prototype.showMatchedNodesAndEdges = function() {
     var matchedNodes = this.matchedNodes;
     for(var key in matchedNodes) {
         var node = matchedNodes[key];
         node.show();
-        node.getChildrenNodes().map(function(resourceNode) {
-            resourceNode.show();
-        });
+        if(node instanceof DomainNode) {
+            node.getChildrenNodes().map(function(resourceNode) {
+                resourceNode.show();
+            });
+        }
     }
     this.graph.getEdges().forEach(function(edge) {
         if(edge.getDestinationNode().isVisible() && edge.getSourceNode().isVisible()) edge.show();
     });
+}
+
+/*  @Docs
+    Returns all nodes valid for filtering:
+    - Non-clustered domain nodes, not filtered out by previous filters
+    - Clusters
+ */
+FilteringEngine.prototype._getFilterableNodes = function() {
+    return this.graph.getNodes()
+                          .filter(function(node) {
+                              return (node instanceof Cluster) ||
+                                     ((node instanceof DomainNode) && (!node.isClustered()) && (node.isVisible()) );
+                          });
 }

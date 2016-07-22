@@ -28,6 +28,7 @@ QUnit.test("addRequest() between different domains, without referrer and with ex
 	var mockNode = sinon.mock(node);
 	var edge = {addLink: function(fromURL, request, linkType){}};
 	var mockEdge = sinon.mock(edge);
+	mockGraph.expects("getNode").withArgs("www.example.com").atLeast(1).returns(node);
 	mockGraph.expects("getNode").withArgs("www.dependency.com").atLeast(1).returns(node);
 	mockGraph.expects("existsEdge").withArgs("www.example.com", "www.dependency.com").atLeast(1).returns(true);
 	mockNode.expects("addRequest").withArgs(request);

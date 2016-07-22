@@ -45,16 +45,9 @@ VisualisationNetwork.prototype.setupListeners = function(graph) {
     this._network.on("select", function(eventParams) {
         if(eventParams.nodes.length == 1) {//Node Selected
             var nodeID = eventParams.nodes[0];
-            if(graph.existsNode(nodeID)) {
-                var selectedNode = graph.getNode(nodeID);
-                this._selectNodeCallback(selectedNode);
-            }
-            else if(graph.clusteringEngine.getCluster(nodeID) != null) {
-                var selectedCluster = graph.clusteringEngine.getCluster(nodeID);
-                this._selectNodeCallback(selectedCluster);
-            }
+            this._selectNodeCallback(graph.getNode(nodeID));
         }
-        else if(eventParams.nodes.length == 0 && eventParams.edges.length == 1 && (graph.getEdge(eventParams.edges[0]) != null)) {//Edge selected (except clusterEdge, or ResourceNode parentEdge)
+        else if(eventParams.nodes.length == 0 && eventParams.edges.length == 1 && (graph.getEdge(eventParams.edges[0]) != null)) {//Edge selected (except ResourceNode parentEdge)
             var selectedEdge = graph.getEdge(eventParams.edges[0]);
             this._selectEdgeCallback(selectedEdge);
         }
@@ -64,20 +57,13 @@ VisualisationNetwork.prototype.setupListeners = function(graph) {
         var previousSelection = eventParams.previousSelection;
         if(previousSelection.nodes.length == 1) {//Only in node deselections
             var nodeID = previousSelection.nodes[0];
-            if(graph.existsNode(nodeID)) {
-                var deselectedNode = graph.getNode(nodeID);
-                this._deselectNodeCallback(deselectedNode);
-            }
-            else if(graph.clusteringEngine.getCluster(nodeID) != null) {
-                var deselectedCluster = graph.clusteringEngine.getCluster(nodeID);
-                this._deselectNodeCallback(deselectedCluster);
-            }
+            this._deselectNodeCallback(graph.getNode(nodeID));
         }
     });
 
     this._network.on("deselectEdge", function(eventParams) {
         var previousSelection = eventParams.previousSelection;
-        if(previousSelection.nodes.length == 0 && previousSelection.edges.length == 1 && (graph.getEdge(previousSelection.edges[0]) != null)) {//Edge deselected (except clusterEdge, or ResourceNode parentEdge)
+        if(previousSelection.nodes.length == 0 && previousSelection.edges.length == 1 && (graph.getEdge(previousSelection.edges[0]) != null)) {//Edge deselected (except ResourceNode parentEdge)
             var deselectedEdges = previousSelection.edges;
             this._deselectEdgeCallback(deselectedEdges);
         }

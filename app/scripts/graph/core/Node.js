@@ -88,18 +88,35 @@ Node.prototype.remove = function() {
 }
 
 Node.prototype.hide = function() {
-	if(this.visible) {
+	if(this.visible && !this.locked) {
 		this.networkNodes.update({id: this.id, hidden: true, physics: false});
 		this.visible = false;
 	}
 }
 
 Node.prototype.show = function() {
-	if(!this.visible) {
+	if(!this.visible && !this.locked) {
 		this.networkNodes.update({id: this.id, hidden: false, physics: true});
 		this.visible = true;
 	}
 }
+
+/* 	@Docs
+ 	Locks a node.
+ 	show(),hide() have no effect on it.
+ */
+Node.prototype.lock = function() {
+	if(!this.locked) this.locked = true;
+}
+
+/* 	@Docs
+ 	Unlocks a node.
+ 	show(),hide() have now effect on it.
+ */
+Node.prototype.unlock = function() {
+	if(this.locked) this.locked = false;
+}
+
 
 Node.prototype.isVisible = function() {
 	return this.visible;

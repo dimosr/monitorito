@@ -153,67 +153,6 @@ QUnit.test("setGraphMode(mode) with mode not belonging in Graph.Mode values", fu
 	}, "Exception is raised, if provided mode is not valid");
 });
 
-QUnit.test("Clustering with expanded Resources, not allowed", function(assert) {
-	var controller = this.controller;
-	var mockGraphHandler = this.mockGraphHandler;
-
-	mockGraphHandler.expects("getExpandedNodes").exactly(1).returns([sinon.createStubInstance(DomainNode)]);
-	mockGraphHandler.expects("cluster").never();
-
-	assert.throws(
-		function() {
-			controller.cluster("cluster-1", ["example.com", "test.com"]);
-		},
-		Error,
-		"Cannot create cluster, when there are expanded Resource nodes"
-	);
-	mockGraphHandler.verify();
-
-});
-
-QUnit.test("Clustering without expanded Resources, allowed", function(assert) {
-	var controller = this.controller;
-	var mockGraphHandler = this.mockGraphHandler;
-
-	mockGraphHandler.expects("getExpandedNodes").exactly(1).returns([]);
-	mockGraphHandler.expects("isFilterActive").exactly(1).returns(false);
-	mockGraphHandler.expects("cluster").exactly(1);
-
-	controller.cluster("cluster-1", ["example.com", "test.com"]);
-	this.clock.tick(50);
-
-	mockGraphHandler.verify();
-});
-
-QUnit.test("Expanding DomainNode, while there are active clusters, not allowed", function(assert) {
-	var controller = this.controller;
-	var mockGraphHandler = this.mockGraphHandler;
-
-	mockGraphHandler.expects("getClusters").exactly(1).returns([sinon.createStubInstance(Cluster)]);
-	mockGraphHandler.expects("expandDomainNode").never();
-
-	assert.throws(
-		function() {
-			controller.expandDomainNode(1);
-		},
-		Error,
-		"Cannot expand DomainNode, when there are existing clusters"
-	);
-	mockGraphHandler.verify();
-});
-
-QUnit.test("Expanding DomainNode, while there are active clusters, not allowed", function(assert) {
-	var controller = this.controller;
-	var mockGraphHandler = this.mockGraphHandler;
-
-	mockGraphHandler.expects("getClusters").exactly(1).returns([]);
-	mockGraphHandler.expects("expandDomainNode").exactly(1);
-
-
-	controller.expandDomainNode(1);
-	mockGraphHandler.verify();
-});
-
 QUnit.test("Reset Data resets all components", function(assert) {
 	var controller = this.controller;
 	var mockGraphHandler = this.mockGraphHandler;

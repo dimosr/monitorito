@@ -11,6 +11,7 @@ function DomainNode(id, graph) {
     this._expanded = false;
 
     this._children = {};
+    this.cluster = null;
 
     this.createVisualNode();
 }
@@ -101,7 +102,7 @@ DomainNode.prototype.removeChildNode = function(resourceNode) {
 }
 
 DomainNode.prototype.getIncomingDomainEdges = function(excludeSelfReferencing) {
-    var filterDomainEdges = function(edge) {return (edge.constructor == DomainEdge);};
+    var filterDomainEdges = function(edge) {return (edge.constructor == DomainEdge) && (!edge.isDetached());};
     return this.getIncomingEdges(excludeSelfReferencing).filter(filterDomainEdges);
 }
 
@@ -111,11 +112,30 @@ DomainNode.prototype.getIncomingResourceEdges = function(excludeSelfReferencing)
 }
 
 DomainNode.prototype.getOutgoingDomainEdges = function(excludeSelfReferencing) {
-    var filterDomainEdges = function(edge) {return (edge.constructor == DomainEdge);};
+    var filterDomainEdges = function(edge) {return (edge.constructor == DomainEdge) && (!edge.isDetached());};
     return this.getOutgoingEdges(excludeSelfReferencing).filter(filterDomainEdges);
 }
 
 DomainNode.prototype.getOutgoingResourceEdges = function(excludeSelfReferencing) {
     var filterResourceEdges = function(edge) {return (edge.constructor == ResourceEdge);};
     return this.getOutgoingEdges(excludeSelfReferencing).filter(filterResourceEdges);
+}
+
+/*  @Docs
+    Sets the cluster to which a domain node is added
+ */
+DomainNode.prototype.setCluster = function(cluster) {
+    this.cluster = cluster;
+}
+
+DomainNode.prototype.removeCluster = function() {
+    this.cluster = null;
+}
+
+DomainNode.prototype.getCluster = function() {
+    return this.cluster;
+}
+
+DomainNode.prototype.isClustered = function() {
+    return this.getCluster() != null;
 }

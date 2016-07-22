@@ -18,6 +18,7 @@ function ResourcesExplorerEngine(graph) {
         - ResourceNode belonging to expanded DomainNode and DomainNodes that have not been expanded
  */
 ResourcesExplorerEngine.prototype.expand = function(domainNode) {
+    if(!(domainNode instanceof DomainNode)) throw new Error("Only domain nodes can be expanded");
     domainNode.setExpanded(true);
     this.expandedDomainNodes[domainNode.getID()] = domainNode;
 
@@ -46,6 +47,7 @@ ResourcesExplorerEngine.prototype.expand = function(domainNode) {
         else if(outEdges[i].getDestinationNode().isExpanded())
             this.processResourceEdges(outEdges[i], "moveToDestination");
     }
+
 }
 
 /*  @Docs
@@ -56,6 +58,7 @@ ResourcesExplorerEngine.prototype.expand = function(domainNode) {
     - Move ResourceEdges to DomainNode, if their other side belongs to expanded DomainNode
  */
 ResourcesExplorerEngine.prototype.collapse = function(domainNode) {
+    if(!(domainNode instanceof DomainNode)) throw new Error("Only domain nodes can be collapsed");
     domainNode.setExpanded(false);
     delete this.expandedDomainNodes[domainNode.getID()];
 
@@ -66,14 +69,14 @@ ResourcesExplorerEngine.prototype.collapse = function(domainNode) {
         var outEdges = node.getOutgoingEdges(true);
 
         for(var j = 0; j < inEdges.length; j++) {
-            if(inEdges[j].getSourceNode() instanceof DomainNode) this.removeResourceEdge("delete", inEdges[j]);
+            if(!(inEdges[j].getSourceNode() instanceof ResourceNode)) this.removeResourceEdge("delete", inEdges[j]);
             else {
                 if(Util.getUrlHostname(inEdges[j].getSourceNode().getID()) == Util.getUrlHostname(inEdges[j].getDestinationNode().getID())) this.removeResourceEdge("delete", inEdges[j]);
                 else this.removeResourceEdge("moveToDestination", inEdges[j]);
             }
         }
         for(var j = 0; j < outEdges.length; j++) {
-            if(outEdges[j].getDestinationNode() instanceof DomainNode) this.removeResourceEdge("delete", outEdges[j]);
+            if(!(outEdges[j].getDestinationNode() instanceof ResourceNode)) this.removeResourceEdge("delete", outEdges[j]);
             else {
                 if(Util.getUrlHostname(outEdges[j].getSourceNode().getID()) == Util.getUrlHostname(outEdges[j].getDestinationNode().getID())) this.removeResourceEdge("delete", outEdges[j]);
                 else this.removeResourceEdge("moveToSource", outEdges[j]);
@@ -114,32 +117,43 @@ ResourcesExplorerEngine.prototype.processResourceEdge = function(mode, fromResou
     }
     else if(mode == "moveFromSource") {
         this._ensureResourceNodeExists(toResourceURL);
-        this._ensureResourceEdgeNotExists(fromResourceURL, Util.getUrlHostname(toResourceURL));
+        this._ensureResourceEdgeNotExists(fromResourceURL, this.getResourceParent(toResourceURL).getID());
         var edge = this._ensureResourceEdgeExists(fromResourceURL, toResourceURL);
         edge.addLink(fromResourceURL, linkToAdd, linkType);
     }
     else if(mode == "moveToDestination") {
         this._ensureResourceNodeExists(fromResourceURL);
-        this._ensureResourceEdgeNotExists(Util.getUrlHostname(fromResourceURL), toResourceURL);
+        this._ensureResourceEdgeNotExists(this.getResourceParent(fromResourceURL).getID(), toResourceURL);
         var edge = this._ensureResourceEdgeExists(fromResourceURL, toResourceURL);
         edge.addLink(fromResourceURL, linkToAdd, linkType);
     }
     else if(mode == "addFromDomain") {
         this._ensureResourceNodeExists(toResourceURL);
-        var edge = this._ensureResourceEdgeExists(Util.getUrlHostname(fromResourceURL), toResourceURL);
+        var edge = this._ensureResourceEdgeExists(this.getResourceParent(fromResourceURL).getID(), toResourceURL);
         edge.addLink(fromResourceURL, linkToAdd, linkType);
     }
     else if(mode == "addToDomain") {
         this._ensureResourceNodeExists(fromResourceURL);
-        var edge = this._ensureResourceEdgeExists(fromResourceURL, Util.getUrlHostname(toResourceURL));
+        var edge = this._ensureResourceEdgeExists(fromResourceURL, this.getResourceParent(toResourceURL).getID());
         edge.addLink(fromResourceURL, linkToAdd, linkType);
     }
 
     if(["create", "addFromDomain", "addToDomain"].indexOf(mode) >= 0) { //when creating new ResourceEdge
-        var edge = this.getInterDomainEdge(this.graph.getNode(Util.getUrlHostname(fromResourceURL)), this.graph.getNode(Util.getUrlHostname(toResourceURL)));
+        var edge = this.getInterDomainEdge(this.getResourceParent(fromResourceURL), this.getResourceParent(toResourceURL));
         edge.hide();
         edge.lock();
     }
+}
+
+/*  @Docs
+    Returns the "parent" of a resource:
+    - Returns the domain node, if it is not clustered
+    - Returns the cluster of the domain node, if it is clustered
+ */
+ResourcesExplorerEngine.prototype.getResourceParent = function(resourceURL) {
+    var domainNode = this.graph.getNode(Util.getUrlHostname(resourceURL));
+    if(domainNode.isClustered()) return domainNode.getCluster();
+    else return domainNode;
 }
 
 /*  @Docs
@@ -155,12 +169,12 @@ ResourcesExplorerEngine.prototype.removeResourceEdge = function(mode, edge) {
     else if(mode == "moveToDestination") {
         this._ensureResourceEdgeNotExists(edge.getSourceNode().getID(), edge.getDestinationNode().getID());
         var newEdge = this._ensureResourceEdgeExists(edge.getSourceNode().getID(), Util.getUrlHostname(edge.getDestinationNode().getID()));
-        this.transferLinks(edge, newEdge);
+        newEdge.getLinksFromEdge(edge);
     }
     else if(mode == "moveToSource") {
         this._ensureResourceEdgeNotExists(edge.getSourceNode().getID(), edge.getDestinationNode().getID());
         var newEdge = this._ensureResourceEdgeExists(Util.getUrlHostname(edge.getSourceNode().getID()), edge.getDestinationNode().getID());
-        this.transferLinks(edge, newEdge);
+        newEdge.getLinksFromEdge(edge);
     }
 
     if(mode == "delete") {
@@ -184,23 +198,10 @@ ResourcesExplorerEngine.prototype._ensureResourceEdgeNotExists = function(fromNo
     if(this.graph.existsEdge(fromNodeID, toNodeID)) this.graph.deleteEdge(this.graph.getEdgeBetweenNodes(fromNodeID, toNodeID).getID());
 }
 
-ResourcesExplorerEngine.prototype.transferLinks = function(fromEdge, toEdge) {
-    var requests = fromEdge.getLinks(DomainEdge.LinkType.REQUEST);
-    var referrals = fromEdge.getLinks(DomainEdge.LinkType.REFERRAL);
-    var redirects = fromEdge.getLinks(DomainEdge.LinkType.REDIRECT);
-
-    for(var i = 0; i < requests.length; i++)
-        toEdge.addLink(requests[i].from, requests[i].link, DomainEdge.LinkType.REQUEST);
-    for(var i = 0; i < referrals.length; i++)
-        toEdge.addLink(referrals[i].from, referrals[i].link, DomainEdge.LinkType.REFERRAL);
-    for(var i = 0; i < redirects.length; i++)
-        toEdge.addLink(redirects[i].from, redirects[i].link, DomainEdge.LinkType.REDIRECT);
-}
-
 ResourcesExplorerEngine.prototype.getInterDomainEdge = function(srcNode, dstNode) {
-    var sourceDomainNode = (srcNode instanceof DomainNode) ? srcNode : srcNode.getParentNode();
-    var dstDomainNode = (dstNode instanceof DomainNode) ? dstNode : dstNode.getParentNode();
-    return this.graph.getEdgeBetweenNodes(sourceDomainNode.getID(), dstDomainNode.getID());
+    var srcNode = (srcNode instanceof ResourceNode) ? srcNode.getParentNode() : srcNode;
+    var dstNode = (dstNode instanceof ResourceNode) ? dstNode.getParentNode() : dstNode;
+    return this.graph.getEdgeBetweenNodes(srcNode.getID(), dstNode.getID());
 }
 
 ResourcesExplorerEngine.prototype.getExpandedDomainNodes = function() {
@@ -218,6 +219,9 @@ ResourcesExplorerEngine.prototype.collapseAllNodes = function() {
     }
 }
 
+/*  @Docs
+    Expands all the visible Domain Nodes (non-clustered nodes in the current filter)
+ */
 ResourcesExplorerEngine.prototype.expandAllNodes = function() {
     var nodes = this.graph.getDomainNodes();
     for(var i = 0; i < nodes.length; i++) {

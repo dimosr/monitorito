@@ -30,9 +30,7 @@ ManipulationWidgetHandler.prototype.initClusteringManipulation = function(dialog
 	this.widget.clustering.$clusterOptions.dialog(dialogOptions);
 
 	this.widget.clustering.$clusterButton.click({handler: this}, function(event) {
-		if(event.data.handler.controller.existExpandedNodes()) $.alert("Cannot create cluster, when there are expanded resources. Please collapse all resources first.", "Clustering Error");
-		else if(event.data.handler.controller.isFilterActive()) $.alert("Cannot create cluster, because the graph is filtered. Please reset filter first.", "Clustering Error");
-		else event.data.handler.widget.clustering.$clusterOptions.dialog("open");
+		event.data.handler.widget.clustering.$clusterOptions.dialog("open");
 	});
 	this.widget.clustering.$submitButton.click({handler: this}, function(event) {
 		event.data.handler.executeClustering();
@@ -61,8 +59,7 @@ ManipulationWidgetHandler.prototype.initFilteringManipulation = function(dialogO
 	this.widget.filtering.$filteringRules.dialog("option", "resizable", "false");
 	
 	this.widget.filtering.$filterButton.click({handler: this}, function(event) {
-		if(event.data.handler.controller.existClusters()) $.alert("Cannot apply Filtering, when there are active clusters. Please delete all clusters first.", "Filtering Error");
-		else event.data.handler.widget.filtering.$filterOptions.dialog("open");
+		event.data.handler.widget.filtering.$filterOptions.dialog("open");
 	});
 	this.widget.filtering.$submitButton.click({handler: this}, function(event) {
 		event.data.handler.executeFiltering();

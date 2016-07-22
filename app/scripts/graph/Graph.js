@@ -13,6 +13,8 @@ function Graph(visualisationNetwork) {
 		this.mode = Graph.Mode.ONLINE;
 	}
 	else this.mode = Graph.Mode.OFFLINE;
+
+	this.clusteringEngine = null;
 }
 
 Graph.Mode = {
@@ -80,14 +82,25 @@ Graph.prototype.createDomainEdge = function(fromHostname, toHostname) {
 	return edge;
 }
 
+/*	@Docs returns all edges of the graph:
+	- Domain Edges
+	- Cluster Edges (retrieved from clustering engine)
+	- Resource Edges
+ */
 Graph.prototype.getEdges = function() {
 	var edges = [];
 	for(var key in this.edges) edges.push(this.edges[key]);
+	if(this.clusteringEngine != null)  edges = edges.concat(this.clusteringEngine.getClustersEdges());
 	return edges;
 }
 
+/*	@Docs
+	Returns only domain edges
+ */
 Graph.prototype.getDomainEdges = function() {
-	return this.getEdges().filter(function(edge) {return edge instanceof DomainEdge;});
+	var edges = [];
+	for(var key in this.edges) edges.push(this.edges[key]);
+	return edges.filter(function(edge) {return edge instanceof DomainEdge;});
 }
 
 Graph.prototype.getEdgeBetweenNodes = function(fromNodeID, toNodeID) {
@@ -98,7 +111,13 @@ Graph.prototype.getEdgeBetweenNodes = function(fromNodeID, toNodeID) {
 }
 
 Graph.prototype.getEdge = function(ID) {
-	return (ID in this.edges) ? this.edges[ID] : null;
+	var edge = null;
+	if(ID in this.edges) edge = this.edges[ID];
+	else {
+		var clusterEdge = this.clusteringEngine.getEdge(ID);
+		if(clusterEdge != null) edge = clusterEdge;
+	}
+	return edge;
 }
 
 Graph.prototype.existsEdge = function(fromNodeID, toNodeID) {
@@ -122,9 +141,16 @@ Graph.prototype.createDomainNode = function(hostname) {
 	return node;
 }
 
+/*	@Docs
+	Returns all nodes of the graph:
+	- Domain Nodes
+	- Resource Nodes
+	- Clusters (retrieved from Clustering Engine)
+ */
 Graph.prototype.getNodes = function() {
 	var nodes = [];
 	for(var key in this.nodes) nodes.push(this.nodes[key]);
+	if(this.clusteringEngine != null) nodes = nodes.concat(this.clusteringEngine.getClusters());
 	return nodes;
 }
 
@@ -133,17 +159,20 @@ Graph.prototype.getDomainNodes = function() {
 }
 
 Graph.prototype.getNode = function(ID) {
-	return (ID in this.nodes) ? this.nodes[ID] : null;
+	var node = null;
+	if(ID in this.nodes) node = this.nodes[ID];
+	else if(this.clusteringEngine.getCluster(ID) != null) node = this.clusteringEngine.getCluster(ID);
+	return node;
 }
 
 Graph.prototype.existsNode = function(ID) {
-	return ID in this.nodes;
+	return this.getNode(ID) != null;
 }
 
 Graph.prototype.empty = function() {
 	var graph = this;
 	this.getEdges().forEach(function(edge) {graph.deleteEdge(edge.getID());});
-	this.getNodes().forEach(function(node) {graph.deleteNode(node.getID());});
+	this.getDomainNodes().forEach(function(node) {graph.deleteNode(node.getID());});
 	this._edgesAutoIncrement = 1;
 }
 

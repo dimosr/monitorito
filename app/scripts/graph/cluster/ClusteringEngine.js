@@ -1,7 +1,8 @@
 "use strict";
 
-function ClusteringEngine(graph) {
+function ClusteringEngine(graph, resourcesExplorerEngine) {
 	this.graph = graph;
+	this.resourcesExplorerEngine = resourcesExplorerEngine;
 
 	this.clusters = {};
 }
@@ -12,10 +13,8 @@ function ClusteringEngine(graph) {
 ClusteringEngine.prototype.cluster = function(clusterOptions, clusterID) {
 	if(clusterID in this.clusters) throw new Error("Cluster ID '" + clusterID + "' already exists. Cluster could not be created, because Cluster ID should be unique.");
 
-	var nodes = this.graph.getDomainNodes();
+	var nodes = this._getNonFilteredOutNodes();
 	var clusteredNodes = [];
-
-
 	for(var i = 0; i < nodes.length; i++) {
 		if(clusterOptions.belongsInCluster(nodes[i]))
 			clusteredNodes.push(nodes[i]);
@@ -27,7 +26,8 @@ ClusteringEngine.prototype.cluster = function(clusterOptions, clusterID) {
 		throw new Error(errorMessage);
 	}
 
-	var cluster = new Cluster(clusterID, this.graph, clusteredNodes, clusterOptions);
+	var cluster = new Cluster(clusterID, clusteredNodes, clusterOptions, this.graph, this.resourcesExplorerEngine);
+
 	this.clusters[clusterID] = cluster;
 }
 
@@ -38,7 +38,9 @@ ClusteringEngine.prototype.cluster = function(clusterOptions, clusterID) {
 	- If not, throw Error
  */
 ClusteringEngine.prototype.editCluster = function(clusterOptions, clusterID) {
-	var nodes = this.graph.getDomainNodes();
+	if(!(clusterID in this.clusters)) throw new Error("Cluster with ID " + clusterID + "does not exist, so it cannot be edited");
+
+	var nodes = this._getNonFilteredOutNodes();
 	var clusteredNodes = [];
 
 
@@ -53,7 +55,8 @@ ClusteringEngine.prototype.editCluster = function(clusterOptions, clusterID) {
 	}
 
 	this.deCluster(clusterID);
-	var cluster = new Cluster(clusterID, this.graph, clusteredNodes, clusterOptions);
+
+	var cluster = new Cluster(clusterID, clusteredNodes, clusterOptions, this.graph, this.resourcesExplorerEngine);
 	this.clusters[clusterID] = cluster;
 }
 
@@ -74,11 +77,27 @@ ClusteringEngine.prototype.getCluster = function(clusterID) {
 	else return null;
 }
 
+ClusteringEngine.prototype.getEdge = function(clusterEdgeID) {
+	var clusterEdge = null
+	var clusterID = clusterEdgeID.split("-")[0];
+	if(clusterID !== undefined) {
+		var cluster = this.getCluster(clusterID);
+		cluster.getOutgoingDomainEdges().forEach(function(edge) {
+			if(edge.getID() == clusterEdgeID) clusterEdge = edge;
+		});
+		cluster.getIncomingEdges().forEach(function(edge) {
+			if(edge.getID() == clusterEdgeID) clusterEdge = edge;
+		});
+	}
+	return clusterEdge;
+}
+
 ClusteringEngine.prototype.deCluster = function(clusterID) {
 	var cluster = this.clusters[clusterID];
 	this.graph.triggerDeselectNode(cluster);
 	cluster.delete();
-	delete this.clusters[clusterID];
+	
+	delete this.clusters[cluster.getID()];
 }
 
 ClusteringEngine.prototype.deClusterAll = function() {
@@ -86,13 +105,41 @@ ClusteringEngine.prototype.deClusterAll = function() {
 	for(var i = 0; i < clusters.length; i++) this.deCluster(clusters[i].getID());
 }
 
-ClusteringEngine.prototype.isClusterEdge = function(ID) {
-	return ID.search("clusterEdge") >= 0;
-}
-
 ClusteringEngine.prototype.getClusters = function() {
 	var clusters = [];
-	for(var key in this.clusters)
-		clusters.push(this.clusters[key]);
+	for(var id in this.clusters)
+		clusters.push(this.clusters[id]);
 	return clusters;
+}
+
+ClusteringEngine.prototype.getClustersEdges = function() {
+	var clustersEdges = {};
+	this.getClusters().forEach(function(cluster) {
+		cluster.getOutgoingDomainEdges()
+			   .filter(function(edge) { return edge instanceof ClusterEdge;})
+			   .forEach(function(edge) {
+				   clustersEdges[edge.getID()] = edge;
+			   });
+		cluster.getIncomingDomainEdges()
+			   .filter(function(edge) { return edge instanceof ClusterEdge;})
+			   .forEach(function(edge) {
+					clustersEdges[edge.getID()] = edge;
+			   });
+	});
+	return Object.keys(clustersEdges).map(function(id) {return clustersEdges[id];});
+}
+
+/*	@Docs
+	Returns all nodes to be examined for clustering:
+	- All non-clustered nodes, that are not filtered out
+	- All clustered-nodes, belonging to clustered nodes that are not filtered out
+ */
+ClusteringEngine.prototype._getNonFilteredOutNodes = function() {
+	var nodes = this.graph.getDomainNodes().filter(function(node) {return node.isVisible()});
+	this.getClusters()
+		.filter(function(cluster){ return cluster.isVisible(); })
+		.forEach(function(cluster) {
+			nodes = nodes.concat(cluster.getNodes());
+	});
+	return nodes;
 }

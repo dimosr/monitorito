@@ -94,6 +94,6 @@ QUnit.test("Multiple filters apply recursively over each other", function(assert
     this.filteringEngine.filter(filterOptions);
 
     assert.notOk(graph.getNode("test.com").isVisible(), "test.com not visible, since it was filtered out in 2nd filtering");
-    assert.notOk(graph.getNode("example.com").isVisible(), "example.com not visible, since it was filtered out in 1nd filtering");
+    assert.notOk(graph.getNode("example.com").isVisible(), "example.com not visible, since it was filtered out in 1st filtering");
     assert.ok(graph.getNode("foo.com").isVisible(), "foo.com visible, since it was not filtered out in either filtering");
 });
