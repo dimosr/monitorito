@@ -2,6 +2,7 @@
 
 function ClusteringEngine(graph, resourcesExplorerEngine) {
 	this.graph = graph;
+	this.graph.register(this);
 	this.resourcesExplorerEngine = resourcesExplorerEngine;
 
 	this.clusters = {};
@@ -142,4 +143,52 @@ ClusteringEngine.prototype._getNonFilteredOutNodes = function() {
 			nodes = nodes.concat(cluster.getNodes());
 	});
 	return nodes;
+}
+
+/*	@Docs
+ Listener function for graph events
+ Incoming nodes are not automatically clustered.
+ So, only incoming edges are handled to comply with already formed clusters
+ */
+ClusteringEngine.prototype.onNewEdge = function(edge) {
+	var srcNode = edge.getSourceNode(), dstNode = edge.getDestinationNode(), clusterEdge, cluster;
+	if(!srcNode.isClustered() && !dstNode.isClustered()) {
+		/* Nothing to do */
+	}
+	else if(!srcNode.isClustered() && dstNode.isClustered()) {
+		edge.setDetached(true);
+		cluster = dstNode.getCluster();
+		if(srcNode.hasEdgeTo(cluster)) clusterEdge = srcNode.getEdgeTo(cluster);
+		else clusterEdge = new ClusterEdge(cluster.getID() + "-" + (cluster.edgeIncrement++), srcNode, cluster, this.graph);
+		clusterEdge.getLinksFromEdge(edge);
+	}
+	else if(srcNode.isClustered() && !dstNode.isClustered()) {
+		edge.setDetached(true);
+		cluster = srcNode.getCluster();
+		if(cluster.hasEdgeTo(dstNode)) clusterEdge = dstNode.getEdgeTo(dstNode);
+		else clusterEdge = new ClusterEdge(cluster.getID() + "-" + (cluster.edgeIncrement++), cluster, dstNode, this.graph);
+		clusterEdge.getLinksFromEdge(edge);
+	}
+	else if(srcNode.isClustered() && dstNode.isClustered()) {
+		edge.setDetached(true);
+		var srcCluster = srcNode.getCluster(), dstCluster = dstNode.getCluster();
+		if(srcCluster == dstCluster) /* No need to create self-referencing edges for clusters */;
+		else {
+			if(srcCluster.hasEdgeTo(dstCluster)) clusterEdge = srcCluster.getEdgeTo(dstCluster);
+			else clusterEdge = new ClusterEdge(srcCluster.getID() + "-" + (srcCluster.edgeIncrement++), srcCluster, dstCluster, this.graph);
+			clusterEdge.getLinksFromEdge(edge);
+		}
+	}
+}
+
+ClusteringEngine.prototype.onNewNode = function(node) {
+	/* Do nothing */
+}
+
+ClusteringEngine.prototype.onNodeChange = function(fromType, toType, node) {
+	/* Do nothing */
+}
+
+ClusteringEngine.prototype.onEdgeChange = function(fromType, toType, edge) {
+	/* Do nothing */
 }
