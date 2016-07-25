@@ -173,3 +173,20 @@ QUnit.test("Clustering applied before filtering: Create 2 connected clusters and
     assert.ok(this.graph.getNode("cluster-1").isVisible(), "Cluster 'cluster-1' is visible, since matched by filter");
     assert.ok(this.graph.getNode("cluster-2").isVisible(), "Cluster 'cluster-2' was not matched by filter, but is shown, since it is direct neighbour of 'cluster-1");
 });
+
+QUnit.test("Resetting filtering with existing clusters does not shows clustered nodes", function(assert) {
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["www.example.com", "test.com", "dummy.com"]);
+    this.clusteringEngine.cluster(clusterOptions, "cluster-1");
+
+    var filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("^(example\.com)$"));
+    this.filteringEngine.filter(filterOptions);
+
+    assert.ok(!this.graph.getNode("cluster-1").isVisible(), "cluster-1 hidden due to filter");
+    this.filteringEngine.resetFilter();
+    assert.ok(this.graph.getNode("cluster-1").isVisible(), "cluster-1 shown again after resetting filter");
+    assert.ok(!this.graph.getNode("www.example.com").isVisible(), "www.example.com not shown again after resetting filter, because is clustered");
+    assert.ok(!this.graph.getNode("test.com").isVisible(), "test.com not shown again after resetting filter, because is clustered");
+    assert.ok(!this.graph.getNode("dummy.com").isVisible(), "dummy.com not shown again after resetting filter, because is clustered");
+});
