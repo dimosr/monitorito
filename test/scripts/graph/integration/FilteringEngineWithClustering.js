@@ -30,7 +30,7 @@ QUnit.module( "graph.integration.FilteringEngineWithClustering", {
     }
 });
 
-QUnit.test("Filtering applied before Clustering", function(assert) {
+QUnit.test("Filtering applied before Clustering: there are filtered-out nodes that would otherwise be clustered", function(assert) {
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp("^((test\.com)|(example\.com)|(dummy\.com))$"));
     this.filteringEngine.filter(filterOptions);
@@ -46,61 +46,38 @@ QUnit.test("Filtering applied before Clustering", function(assert) {
     assert.ok(this.graph.getNode("test.com").isClustered(), "test.com successfully clustered");
 });
 
-QUnit.test("Filtering applied after Clustering", function(assert) {
+QUnit.test("Filtering applied before Clustering: no filtered-out nodes that would be clustered, but there are filtered-out nodes that would be neighbours of the cluster", function(assert) {
+    var filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("^((test\.com)|(www\.example\.com)|(dummy\.com))$"));
+    this.filteringEngine.filter(filterOptions);
+
     var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
-    clusterOptions.setDomains(["www.example.com", "test.com"]);
+    clusterOptions.setDomains(["www.example.com", "test.com", "dummy.com"]);
     this.clusteringEngine.cluster(clusterOptions, "cluster-1");
 
-    var filterOptions = new FilterOptions();
-    filterOptions.setEdgesMin("incoming", 1);
-    this.filteringEngine.filter(filterOptions);
-
-    assert.ok(!this.node1.isVisible() && this.node1.isClustered(), "www.example.com not affected by filtering, since clustered");
-    assert.ok(!this.node3.isVisible() && this.node3.isClustered(), "test.com not affected by filtering, since clustered");
-    assert.ok(!this.node4.isVisible(), "dummy.com hidden by filtering, since it has no incoming edges");
-    assert.ok(!this.node2.isVisible(), "example.com filtered out, because has less than 1 incoming edges");
-    assert.ok(this.clusteringEngine.getCluster("cluster-1").isVisible(), "cluster matched by filter, since it has at least 1 incoming edge");
-
-    this.filteringEngine.resetFilter();
-    assert.ok(!this.node1.isVisible() && this.node1.isClustered(), "www.example.com not affected by reset filtering, since clustered");
-    assert.ok(!this.node3.isVisible() && this.node3.isClustered(), "test.com not affected by reset filtering, since clustered");
-    assert.ok(!this.node1.getEdgeFrom(this.node2).isVisible(), "edge example.com --> www.example.com to clustered node not shown after resetting the filter");
-    assert.ok(!this.node3.getEdgeFrom(this.node2).isVisible(), "edge example.com --> test.com to clustered node not shown after resetting the filter");
-    assert.ok(this.node4.isVisible(), "dummy.com shown, since filter is reset");
-    assert.ok(this.node2.isVisible(), "example.com shown, since filter is reset");
-    assert.ok(this.clusteringEngine.getCluster("cluster-1").isVisible(), "cluster shown, since filter is reset");
-
-    filterOptions = new FilterOptions();
-    filterOptions.setEdgesMin("outgoing", 1);
-    this.filteringEngine.filter(filterOptions);
-
-    assert.ok(!this.node1.isVisible() && this.node1.isClustered(), "www.example.com not affected by filtering, since clustered");
-    assert.ok(!this.node3.isVisible() && this.node3.isClustered(), "test.com not affected by filtering, since clustered");
-    assert.ok(!this.node4.isVisible(), "dummy.com hidden by filter, since it has no outgoing edges");
-    assert.ok(this.node2.isVisible(), "example.com shown, since has at least 1 outgoing edge");
-    assert.ok(!this.clusteringEngine.getCluster("cluster-1").isVisible(), "cluster hidden by filter, since it does not have at least 1 outgoing edge");
+    assert.ok(this.graph.getNode("cluster-1").getNodes().length == 3, "All 3 nodes to be clustered were not filtered-out");
+    assert.ok(this.graph.getNode("cluster-1").getNodes().indexOf(this.graph.getNode("www.example.com")) >= 0, "www.example.com included in the cluster");
+    assert.ok(this.graph.getNode("cluster-1").getNodes().indexOf(this.graph.getNode("test.com")) >= 0, "test.com included in the cluster");
+    assert.ok(this.graph.getNode("cluster-1").getNodes().indexOf(this.graph.getNode("dummy.com")) >= 0, "dummy.com included in the cluster");
+    assert.ok(this.graph.existsEdge("example.com", "cluster-1") && !this.graph.getEdgeBetweenNodes("example.com", "cluster-1").isVisible(), "edge between filtered-out node and cluster created, but hidden");
 });
 
-QUnit.test("Filtering applied after clustering, with neihgbours depth 1, where there is one such expanded neighbour (incoming)", function(assert) {
-    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
-    clusterOptions.setDomains(["www.example.com", "test.com"]);
+QUnit.test("Clustering applied before filtering: Create a cluster and filter only that with depth = 0", function(assert) {
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.REGEXP);
+    clusterOptions.setRegExp(new RegExp("^((example\.com)|(dummy\.com))$"));
     this.clusteringEngine.cluster(clusterOptions, "cluster-1");
-
-    /* Filter only cluster node with direct neighbours, where there one such expanded neighbour (incoming)*/
-    this.resourcesExplorerEngine.expand(this.node2);
     filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp("(.*)(cluster-1)(.*)"));
-    filterOptions.setNeighboursDepth(1);
     this.filteringEngine.filter(filterOptions);
 
     assert.ok(this.clusteringEngine.getCluster("cluster-1").isVisible(), "cluster matched by filter");
-    assert.ok(this.node2.isVisible(), "example.com not matched by filter, but shown as neighbour of cluster");
-    assert.ok(!this.node4.isVisible(), "dummy.com not matched by filter");
-    assert.ok(this.graph.getEdgeBetweenNodes("http://example.com", "cluster-1").isVisible(), "edge http://example.com --> cluster-1 shown by filter");
-})
+    assert.ok(!this.node1.isVisible(), "www.example.com not matched by filter, thus not shown since neighbour depth equals 0");
+    assert.ok(!this.node3.isVisible(), "test.com not matched by filter, thus not shown since neighbour depth equals 0");
+    assert.ok(this.graph.existsEdge("cluster-1", "www.example.com") && !this.graph.getEdgeBetweenNodes("cluster-1", "www.example.com").isVisible(), "edge cluster-1 --> www.example.com created, but hidden by filter");
+    assert.ok(this.graph.existsEdge("cluster-1", "test.com") && !this.graph.getEdgeBetweenNodes("cluster-1", "test.com").isVisible(), "edge cluster-1 --> test.com created, but hidden by filter");
+});
 
-QUnit.test("Filtering applied after clustering, with neihgbours depth 1, where there is one such expanded neighbour (outgoing)", function(assert) {
-    /* Filter only cluster node with direct neighbours, where there one such expanded neighbour (outgoing)*/
+QUnit.test("Clustering applied before filtering: Create cluster and filter only that with depth > 0 (outgoing neighbours exist)", function(assert) {
     var clusterOptions = new ClusterOptions(ClusterOptions.operationType.REGEXP);
     clusterOptions.setRegExp(new RegExp("^((example\.com)|(dummy\.com))$"));
     this.clusteringEngine.cluster(clusterOptions, "cluster-1");
@@ -109,10 +86,90 @@ QUnit.test("Filtering applied after clustering, with neihgbours depth 1, where t
     filterOptions.setNeighboursDepth(1);
     this.filteringEngine.filter(filterOptions);
 
-
     assert.ok(this.clusteringEngine.getCluster("cluster-1").isVisible(), "cluster matched by filter");
     assert.ok(this.node1.isVisible(), "www.example.com not matched by filter, but shown as neighbour of cluster");
     assert.ok(this.node3.isVisible(), "test.com not matched by filter, but shown as neighbour of cluster");
     assert.ok(this.graph.getEdgeBetweenNodes("cluster-1", "www.example.com").isVisible(), "edge cluster-1 --> www.example.com shown by filter");
     assert.ok(this.graph.getEdgeBetweenNodes("cluster-1", "test.com").isVisible(), "edge cluster-1 --> test.com shown by filter");
-})
+});
+
+QUnit.test("Clustering applied before filtering: Create cluster and filter only that with depth > 0 (incoming neighbours exist)", function(assert) {
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["www.example.com", "test.com"]);
+    this.clusteringEngine.cluster(clusterOptions, "cluster-1");
+    filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("(.*)(cluster-1)(.*)"));
+    filterOptions.setNeighboursDepth(1);
+    this.filteringEngine.filter(filterOptions);
+
+    assert.ok(this.clusteringEngine.getCluster("cluster-1").isVisible(), "cluster matched by filter");
+    assert.ok(this.node2.isVisible(), "example.com not matched by filter, but shown as neighbour of cluster");
+    assert.ok(!this.node4.isVisible(), "dummy.com not matched by filter");
+    assert.ok(this.graph.existsEdge("example.com", "cluster-1") && this.graph.getEdgeBetweenNodes("example.com", "cluster-1").isVisible(), "edge example.com --> cluster-1 shown by filter");
+});
+
+QUnit.test("Clustering applied before filtering: Create cluster and filter the clustered nodes", function(assert) {
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["www.example.com", "test.com"]);
+    this.clusteringEngine.cluster(clusterOptions, "cluster-1");
+
+    filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("(.*)(www\.example\.com)|(test\.com)(.*)"));
+    this.filteringEngine.filter(filterOptions);
+
+    assert.ok(!this.graph.getNode("www.example.com").isVisible(), "www.example.com satisfies filter, but is not investigated by filtering, since it is clustered");
+    assert.ok(!this.graph.getNode("test.com").isVisible(), "test.com satisfies filter, but is not investigated by filtering, since it is clustered");
+});
+
+QUnit.test("Clustering applied before filtering: Create 2 connected clusters and filter one of them with depth = 0", function(assert) {
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["example.com"]);     //matches example.com && www.example.com
+    this.clusteringEngine.cluster(clusterOptions, "cluster-1");
+
+    clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["dummy.com", "test.com"]);
+    this.clusteringEngine.cluster(clusterOptions, "cluster-2");
+
+    filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("(.*)(cluster-1)(.*)"));
+    this.filteringEngine.filter(filterOptions);
+
+    assert.ok(this.graph.getNode("cluster-1").isVisible(), "Cluster 'cluster-1' was matched by filter");
+    assert.ok(!this.graph.getNode("cluster-2").isVisible(), "Cluster 'cluster-2' was not matched by filter");
+});
+
+QUnit.test("Clustering applied before filtering: Create 2 connected clusters and filter one of them with depth > 0 (incoming neighbours exists)", function(assert) {
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["example.com"]);     //matches example.com && www.example.com
+    this.clusteringEngine.cluster(clusterOptions, "cluster-1");
+
+    clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["dummy.com", "test.com"]);
+    this.clusteringEngine.cluster(clusterOptions, "cluster-2");
+
+    filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("(.*)(cluster-2)(.*)"));
+    filterOptions.setNeighboursDepth(1);
+    this.filteringEngine.filter(filterOptions);
+
+    assert.ok(this.graph.getNode("cluster-2").isVisible(), "Cluster 'cluster-2' is visible, since matched by filter");
+    assert.ok(this.graph.getNode("cluster-1").isVisible(), "Cluster 'cluster-1' was not matched by filter, but is shown, since it is direct neighbour of 'cluster-1");
+});
+
+QUnit.test("Clustering applied before filtering: Create 2 connected clusters and filter one of them with depth > 0 (outgoing neighbours exist)", function(assert) {
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["example.com"]);     //matches example.com && www.example.com
+    this.clusteringEngine.cluster(clusterOptions, "cluster-1");
+
+    clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["dummy.com", "test.com"]);
+    this.clusteringEngine.cluster(clusterOptions, "cluster-2");
+
+    filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("(.*)(cluster-1)(.*)"));
+    filterOptions.setNeighboursDepth(1);
+    this.filteringEngine.filter(filterOptions);
+
+    assert.ok(this.graph.getNode("cluster-1").isVisible(), "Cluster 'cluster-1' is visible, since matched by filter");
+    assert.ok(this.graph.getNode("cluster-2").isVisible(), "Cluster 'cluster-2' was not matched by filter, but is shown, since it is direct neighbour of 'cluster-1");
+});
