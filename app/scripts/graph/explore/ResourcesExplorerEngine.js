@@ -18,7 +18,7 @@ function ResourcesExplorerEngine(graph) {
         - ResourceNode belonging to expanded DomainNode and DomainNodes that have not been expanded
  */
 ResourcesExplorerEngine.prototype.expand = function(domainNode) {
-    if(!(domainNode instanceof DomainNode)) throw new Error("Only domain nodes can be expanded");
+    if(!(domainNode instanceof DomainNode) || (domainNode.isClustered())) throw new Error("Only domain nodes (that are not clustered) can be expanded.");
     domainNode.setExpanded(true);
     this.expandedDomainNodes[domainNode.getID()] = domainNode;
 
@@ -58,7 +58,8 @@ ResourcesExplorerEngine.prototype.expand = function(domainNode) {
     - Move ResourceEdges to DomainNode, if their other side belongs to expanded DomainNode
  */
 ResourcesExplorerEngine.prototype.collapse = function(domainNode) {
-    if(!(domainNode instanceof DomainNode)) throw new Error("Only domain nodes can be collapsed");
+    if(!(domainNode instanceof DomainNode) || (domainNode.isClustered())) throw new Error("Only domain nodes (that are not clustered) can be collapsed.");
+
     domainNode.setExpanded(false);
     delete this.expandedDomainNodes[domainNode.getID()];
 

@@ -29,7 +29,10 @@ QUnit.module( "graph.integration.ResourcesExplorerEngineWithClustering", {
     }
 });
 
-QUnit.test("Resources Explorer Engine executed before clustering. Nodes involved automatically collapsed", function(assert) {
+/* Clustering automatically collapses all neighbour nodes of the formed cluster
+   De-clustering also automatically collapses all neighbour nodes of the formed cluster
+*/
+QUnit.test("Resources Explorer Engine executed before clustering: Expanded nodes belong are neighbours of the cluster", function(assert) {
     this.resourcesExplorerEngine.expand(this.graph.getNode("example.com"));
 
     var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
@@ -42,16 +45,30 @@ QUnit.test("Resources Explorer Engine executed before clustering. Nodes involved
     assert.ok(this.graph.existsEdge("example.com", "cluster-1"), "edge cluster-1 --> example.com created");
 
     this.resourcesExplorerEngine.expand(this.graph.getNode("example.com"));
-
-    assert.ok(!this.graph.getEdgeBetweenNodes("example.com", "cluster-1").isVisible(), "edge example.com --> cluster-1 hidden, as inter-domain edge");
-    assert.ok(this.graph.getEdgeBetweenNodes("http://example.com", "cluster-1").isVisible(), "resource edge http://example.com --> cluster-1 shown");
-    
     this.clusteringEngine.deCluster("cluster-1");
 
     assert.ok(!this.graph.getNode("example.com").isExpanded(), "neighbour expanded node was collapsed before executing de-cluster");
 });
 
-QUnit.test("Resources Explorer Engine executed after clustering, involving clusters", function(assert) {
+/* Clustering automatically collapses all neighbour nodes incuded in the cluster */
+QUnit.test("Resources Explorer Engine executed before clustering: Expanded nodes belong in the cluster.", function(assert) {
+    this.resourcesExplorerEngine.expand(this.graph.getNode("www.example.com"));
+
+    assert.ok(this.graph.getNode("www.example.com").isExpanded(), "Clustered node expanded before clustering");
+
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["www.example.com", "test.com"]);
+    this.clusteringEngine.cluster(clusterOptions, "cluster-1");
+
+    assert.ok(this.graph.getNode("www.example.com").isClustered(), "previously expanded node was successfully clustered");
+    assert.ok(this.graph.getNode("www.example.com").getCluster() == this.clusteringEngine.getCluster("cluster-1"), "node clustered to correct cluster");
+
+    this.clusteringEngine.deCluster("cluster-1");
+    assert.ok(!this.graph.getNode("www.example.com").isExpanded(), "clustered node was collapsed before clustering");
+});
+
+/* Expanding domain node that is connected to clustered nodes, creates resources edges to the corresponding cluster*/
+QUnit.test("Resources Explorer Engine executed after clustering: Expanding neighbour nodes of a cluster", function(assert) {
     var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
     clusterOptions.setDomains(["www.example.com", "test.com"]);
     this.clusteringEngine.cluster(clusterOptions, "cluster-1");
@@ -67,5 +84,31 @@ QUnit.test("Resources Explorer Engine executed after clustering, involving clust
     this.resourcesExplorerEngine.collapse(this.graph.getNode("example.com"));
 
     assert.notOk(this.graph.existsNode("http://example.com"), "Resource node deleted successfully");
+    assert.notOk(this.graph.existsEdge("http://example.com", "cluster-1"), "Resource edge deleted successfully");
     assert.ok(this.graph.getEdgeBetweenNodes("example.com", "cluster-1").isVisible(), "inter-domain edge shown");
 });
+
+/* Expanding cluster, or domain node that is currently clustered is not allowed */
+QUnit.test("Resources Explorer Engine executed after clustering: Expanding cluster or clustered node", function(assert) {
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["www.example.com", "test.com"]);
+    this.clusteringEngine.cluster(clusterOptions, "cluster-1");
+
+    var resourcesExplorerEngine = this.resourcesExplorerEngine;
+    assert.throws(
+        function() {
+            resourcesExplorerEngine.expand(this.graph.getNode("cluster-1"));
+        },
+        Error,
+        "Cannot expand cluster"
+    );
+    assert.throws(
+        function() {
+            resourcesExplorerEngine.expand(this.graph.getNode("www.example.com"));
+        },
+        Error,
+        "Cannot expand clustered node"
+    );
+});
+
+
