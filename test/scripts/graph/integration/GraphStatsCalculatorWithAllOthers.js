@@ -25,6 +25,10 @@ QUnit.module( "graph.integration.GraphStatsCalculatorWithAllOthers", {
     }
 });
 
+/*
+    - GraphStatistics are maintained for the whole graph (not only the visible graph)
+    - NodeMetrics of a node are calculated based on the connections in the whole graph, not only the filtered part
+*/
 QUnit.test("Filtering applied before statistics calculation (no interference, statistics are maintained for the whole graph)", function(assert) {
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp("(.*)(test\.com)|(example\.com)|(foo\.com)(.*)"));
@@ -43,6 +47,11 @@ QUnit.test("Filtering applied before statistics calculation (no interference, st
     assert.equal(node.getOutgoingDomainEdges().length, 1, "Edge to filtered-out node bar.com will be taken into account in statistics");
 });
 
+/*
+    - GraphStatistics are calculated based on the core graph (without clusters)
+    - NodeMetrics can be calculated for both nodes & clusters
+    - NodeMetrics take into account non-clustered nodes and clusters
+ */
 QUnit.test("Clustering applied before statistics calculation (clustered nodes not taken into account & clusters taken into account)", function(assert) {
     var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
     clusterOptions.setDomains(["example.com", "bar.com"]);
@@ -68,7 +77,10 @@ QUnit.test("Clustering applied before statistics calculation (clustered nodes no
     assert.equal(node.getOutgoingDomainEdges().length, 1, "edge foo.com --> bar.com");
 });
 
-
+/*
+    - GraphStatistics & NodeMetrics only use domainNodes,clusters for calculation, resources are not used anywhere
+    - NodeMetrics take into account the inter-domain (redundant due to expanded resources) edges that are temporarily hidden in the visualisation
+ */
 QUnit.test("Resources Expansion applied before statistics calculation (inter-domain edges hidden as visual optimisation, but taken into account in metrics)", function(assert) {
     this.graphHandler.expandDomainNode("test.com");
 
