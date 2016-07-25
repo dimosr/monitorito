@@ -29,6 +29,37 @@ QUnit.module( "graph.integration.ResourcesExplorerEngineWithFiltering", {
     }
 });
 
+QUnit.test("Expanding applied before filtering: expand domain node & filter-out nodes that have incoming resource edges from it", function(assert) {
+    this.resourcesExplorerEngine.expand(this.graph.getNode("example.com"));
+
+    var filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp(".*(example\.com).*"));
+    this.filteringEngine.filter(filterOptions);
+
+    assert.ok(this.graph.existsEdge("http://example.com", "test.com") && !this.graph.getEdgeBetweenNodes("http://example.com", "test.com").isVisible(), "edge http://example.com --> test.com hidden by filter, since test.com was filtered out");
+    assert.ok(this.graph.existsEdge("http://example.com", "www.example.com") && this.graph.getEdgeBetweenNodes("http://example.com", "www.example.com").isVisible(), "edge http://example.com --> www.example.com not hidden by filter, since test.com was not filtered out");
+});
+
+QUnit.test("Expanding applied before filtering: expand domain node & filter-out this node", function(assert) {
+    this.resourcesExplorerEngine.expand(this.graph.getNode("example.com"));
+
+    var filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp(".*(test\.com).*"));
+    this.filteringEngine.filter(filterOptions);
+
+    assert.ok(this.graph.existsEdge("http://example.com", "test.com") && !this.graph.getEdgeBetweenNodes("http://example.com", "test.com").isVisible(), "edge http://example.com --> test.com hidden by filter, since example.com was filtered out");
+});
+
+QUnit.test("Expanding applied after filtering: filter the graph & expand domain node that has outgoing edges to nodes that were previously filtered out", function(assert) {
+    var filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp(".*(example\.com).*"));
+    this.filteringEngine.filter(filterOptions);
+
+    this.resourcesExplorerEngine.expand(this.graph.getNode("example.com"));
+
+    assert.ok(this.graph.existsEdge("http://example.com", "test.com") && !this.graph.getEdgeBetweenNodes("http://example.com", "test.com").isVisible(), "edge http://example.com --> test.com created, but hidden, because test.com was previously filtered out");
+});
+
 QUnit.test("Resetting the filtering does not affect the inter-domain edges hidden & locked by ResourcesExplorerEngine", function(assert) {
     this.resourcesExplorerEngine.expand(this.graph.getNode("test.com"));
     assert.notOk(this.graph.getEdgeBetweenNodes("example.com", "test.com").isVisible(), "Inter-domain edge successfully hidden");
@@ -49,7 +80,7 @@ QUnit.test("Resetting the filtering does not affect the inter-domain edges hidde
     assert.ok(this.graph.getEdgeBetweenNodes("example.com", "http://test.com").isVisible(), "Edge between domain and resource now visible, because both nodes visible, since filter was reset");
 });
 
-QUnit.test("Expanding and Collapsing, when filtering is enabled works as expected", function(assert) {
+QUnit.test("Successive expands-collapses, while filtering is active", function(assert) {
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp("^((test.com)|(example.com))$"));
     this.filteringEngine.filter(filterOptions);
