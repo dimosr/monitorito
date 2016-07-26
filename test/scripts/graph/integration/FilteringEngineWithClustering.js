@@ -174,6 +174,25 @@ QUnit.test("Clustering applied before filtering: Create 2 connected clusters and
     assert.ok(this.graph.getNode("cluster-2").isVisible(), "Cluster 'cluster-2' was not matched by filter, but is shown, since it is direct neighbour of 'cluster-1");
 });
 
+QUnit.test("Clustering applied before filtering: De-cluster when filter is active shows all nodes and only edges to visible nodes", function(assert) {
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["example.com"]);     //matches example.com && www.example.com
+    this.clusteringEngine.cluster(clusterOptions, "cluster-1");
+
+    filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("(.*)(cluster-1)(.*)"));
+    this.filteringEngine.filter(filterOptions);
+
+    this.clusteringEngine.deCluster("cluster-1");
+    assert.ok(this.graph.getNode("example.com").isVisible(), "example.com shown after de-clustering");
+    assert.ok(this.graph.getNode("www.example.com").isVisible(), "www.example.com shown after de-clustering");
+    assert.ok(this.graph.getEdgeBetweenNodes("example.com", "www.example.com").isVisible(), "edge example.com --> www.example.com shown after de-clustering, since both nodes visible");
+    assert.ok(!this.graph.getEdgeBetweenNodes("example.com", "test.com").isVisible(), "edge example.com --> test.com not shown after de-clustering, since test.com was filtered out and is not visible");
+
+    this.filteringEngine.resetFilter();
+    assert.ok(this.graph.getEdgeBetweenNodes("example.com", "test.com").isVisible(), "edge example.com --> test.com shown after resetting the filter");
+});
+
 QUnit.test("Resetting filtering with existing clusters does not shows clustered nodes", function(assert) {
     var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
     clusterOptions.setDomains(["www.example.com", "test.com", "dummy.com"]);

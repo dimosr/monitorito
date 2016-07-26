@@ -123,6 +123,9 @@ DomainEdge.prototype.isDetached = function() {
 
 DomainEdge.prototype.setDetached = function(detached) {
     if(detached == true) this.hide();
-    else this.show();
+    else {
+        if(this.getSourceNode().isVisible() && this.getDestinationNode().isVisible()) this.show();
+    }
+
     this.detached = detached;
 }
