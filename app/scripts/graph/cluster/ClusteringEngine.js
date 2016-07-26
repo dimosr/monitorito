@@ -103,7 +103,9 @@ ClusteringEngine.prototype.deCluster = function(clusterID) {
 
 ClusteringEngine.prototype.deClusterAll = function() {
 	var clusters = this.getClusters();
-	for(var i = 0; i < clusters.length; i++) this.deCluster(clusters[i].getID());
+	for(var i = 0; i < clusters.length; i++) {
+		if(clusters[i].isVisible()) this.deCluster(clusters[i].getID());
+	}
 }
 
 ClusteringEngine.prototype.getClusters = function() {

@@ -111,3 +111,29 @@ QUnit.test("Successive expands-collapses, while filtering is active", function(a
     assert.notOk(this.graph.existsNode("http://example.com"), "resource not existing, since parent node collapsed");
     assert.ok(this.graph.getEdgeBetweenNodes("example.com", "test.com").isVisible(), "inter-domain edge unlocked and shown again");
 });
+
+QUnit.test("expandAllNodes() operates only on visible (filtered) nodes", function(assert) {
+    var filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("^((test.com))$"));
+    this.filteringEngine.filter(filterOptions);
+
+    this.resourcesExplorerEngine.expandAllNodes();
+
+    this.filteringEngine.resetFilter();
+    assert.ok(this.graph.getNode("test.com").isExpanded(), "test.com was not filtered-out, so it got expanded");
+    assert.ok(!this.graph.getNode("example.com").isExpanded(), "example.com was filtered-out, so it did not get expanded");
+    assert.ok(!this.graph.getNode("www.example.com").isExpanded(), "www.example.com was filtered-out, so it did not get expanded");
+});
+
+QUnit.test("collapseAllNodes() operates only on visible (filtered) nodes", function(assert) {
+    this.resourcesExplorerEngine.expand(this.graph.getNode("example.com"));
+
+    var filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("^((test.com))$"));
+    this.filteringEngine.filter(filterOptions);
+
+    this.resourcesExplorerEngine.collapseAllNodes();
+
+    this.filteringEngine.resetFilter();
+    assert.ok(this.graph.getNode("example.com").isExpanded(), "example.com is still expanded, because it was filtered out during the collapseAllNodes()")
+});

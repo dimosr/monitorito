@@ -209,3 +209,17 @@ QUnit.test("Resetting filtering with existing clusters does not shows clustered 
     assert.ok(!this.graph.getNode("test.com").isVisible(), "test.com not shown again after resetting filter, because is clustered");
     assert.ok(!this.graph.getNode("dummy.com").isVisible(), "dummy.com not shown again after resetting filter, because is clustered");
 });
+
+QUnit.test("deClusterAll() operates only on visible (not filtered-out) clusters", function(assert) {
+    var clusterOptions = new ClusterOptions(ClusterOptions.operationType.DOMAINS);
+    clusterOptions.setDomains(["test.com", "dummy.com"]);
+    this.clusteringEngine.cluster(clusterOptions, "cluster-1");
+
+    var filterOptions = new FilterOptions();
+    filterOptions.setDomainRegExp(new RegExp("(.*)(example.com)(.*)"));
+    this.filteringEngine.filter(filterOptions);
+
+    this.clusteringEngine.deClusterAll();
+
+    assert.ok(this.graph.existsNode("cluster-1"), "cluster was not de-clustered, because it was filtered-out")
+});
