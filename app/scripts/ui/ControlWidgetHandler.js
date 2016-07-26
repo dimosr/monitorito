@@ -20,6 +20,12 @@ ControlWidgetHandler.prototype.init = function() {
 		else controller.disableGraphPhysics();
 	});
 
+	this.widget.straightEdges.$button.on("click", {controller: this.controller}, function(event) {
+		var controller = event.data.controller;
+		if(this.checked) controller.enableStraightEdges();
+		else controller.disableStraightEdges();
+	});
+
 	this.widget.export.data.$button.on("click", {controller: this.controller}, function(event) {
 		var controller = event.data.controller;
 		controller.extractMonitoredData();

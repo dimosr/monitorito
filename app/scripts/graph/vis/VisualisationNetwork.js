@@ -36,6 +36,14 @@ VisualisationNetwork.prototype.enablePhysics = function() {
     this._network.setOptions({physics: {enabled: true}});
 }
 
+VisualisationNetwork.prototype.enableStraightEdges = function() {
+    this._network.setOptions({edges: {smooth: false}});
+}
+
+VisualisationNetwork.prototype.disableStraightEdges = function() {
+    this._network.setOptions({edges: {smooth: true}});
+}
+
 VisualisationNetwork.prototype.setupListeners = function(graph) {
     this._network._selectEdgeCallback = function(selectedEdge){};
     this._network._selectNodeCallback = function(selectedNode){};

@@ -39,6 +39,14 @@ GraphHandler.prototype.enableGraphPhysics = function() {
 	this.graph.enablePhysics();
 }
 
+GraphHandler.prototype.enableStraightEdges = function() {
+	this.graph.enableStraightEdges();
+}
+
+GraphHandler.prototype.disableStraightEdges = function() {
+	this.graph.disableStraightEdges();
+}
+
 GraphHandler.prototype.addRequest = function(rootRequest, request) {
 	this._ensureNodeExists(Util.getUrlHostname(request.url));
 	var node = this.graph.getNode(Util.getUrlHostname(request.url));

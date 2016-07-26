@@ -36,6 +36,16 @@ Graph.prototype.enablePhysics = function() {
 	else this.visualisationNetwork.enablePhysics();
 }
 
+Graph.prototype.enableStraightEdges = function() {
+	if(this.mode == Graph.Mode.OFFLINE) throw new Error("enableStraightEdges() called for graph without visualisation");
+	else this.visualisationNetwork.enableStraightEdges();
+}
+
+Graph.prototype.disableStraightEdges = function() {
+	if(this.mode == Graph.Mode.OFFLINE) throw new Error("enableStraightEdges() called for graph without visualisation");
+	else this.visualisationNetwork.disableStraightEdges();
+}
+
 Graph.prototype.addListeners = function(selectNodeFn, selectEdgeFn, deselectNodeFn, deselectEdgeFn) {
 	if(this.mode == Graph.Mode.OFFLINE) throw new Error("addListeners() called for graph without visualisation");
 	else this.visualisationNetwork.addListeners(selectNodeFn, selectEdgeFn, deselectNodeFn, deselectEdgeFn);

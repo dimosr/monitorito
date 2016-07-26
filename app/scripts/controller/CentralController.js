@@ -60,6 +60,14 @@ CentralController.prototype.enableGraphPhysics = function() {
 	this.graphHandler.enableGraphPhysics();
 }
 
+CentralController.prototype.enableStraightEdges = function() {
+	this.graphHandler.enableStraightEdges();
+}
+
+CentralController.prototype.disableStraightEdges = function() {
+	this.graphHandler.disableStraightEdges();
+}
+
 CentralController.prototype.storeRequest = function(sesssionID, request) {
 	this.storageService.storeRequest(sesssionID, request);
 }

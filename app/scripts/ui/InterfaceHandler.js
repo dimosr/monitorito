@@ -96,6 +96,7 @@ InterfaceHandler.prototype.initControlWidgetHandler = function() {
 			$button: $("#physics-switch"),
 		},
 		monitoring: {$button: $("#monitoring-switch")},
+		straightEdges: {$button: $("#edges-switch")},
 		export: {
 			data: {$button: $("#export-data-button")},
 			graph: {$button: $("#export-graph-button")}
