@@ -60,6 +60,9 @@ QUnit.test("Filtering applied before Clustering: no filtered-out nodes that woul
     assert.ok(this.graph.getNode("cluster-1").getNodes().indexOf(this.graph.getNode("test.com")) >= 0, "test.com included in the cluster");
     assert.ok(this.graph.getNode("cluster-1").getNodes().indexOf(this.graph.getNode("dummy.com")) >= 0, "dummy.com included in the cluster");
     assert.ok(this.graph.existsEdge("example.com", "cluster-1") && !this.graph.getEdgeBetweenNodes("example.com", "cluster-1").isVisible(), "edge between filtered-out node and cluster created, but hidden");
+
+    this.filteringEngine.resetFilter();
+    assert.ok(this.graph.getEdgeBetweenNodes("example.com", "cluster-1").isVisible(), "edge shown after resetting the filter");
 });
 
 QUnit.test("Clustering applied before filtering: Create a cluster and filter only that with depth = 0", function(assert) {

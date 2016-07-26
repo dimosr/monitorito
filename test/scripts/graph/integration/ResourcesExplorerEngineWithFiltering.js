@@ -58,6 +58,9 @@ QUnit.test("Expanding applied after filtering: filter the graph & expand domain 
     this.resourcesExplorerEngine.expand(this.graph.getNode("example.com"));
 
     assert.ok(this.graph.existsEdge("http://example.com", "test.com") && !this.graph.getEdgeBetweenNodes("http://example.com", "test.com").isVisible(), "edge http://example.com --> test.com created, but hidden, because test.com was previously filtered out");
+
+    this.filteringEngine.resetFilter();
+    assert.ok(this.graph.getEdgeBetweenNodes("http://example.com", "test.com").isVisible(), "edge shown after resetting the filter");
 });
 
 QUnit.test("Resetting the filtering does not affect the inter-domain edges hidden & locked by ResourcesExplorerEngine", function(assert) {
