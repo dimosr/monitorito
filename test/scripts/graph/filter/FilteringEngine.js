@@ -6,7 +6,6 @@ QUnit.module( "graph.filter.FilteringEngine", {
 
         this.filteringEngine = new FilteringEngine(graph, this.stubGraphStatsCalculator);
         this.filteringEngine.resetFilter();
-        this.mockGraph = sinon.mock(graph);
 
         graph.createDomainNode("example.com");
         graph.createDomainNode("test.com");
@@ -96,4 +95,15 @@ QUnit.test("Multiple filters apply recursively over each other", function(assert
     assert.notOk(graph.getNode("test.com").isVisible(), "test.com not visible, since it was filtered out in 2nd filtering");
     assert.notOk(graph.getNode("example.com").isVisible(), "example.com not visible, since it was filtered out in 1st filtering");
     assert.ok(graph.getNode("foo.com").isVisible(), "foo.com visible, since it was not filtered out in either filtering");
+});
+
+QUnit.test("FilteringEngine examines through _getFilterableNodes() only visible nodes (clusters and domain nodes)", function(assert) {
+    var stubClusteringEngine = sinon.createStubInstance(ClusteringEngine);
+    this.graph.setClusteringEngine(stubClusteringEngine);
+
+    var cluster = sinon.createStubInstance(Cluster);
+    cluster.isVisible.returns(false);//cluster hidden from previous filters
+    stubClusteringEngine.getClusters.returns(cluster);
+
+    assert.ok(this.filteringEngine._getFilterableNodes().indexOf(cluster) < 0, "Cluster is not returned");
 });

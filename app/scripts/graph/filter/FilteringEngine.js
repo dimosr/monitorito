@@ -139,8 +139,9 @@ FilteringEngine.prototype.showMatchedNodesAndEdges = function() {
  */
 FilteringEngine.prototype._getFilterableNodes = function() {
     return this.graph.getNodes()
-                          .filter(function(node) {
-                              return (node instanceof Cluster) ||
-                                     ((node instanceof DomainNode) && (!node.isClustered()) && (node.isVisible()) );
-                          });
+                     .filter(function(node) { return node.isVisible(); })
+                     .filter(function(node) {
+                          return (node instanceof Cluster) ||
+                                 ((node instanceof DomainNode) && (!node.isClustered()) );
+                     });
 }
