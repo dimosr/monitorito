@@ -7,19 +7,29 @@ function FilteringEngine(graph, graphStatsCalculator) {
     this.active = false;
 }
 
+FilteringEngine.operationType = {
+    SHOW: 1,        /* Show all the matched nodes & edges */
+    HIDE: 2         /* Hide all the matched nodes & edges */
+}
+
 FilteringEngine.prototype.isFilterActive = function() {
     return this.active;
 }
 
+FilteringEngine.prototype.filter = function(filterOptions, operationType) {
+    if(operationType == FilteringEngine.operationType.SHOW) this.showMatched(filterOptions);
+    else if(operationType == FilteringEngine.operationType.HIDE) this.hideMatched(filterOptions);
+    else throw new Error("FilteringEngine.operationType parameter provided is not valid");
+}
+
 /*  @Docs
-    Applies the filterOptions to the graph
+    Applies the filterOptions to the graph and maintains the matched nodes
     - First, gets all the currently visible nodes (existing from previous filters)
     - Hides all of these nodes and their edges
-    - Iterates over them and maintains the set of the matched nodes
+    - Iterates over them and calculates the set of the matched nodes
     - Then, shows only the matched nodes and edges between matched nodes
-    Note: Clusters should be deleted before applying the filter, for compatibility
  */
-FilteringEngine.prototype.filter = function(filterOptions) {
+FilteringEngine.prototype.showMatched = function(filterOptions) {
     var filterableNodes = this._getFilterableNodes();
     this._hideNodesWithEdges(filterableNodes);
     this.matchedNodes = {};
@@ -32,6 +42,28 @@ FilteringEngine.prototype.filter = function(filterOptions) {
     }
     this.showMatchedNodesAndEdges();
     
+    this.active = true;
+}
+
+/*  @Docs
+    Applies the filterOptions to the graph and maintains the matched nodes
+    - First, gets all the currently visible nodes (existing from previous filters)
+    - Hides all of these nodes and their edges
+    - Iterates over them and calculates the set of the matched nodes
+    - Then, hides only the matched nodes and edges between matched nodes
+ */
+FilteringEngine.prototype.hideMatched = function(filterOptions) {
+    var filterableNodes = this._getFilterableNodes();
+    this.matchedNodes = {};
+
+    for(var i = 0; i < filterableNodes.length; i++) {
+        var node = filterableNodes[i];
+        if(filterOptions.satisfiedByNode(node, this.graphStatsCalculator.getNodeMetrics(node))) {
+            this.traverseDomainNodeEnvironment(node, filterOptions.getNeighboursDepth());
+        }
+    }
+    this.hideMatchedNodesAndEdges();
+
     this.active = true;
 }
 
@@ -79,10 +111,10 @@ FilteringEngine.prototype._hideNodesWithEdges = function(nodes) {
             node.getChildrenNodes().map(function (resourceNode) {
                 resourceNode.hide();
                 resourceNode.getOutgoingEdges().map(function (resourceEdge) {
-                    resourceEdge.hide()
+                    resourceEdge.hide();
                 });
                 resourceNode.getIncomingEdges().map(function (resourceEdge) {
-                    resourceEdge.hide()
+                    resourceEdge.hide();
                 });
             });
         }
@@ -129,6 +161,29 @@ FilteringEngine.prototype.showMatchedNodesAndEdges = function() {
     }
     this.graph.getEdges().forEach(function(edge) {
         if(edge.getDestinationNode().isVisible() && edge.getSourceNode().isVisible()) edge.show();
+    });
+}
+
+/*  @Docs
+    Hides all nodes matched by the applied filter
+    Hides also:
+    - their edges (if the other node is also visible)
+    - their children resource nodes (if domain nodes)
+    - the edges of their children resource nodes (if domain nodes && if the other node is also visible)
+ */
+FilteringEngine.prototype.hideMatchedNodesAndEdges = function() {
+    var matchedNodes = this.matchedNodes;
+    for(var key in matchedNodes) {
+        var node = matchedNodes[key];
+        node.hide();
+        if(node instanceof DomainNode) {
+            node.getChildrenNodes().map(function(resourceNode) {
+                resourceNode.hide();
+            });
+        }
+    }
+    this.graph.getEdges().forEach(function(edge) {
+        if(!edge.getDestinationNode().isVisible() || !edge.getSourceNode().isVisible()) edge.hide();
     });
 }
 

@@ -103,7 +103,7 @@ QUnit.test("Clustering - Case 5: Incoming new edge between 2 nodes that belong i
 QUnit.test("Filtering: Incoming nodes are never filtered out, incoming edges filtered out if one of the nodes is already filtered out", function(assert) {
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp("(.*)(example.com)(.*)"));
-    this.graphHandler.applyFilter(filterOptions);
+    this.graphHandler.applyFilter(filterOptions, FilteringEngine.operationType.SHOW);
 
     var request = new HttpRequest(7, "GET", "http://sub.foo.com/resource", Date.now(), {}, HttpRequest.Type.EMBEDDED);
     this.graphHandler.addRequest(this.request3, request);

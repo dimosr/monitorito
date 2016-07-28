@@ -32,7 +32,7 @@ QUnit.module( "graph.integration.GraphStatsCalculatorWithAllOthers", {
 QUnit.test("Filtering applied before statistics calculation (no interference, statistics are maintained for the whole graph)", function(assert) {
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp("(.*)(test\.com)|(example\.com)|(foo\.com)(.*)"));
-    this.graphHandler.applyFilter(filterOptions);
+    this.graphHandler.applyFilter(filterOptions, FilteringEngine.operationType.SHOW);
 
     var graphStatistics = this.graphHandler.getGraphStatistics();
     assert.equal(graphStatistics.nodeTypes.firstParty, 3, "3 First Party domain nodes (example.com, bar.com, foo.com)");

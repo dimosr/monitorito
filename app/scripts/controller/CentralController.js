@@ -134,9 +134,9 @@ CentralController.prototype.expandAllNodes = function() {
 	this.interfaceHandler.executeWithLoader(function() { graphHandler.expandAllNodes() });
 }
 
-CentralController.prototype.applyFilter = function(filterOptions) {
+CentralController.prototype.applyFilter = function(filterOptions, filteringOperationType) {
 	var graphHandler = this.graphHandler;
-	this.interfaceHandler.executeWithLoader(function() {graphHandler.applyFilter(filterOptions);});
+	this.interfaceHandler.executeWithLoader(function() {graphHandler.applyFilter(filterOptions, filteringOperationType);});
 	this.interfaceHandler.showFilterRibbon();
 }
 

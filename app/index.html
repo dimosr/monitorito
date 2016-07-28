@@ -196,8 +196,10 @@
 												Non-defined parameters will not be used in the filtering.
 											</div>
 											<fieldset class="columns large-12">
-													<input type="radio" name="operation" value="and" id="and" required checked><label for="and">Match ALL of the provided conditions</label>
-													<input type="radio" name="operation" value="or" id="or"><label for="or">Match ANY of the provided conditions</label>
+												<input type="radio" name="operation" value="and" id="and" required checked><label for="and">SHOW nodes matching ALL of the provided conditions</label><br>
+												<input type="radio" name="operation" value="or" id="or"><label for="or">SHOW nodes matching ANY of the provided conditions</label><br>
+												<input type="radio" name="operation" value="nand" id="nand"><label for="nand">HIDE nodes matching ALL of the provided conditions</label><br>
+												<input type="radio" name="operation" value="nor" id="nor"><label for="nor">HIDE nodes matching ANY of the provided conditions</label><br>
 											</fieldset>
 											<h4>Node Attributes</h4>
 											<div class="columns large-12">

@@ -161,11 +161,25 @@ ManipulationWidgetHandler.prototype.executeFiltering = function() {
 			this.showFilteringRules();
 		}
 		else {
-			var filteringOptions = new FilterOptions();
+			var filteringOptions = new FilterOptions(), filteringOperationType;
 			
 			var operationType = form.find("input[name='operation']:checked").val();
-			if(operationType == "and") filteringOptions.setOperationType(FilterOptions.operationType.AND);
-			else if(operationType == "or") filteringOptions.setOperationType(FilterOptions.operationType.OR);
+			if(operationType == "and") {
+				filteringOptions.setOperationType(FilterOptions.operationType.AND);
+				filteringOperationType = FilteringEngine.operationType.SHOW;
+			}
+			else if(operationType == "or") {
+				filteringOptions.setOperationType(FilterOptions.operationType.OR);
+				filteringOperationType = FilteringEngine.operationType.SHOW;
+			}
+			else if(operationType == "nand") {
+				filteringOptions.setOperationType(FilterOptions.operationType.AND);
+				filteringOperationType = FilteringEngine.operationType.HIDE;
+			}
+			else if(operationType == "nor") {
+				filteringOptions.setOperationType(FilterOptions.operationType.OR);
+				filteringOperationType = FilteringEngine.operationType.HIDE;
+			}
 
 			var nodeID = form.find("input[name='node-id']").val();
 			if(nodeID.trim() != "") filteringOptions.setDomainRegExp(new RegExp(nodeID));
@@ -191,7 +205,7 @@ ManipulationWidgetHandler.prototype.executeFiltering = function() {
 			var depth = form.find("input[name='depth']").val();
 			if(depth.trim() != "") filteringOptions.setNeighboursDepth(parseInt(depth, 10));
 
-			this.controller.applyFilter(filteringOptions);
+			this.controller.applyFilter(filteringOptions, filteringOperationType);
 			this.widget.filtering.$filterOptions.dialog("close");
 			this.resetFilteringForm();
 		}

@@ -34,7 +34,7 @@ QUnit.test("Expanding applied before filtering: expand domain node & filter-out 
 
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp(".*(example\.com).*"));
-    this.filteringEngine.filter(filterOptions);
+    this.filteringEngine.filter(filterOptions, FilteringEngine.operationType.SHOW);
 
     assert.ok(this.graph.existsEdge("http://example.com", "test.com") && !this.graph.getEdgeBetweenNodes("http://example.com", "test.com").isVisible(), "edge http://example.com --> test.com hidden by filter, since test.com was filtered out");
     assert.ok(this.graph.existsEdge("http://example.com", "www.example.com") && this.graph.getEdgeBetweenNodes("http://example.com", "www.example.com").isVisible(), "edge http://example.com --> www.example.com not hidden by filter, since test.com was not filtered out");
@@ -45,7 +45,7 @@ QUnit.test("Expanding applied before filtering: expand domain node & filter-out 
 
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp(".*(test\.com).*"));
-    this.filteringEngine.filter(filterOptions);
+    this.filteringEngine.filter(filterOptions, FilteringEngine.operationType.SHOW);
 
     assert.ok(this.graph.existsEdge("http://example.com", "test.com") && !this.graph.getEdgeBetweenNodes("http://example.com", "test.com").isVisible(), "edge http://example.com --> test.com hidden by filter, since example.com was filtered out");
 });
@@ -53,7 +53,7 @@ QUnit.test("Expanding applied before filtering: expand domain node & filter-out 
 QUnit.test("Expanding applied after filtering: filter the graph & expand domain node that has outgoing edges to nodes that were previously filtered out", function(assert) {
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp(".*(example\.com).*"));
-    this.filteringEngine.filter(filterOptions);
+    this.filteringEngine.filter(filterOptions, FilteringEngine.operationType.SHOW);
 
     this.resourcesExplorerEngine.expand(this.graph.getNode("example.com"));
 
@@ -70,7 +70,7 @@ QUnit.test("Resetting the filtering does not affect the inter-domain edges hidde
 
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp(".*(test.com).*"));
-    this.filteringEngine.filter(filterOptions);
+    this.filteringEngine.filter(filterOptions, FilteringEngine.operationType.SHOW);
     assert.ok(this.graph.getNode("test.com").isVisible(), "test.com matched by filtering, thus visible");
     assert.ok(this.graph.getNode("http://test.com").isVisible(), "http://test.com child of matched node (test.com), thus visible");
     assert.notOk(this.graph.getEdgeBetweenNodes("example.com", "http://test.com").isVisible(), "Edge between domain and resource not visible, because example.com filtered out");
@@ -86,7 +86,7 @@ QUnit.test("Resetting the filtering does not affect the inter-domain edges hidde
 QUnit.test("Successive expands-collapses, while filtering is active", function(assert) {
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp("^((test.com)|(example.com))$"));
-    this.filteringEngine.filter(filterOptions);
+    this.filteringEngine.filter(filterOptions, FilteringEngine.operationType.SHOW);
 
     assert.ok(this.graph.getNode("test.com").isVisible(), "test.com matched by filtering, thus visible");
     assert.ok(this.graph.getNode("example.com").isVisible(), "example.com matched by filtering, thus visible");
@@ -118,7 +118,7 @@ QUnit.test("Successive expands-collapses, while filtering is active", function(a
 QUnit.test("expandAllNodes() operates only on visible (filtered) nodes", function(assert) {
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp("^((test.com))$"));
-    this.filteringEngine.filter(filterOptions);
+    this.filteringEngine.filter(filterOptions, FilteringEngine.operationType.SHOW);
 
     this.resourcesExplorerEngine.expandAllNodes();
 
@@ -133,7 +133,7 @@ QUnit.test("collapseAllNodes() operates only on visible (filtered) nodes", funct
 
     var filterOptions = new FilterOptions();
     filterOptions.setDomainRegExp(new RegExp("^((test.com))$"));
-    this.filteringEngine.filter(filterOptions);
+    this.filteringEngine.filter(filterOptions, FilteringEngine.operationType.SHOW);
 
     this.resourcesExplorerEngine.collapseAllNodes();
 

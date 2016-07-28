@@ -29,13 +29,13 @@ QUnit.module( "graph.filter.FilteringEngine", {
     }
 });
 
-QUnit.test("applying filter shows only matched nodes and edges between matched nodes", function(assert) {
+QUnit.test("applying filter with operationType.SHOW shows only matched nodes and edges between matched nodes", function(assert) {
     var graph = this.graph;
     this.filterOptions.getNeighboursDepth.returns(0);
 
     assert.notOk(this.filteringEngine.isFilterActive(), "Initially filter is disabled");
 
-    this.filteringEngine.filter(this.filterOptions);
+    this.filteringEngine.filter(this.filterOptions, FilteringEngine.operationType.SHOW);
 
     assert.notOk(graph.getNode("example.com").isVisible(), "example.com filtered out");
     assert.ok(graph.getNode("test.com").isVisible(), "test.com matched");
@@ -56,11 +56,30 @@ QUnit.test("applying filter shows only matched nodes and edges between matched n
     assert.notOk(this.filteringEngine.isFilterActive(), "Filter disabled after reset.");
 });
 
+QUnit.test("applying filter with operationType.HIDE hides matched nodes and edges of matched nodes", function(assert) {
+    var graph = this.graph;
+    this.filterOptions.getNeighboursDepth.returns(0);
+
+    this.filteringEngine.filter(this.filterOptions, FilteringEngine.operationType.HIDE);
+
+    assert.ok(graph.getNode("example.com").isVisible(), "example.com not matched, so not hidden");
+    assert.notOk(graph.getNode("test.com").isVisible(), "test.com matched, so hidden");
+    assert.notOk(graph.getNode("https://test.com").isVisible(), "Resource https://test.com hidden, since parent domain node hidden");
+    assert.notOk(graph.getNode("https://test.com/lib").isVisible(), "Resource https://test.com/lib matched, since parent domain node hidden");
+    assert.notOk(graph.getNode("foo.com").isVisible(), "foo.com matched, so hidden");
+    assert.ok(graph.getNode("bar.com").isVisible(), "bar.com not matched, so not hidden");
+
+    assert.notOk(graph.getEdgeBetweenNodes("example.com", "test.com").isVisible(), "Edge example.com --> test.com hidden, since test.com hidden");
+    assert.notOk(graph.getEdgeBetweenNodes("foo.com", "test.com").isVisible(), "Edge foo.com --> test.com hidden, since both nodes hidden");
+    assert.notOk(graph.getEdgeBetweenNodes("https://test.com", "https://test.com/lib").isVisible(), "Edge 'https://test.com' --> 'https://test.com/lib' shown");
+    assert.notOk(graph.getEdgeBetweenNodes("foo.com", "bar.com").isVisible(), "Edge foo.com --> bar.com hidden, since parent domain node hidden");
+});
+
 QUnit.test("applying filter with traversing neighbours to depth 1, showing the whole graph", function(assert) {
     var graph = this.graph;
     this.filterOptions.getNeighboursDepth.returns(1);
 
-    this.filteringEngine.filter(this.filterOptions);
+    this.filteringEngine.filter(this.filterOptions, FilteringEngine.operationType.SHOW);
 
     assert.ok(graph.getNode("example.com").isVisible(), "example.com shown, as neighbour in depth 1");
     assert.ok(graph.getNode("test.com").isVisible(), "test.com matched");
@@ -85,12 +104,12 @@ QUnit.test("Multiple filters apply recursively over each other", function(assert
     filterOptions.satisfiedByNode.withArgs(graph.getNode("foo.com")).returns(true);
     filterOptions.satisfiedByNode.withArgs(graph.getNode("bar.com")).returns(false);
 
-    this.filteringEngine.filter(filterOptions);
+    this.filteringEngine.filter(filterOptions, FilteringEngine.operationType.SHOW);
 
     filterOptions.satisfiedByNode.withArgs(graph.getNode("example.com")).returns(true);
     filterOptions.satisfiedByNode.withArgs(graph.getNode("test.com")).returns(false);
 
-    this.filteringEngine.filter(filterOptions);
+    this.filteringEngine.filter(filterOptions, FilteringEngine.operationType.SHOW);
 
     assert.notOk(graph.getNode("test.com").isVisible(), "test.com not visible, since it was filtered out in 2nd filtering");
     assert.notOk(graph.getNode("example.com").isVisible(), "example.com not visible, since it was filtered out in 1st filtering");

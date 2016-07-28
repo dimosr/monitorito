@@ -132,8 +132,8 @@ GraphHandler.prototype.expandAllNodes = function() {
 	this.resourcesExplorerEngine.expandAllNodes();
 }
 
-GraphHandler.prototype.applyFilter = function(filterOptions) {
-	this.filteringEngine.filter(filterOptions);
+GraphHandler.prototype.applyFilter = function(filterOptions, filteringOperationType) {
+	this.filteringEngine.filter(filterOptions, filteringOperationType);
 }
 
 GraphHandler.prototype.resetFilter = function() {
