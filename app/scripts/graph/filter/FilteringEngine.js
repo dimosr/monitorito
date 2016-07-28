@@ -118,13 +118,18 @@ FilteringEngine.prototype._hideNodesWithEdges = function(nodes) {
 }
 
 /*  @Docs
-    Traverses a node and its environment:
-    @param environmentDepth: defines the depth to which neighbours will be recursively shown
-    - Neighbour node
+    Traverses a node and its resourceNodes and recursively its neighbour nodes (domain & cluster) and populates matchedNodes field
+    @param environmentDepth: defines the depth to which neighbours will be recursively traversed
  */
 FilteringEngine.prototype.traverseDomainNodeEnvironment = function(node, environmentDepth) {
     var filteringEngine = this;
     this.matchedNodes[node.getID()] = node;
+    if(node instanceof DomainNode) {
+        node.getChildrenNodes().forEach(function (resourceNode) {
+            this.matchedNodes[resourceNode.getID()] = resourceNode;
+        }, this);
+    }
+
     node.getIncomingDomainEdges().map(function(edge) {
         if(environmentDepth > 0){
             filteringEngine.traverseDomainNodeEnvironment(edge.getSourceNode(), environmentDepth-1);
@@ -138,49 +143,37 @@ FilteringEngine.prototype.traverseDomainNodeEnvironment = function(node, environ
 }
 
 /*  @Docs
- Shows all nodes matched by the applied filter
- Shows also:
- - their edges (if the other node is also visible)
- - their children resource nodes (if domain nodes)
- - the edges of their children resource nodes (if domain nodes && if the other node is also visible)
+    Shows all nodes matched by the applied filter (clusters, domainNodes & resourceNodes)
+    Shows also:
+    - their edges (if the other node is also matched)
  */
 FilteringEngine.prototype.showMatchedNodesAndEdges = function() {
     var matchedNodes = this.matchedNodes;
     for(var key in matchedNodes) {
         var node = matchedNodes[key];
         node.show();
-        if(node instanceof DomainNode) {
-            node.getChildrenNodes().map(function(resourceNode) {
-                resourceNode.show();
-            });
-        }
+        node.getOutgoingEdges().forEach(function(edge) {
+            if(edge.getDestinationNode().getID() in matchedNodes) edge.show();
+        }, this);
+        node.getIncomingEdges().forEach(function(edge) {
+            if(edge.getSourceNode().getID() in matchedNodes) edge.show();
+        }, this);
     }
-    this.graph.getEdges().forEach(function(edge) {
-        if(edge.getDestinationNode().isVisible() && edge.getSourceNode().isVisible()) edge.show();
-    });
 }
 
 /*  @Docs
-    Hides all nodes matched by the applied filter
+    Hides all nodes matched by the applied filter (clusters, domainNodes & resourceNodes)
     Hides also:
-    - their edges (if the other node is also visible)
-    - their children resource nodes (if domain nodes)
-    - the edges of their children resource nodes (if domain nodes && if the other node is also visible)
+    - their edges (if the other node is also matched)
  */
 FilteringEngine.prototype.hideMatchedNodesAndEdges = function() {
     var matchedNodes = this.matchedNodes;
     for(var key in matchedNodes) {
         var node = matchedNodes[key];
         node.hide();
-        if(node instanceof DomainNode) {
-            node.getChildrenNodes().map(function(resourceNode) {
-                resourceNode.hide();
-            });
-        }
+        node.getOutgoingEdges().forEach(function(edge) { edge.hide(); });
+        node.getIncomingEdges().forEach(function(edge) { edge.hide(); });
     }
-    this.graph.getEdges().forEach(function(edge) {
-        if(!edge.getDestinationNode().isVisible() || !edge.getSourceNode().isVisible()) edge.hide();
-    });
 }
 
 /*  @Docs
