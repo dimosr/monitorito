@@ -34,12 +34,10 @@ FilteringEngine.prototype.showMatched = function(filterOptions) {
     this._hideNodesWithEdges(filterableNodes);
     this.matchedNodes = {};
 
-    for(var i = 0; i < filterableNodes.length; i++) {
-        var node = filterableNodes[i];
-        if(filterOptions.satisfiedByNode(node, this.graphStatsCalculator.getNodeMetrics(node))) {
+    filterableNodes.forEach(function(node) {
+        if(filterOptions.satisfiedByNode(node, this.graphStatsCalculator.getNodeMetrics(node)))
             this.traverseDomainNodeEnvironment(node, filterOptions.getNeighboursDepth());
-        }
-    }
+    }, this);
     this.showMatchedNodesAndEdges();
     
     this.active = true;
@@ -56,12 +54,10 @@ FilteringEngine.prototype.hideMatched = function(filterOptions) {
     var filterableNodes = this._getFilterableNodes();
     this.matchedNodes = {};
 
-    for(var i = 0; i < filterableNodes.length; i++) {
-        var node = filterableNodes[i];
-        if(filterOptions.satisfiedByNode(node, this.graphStatsCalculator.getNodeMetrics(node))) {
+    filterableNodes.forEach(function(node) {
+        if(filterOptions.satisfiedByNode(node, this.graphStatsCalculator.getNodeMetrics(node)))
             this.traverseDomainNodeEnvironment(node, filterOptions.getNeighboursDepth());
-        }
-    }
+    }, this);
     this.hideMatchedNodesAndEdges();
 
     this.active = true;
