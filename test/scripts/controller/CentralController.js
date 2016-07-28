@@ -158,13 +158,19 @@ QUnit.test("Reset Data resets all components", function(assert) {
 	var mockGraphHandler = this.mockGraphHandler;
 	var mockStorageService = this.mockStorageService;
 	var mockMonitoringService = this.mockMonitoringService;
+	var mockInterfaceHandler = this.mockInterfaceHandler;
+
 
 	mockStorageService.expects("clearStorage").exactly(1);
 	mockGraphHandler.expects("emptyGraph").exactly(1);
+	mockInterfaceHandler.expects("hideFilterRibbon").exactly(1);
+
 	mockMonitoringService.expects("reset");
 
 	controller.resetData();
 	this.clock.tick(50);
 
+	mockStorageService.verify();
 	mockGraphHandler.verify();
+	mockInterfaceHandler.verify();
 });

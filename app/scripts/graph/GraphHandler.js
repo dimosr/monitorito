@@ -145,7 +145,22 @@ GraphHandler.prototype.isFilterActive = function() {
 }
 
 GraphHandler.prototype.emptyGraph = function() {
+	this.resetFilter();
 	this.deleteAllClusters();
 	this.collapseAllNodes();
 	this.graph.empty();
+}
+
+/* Protected Methods for Dependency Injection capability (mainly used for unit tests) */
+GraphHandler.prototype.setFilteringEngine = function(filteringEngine) {
+	this.filteringEngine = filteringEngine;
+}
+
+GraphHandler.prototype.setResourcesExplorerEngine = function(resourcesExplorerEngine) {
+	this.resourcesExplorerEngine = resourcesExplorerEngine;
+}
+
+GraphHandler.prototype.setClusteringEngine = function(clusteringEngine) {
+	this.clusteringEngine = clusteringEngine;
+	this.graph.setClusteringEngine(this.clusteringEngine);
 }

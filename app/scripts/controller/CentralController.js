@@ -34,13 +34,12 @@ CentralController.prototype.extractGraphData = function() {
 }
 
 CentralController.prototype.resetData = function() {
-	var graphHandler = this.graphHandler;
-	var storageService = this.storageService;
-	var monitoringService = this.monitoringService;
+	var controller = this;
 	this.interfaceHandler.executeWithLoader(function() {
-		storageService.clearStorage();
-		graphHandler.emptyGraph();
-		monitoringService.reset();
+		controller.storageService.clearStorage();
+		controller.graphHandler.emptyGraph();
+		controller.monitoringService.reset();
+		controller.interfaceHandler.hideFilterRibbon();
 	});
 }
 

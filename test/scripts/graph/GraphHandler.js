@@ -4,15 +4,15 @@ QUnit.module( "graph.GraphHandler", {
 	   graph with visualisation is enabled */
 	beforeEach: function() {
 		var factory = new GraphFactory();
-		var graph = factory.buildGraph(Graph.Mode.OFFLINE, null);
-		var graphStatsCalculator = new GraphStatsCalculator();
-		this.graphHandler = new GraphHandler(graphStatsCalculator);
-		this.graphHandler.setGraph(graph);
+		this.graph = factory.buildGraph(Graph.Mode.OFFLINE, null);
+		this.graphStatsCalculator = new GraphStatsCalculator();
+		this.graphHandler = new GraphHandler(this.graphStatsCalculator);
+		this.graphHandler.setGraph(this.graph);
 		this.controller = new CentralController(sinon.createStubInstance(InterfaceHandler), sinon.createStubInstance(MonitoringService), this.graphHandler);
 		this.graphHandler.setController(this.controller);
 		
-		this.mockGraph = sinon.mock(graph);
-		this.mockGraphStatsCalculator = sinon.mock(graphStatsCalculator);
+		this.mockGraph = sinon.mock(this.graph);
+		this.mockGraphStatsCalculator = sinon.mock(this.graphStatsCalculator);
 		this.mockController = sinon.mock(this.controller);
 	}
 });
@@ -93,4 +93,28 @@ QUnit.test("getGraphStatistics(), getGraphNodeMetrics() methods", function(asser
 	graphHandler.getGraphNodeMetrics(node);
 
 	mockGraphStatsCalculator.verify();
+});
+
+QUnit.test("emptyGraph() adjusts graph appropriately before resetting all data", function(assert) {
+	var filteringEngine = new FilteringEngine(this.graph, this.graphStatsCalculator);
+	var resourcesExplorerEngine = new ResourcesExplorerEngine(this.graph);
+	var clusteringEngine = new ClusteringEngine(this.graph, resourcesExplorerEngine);
+	var mockFilteringEngine = sinon.mock(filteringEngine);
+	var mockClusteringEngine = sinon.mock(clusteringEngine);
+	var mockResourcesExplorerEngine = sinon.mock(resourcesExplorerEngine);
+	this.graphHandler.setFilteringEngine(filteringEngine);
+	this.graphHandler.setClusteringEngine(clusteringEngine);
+	this.graphHandler.setResourcesExplorerEngine(resourcesExplorerEngine);
+
+	mockFilteringEngine.expects("resetFilter").exactly(1);
+	mockClusteringEngine.expects("deClusterAll").exactly(1);
+	mockResourcesExplorerEngine.expects("collapseAllNodes").exactly(1);
+	this.mockGraph.expects("empty").exactly(1);
+
+	this.graphHandler.emptyGraph();
+
+	mockFilteringEngine.verify();
+	mockClusteringEngine.verify();
+	mockResourcesExplorerEngine.verify();
+	this.mockGraph.verify();
 });
