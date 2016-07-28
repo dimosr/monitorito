@@ -161,16 +161,15 @@ CentralController.prototype.setGraphMode = function(mode) {
 	    graphHandler.setGraph(graph);
 		var selectNodeCallback = function(selectedNode) {
 			interfaceHandler.emptyEdgeInfo();
-			if(selectedNode instanceof Cluster) {
-				interfaceHandler.emptyNodeInfo();
+			interfaceHandler.emptyNodeInfo();
+			interfaceHandler.emptyClusterInfo();
+			if(selectedNode instanceof Cluster)
 				interfaceHandler.showClusterInfo(selectedNode);
-			}
-			else if(selectedNode instanceof Node) {
-				interfaceHandler.emptyClusterInfo();
+			else if(selectedNode instanceof Node)
 				interfaceHandler.showNodeInfo(selectedNode);
-			}
 		};
 		var selectEdgeCallback = function(selectedEdge) {
+			interfaceHandler.emptyEdgeInfo();
 			interfaceHandler.emptyNodeInfo();
 			interfaceHandler.emptyClusterInfo();
 			interfaceHandler.showEdgeInfo(selectedEdge);
