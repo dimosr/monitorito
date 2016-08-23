@@ -148,6 +148,7 @@ GraphHandler.prototype.emptyGraph = function() {
 	this.resetFilter();
 	this.deleteAllClusters();
 	this.collapseAllNodes();
+	this.graphStatsCalculator.reset();
 	this.graph.empty();
 }
 

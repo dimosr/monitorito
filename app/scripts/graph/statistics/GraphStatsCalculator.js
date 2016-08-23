@@ -2,7 +2,10 @@
 
 function GraphStatsCalculator(){
 	this.nodeMetricsCalculator = new NodeMetricsCalculator();
+	this.reset();
+}
 
+GraphStatsCalculator.prototype.reset = function() {
 	this.totalEdges = 0;
 	this.incomingEdges = {
 		referral: new StatisticsHolder(),

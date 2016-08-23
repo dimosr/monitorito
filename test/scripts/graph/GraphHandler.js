@@ -110,11 +110,13 @@ QUnit.test("emptyGraph() adjusts graph appropriately before resetting all data",
 	mockClusteringEngine.expects("deClusterAll").exactly(1);
 	mockResourcesExplorerEngine.expects("collapseAllNodes").exactly(1);
 	this.mockGraph.expects("empty").exactly(1);
+	this.mockGraphStatsCalculator.expects("reset").exactly(1);
 
 	this.graphHandler.emptyGraph();
 
 	mockFilteringEngine.verify();
 	mockClusteringEngine.verify();
 	mockResourcesExplorerEngine.verify();
+	this.mockGraphStatsCalculator.verify();
 	this.mockGraph.verify();
 });
