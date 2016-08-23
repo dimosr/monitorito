@@ -37,6 +37,7 @@ QUnit.test("expanding single domain node creates ResourceNodes and ResourceEdges
     assert.ok(graph.existsEdge("http://example.com", "test.com"), "ResourceEdge created between ResourceNode and not-expanded domain");
 });
 
+
 QUnit.test("expanding 2 domain nodes creates ResourceEdge between the corresponding ResourceNodes, not between DomainNode (case 1)", function(assert) {
     var resourcesExplorerEngine = this.resourcesExplorerEngine;
     var graph = this.graph;
@@ -166,4 +167,49 @@ QUnit.test("Expanding hidden node (due to filter), expands resources but hides t
 
     assert.notOk(graph.getNode("example.com").isVisible(), "domain node still hidden");
     assert.notOk(graph.getEdgeBetweenNodes("example.com", "http://www.example.com").isVisible(), "resource edge hidden");
+});
+
+QUnit.test("Referer URL not existing as request, handled correctly (same domain referral)", function(assert) {
+    var graph = this.graph;
+    var graphHandler = new GraphHandler(new GraphStatsCalculator());
+    graphHandler.setGraph(this.graph);
+    var resourcesExplorerEngine = this.resourcesExplorerEngine;
+
+    var request4 = new HttpRequest(4, "GET", "http://test.com/second", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
+    request4.setHeaders({"Referer": "http://test.com/first"});
+    graphHandler.addRequest(request4, request4);
+
+    assert.ok(graph.existsEdge("test.com", "test.com"), "self referring");
+
+    resourcesExplorerEngine.expand(graph.getNode("test.com"));
+    assert.ok(graph.existsNode("http://test.com/first"), "Resource Node successfully created");
+    assert.ok(graph.existsEdge("http://test.com/first", "http://test.com/second"), "Resource Edge successfully created");
+
+    resourcesExplorerEngine.collapse(graph.getNode("test.com"));
+    assert.ok(!graph.existsNode("http://test.com/first"), "Resource Node successfully deleted");
+});
+
+QUnit.test("Referer URL not existing as request, handled correctly (different domain referral)", function(assert) {
+    var graph = this.graph;
+    var graphHandler = new GraphHandler(new GraphStatsCalculator());
+    graphHandler.setGraph(this.graph);
+    var resourcesExplorerEngine = this.resourcesExplorerEngine;
+
+    var request4 = new HttpRequest(4, "GET", "http://test.com/second", Date.now(), {}, HttpRequest.Type.ROOT, "main_frame");
+    request4.setHeaders({"Referer": "http://example.com/first"});
+    graphHandler.addRequest(request4, request4);
+
+    resourcesExplorerEngine.expand(graph.getNode("test.com"));
+    assert.ok(graph.existsEdge("example.com", "http://test.com/second"), "Resource Edge successfully created");
+
+    resourcesExplorerEngine.expand(graph.getNode("example.com"));
+    assert.ok(!graph.existsEdge("example.com", "http://test.com/second"), "Previous Edge successfully deleted");
+    assert.ok(graph.existsEdge("http://example.com/first", "http://test.com/second"), "Resource Edge successfully moved");
+
+    resourcesExplorerEngine.collapse(graph.getNode("test.com"));
+    assert.ok(!graph.existsEdge("http://example.com/first", "http://test.com/second"), "Previous Edge successfully deleted");
+    assert.ok(graph.existsEdge("http://example.com/first", "test.com"), "Resource Edge successfully moved");
+
+    resourcesExplorerEngine.collapse(graph.getNode("example.com"));
+    assert.ok(!graph.existsEdge("http://example.com/first", "test.com"), "Resource Edge successfully deleted");
 });

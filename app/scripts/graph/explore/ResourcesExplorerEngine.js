@@ -94,8 +94,10 @@ ResourcesExplorerEngine.prototype.processResourceEdges = function(domainEdge, mo
 
     for(var i = 0; i < requests.length; i++)
         this.processResourceEdge(mode, requests[i].from, requests[i].link.url, requests[i].link, DomainEdge.LinkType.REQUEST);
-    for(var i = 0; i < referrals.length; i++)
+    for(var i = 0; i < referrals.length; i++) {
+        this._ensureResourceNodeExists(referrals[i].from);
         this.processResourceEdge(mode, referrals[i].from, referrals[i].link.url, referrals[i].link, DomainEdge.LinkType.REFERRAL);
+    }
     for(var i = 0; i < redirects.length; i++)
         this.processResourceEdge(mode, redirects[i].from, redirects[i].link.getFinalURL(), redirects[i].link, DomainEdge.LinkType.REDIRECT);
 }
