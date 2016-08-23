@@ -94,8 +94,8 @@
 						<div id="control_widget" class="row full-width">
 							<div class="columns large-12">
 								<div class="row" id="monitoring-switch-container">
-									<div class="columns small-4 large-4">Monitoring</div>
-									<div class="columns small-8 large-8">
+									<div class="columns small-8 large-8 heading">Monitoring</div>
+									<div class="columns small-4 large-4">
 										<div class="switch tiny">
 											<input checked class="switch-input" id="monitoring-switch" type="checkbox" name="monitor">
 											<label class="switch-paddle" for="monitoring-switch">
@@ -109,8 +109,8 @@
 
 							<div class="columns large-12">
 								<div class="row" id="physics-switch-container">
-									<div class="columns small-4 large-4">Physics</div>
-									<div class="columns small-8 large-8">
+									<div class="columns small-8 large-8 heading">Physics</div>
+									<div class="columns small-4 large-4">
 										<div class="switch tiny">
 											<input checked class="switch-input" id="physics-switch" type="checkbox" name="physics">
 											<label class="switch-paddle" for="physics-switch">
@@ -124,8 +124,8 @@
 
 							<div class="columns large-12">
 								<div class="row" id="edges-switch-container">
-									<div class="columns small-4 large-4">Straight Edges</div>
-									<div class="columns small-8 large-8">
+									<div class="columns small-8 large-8 heading">Straight Edges</div>
+									<div class="columns small-4 large-4">
 										<div class="switch tiny">
 											<input checked class="switch-input" id="edges-switch" type="checkbox" name="edges">
 											<label class="switch-paddle" for="edges-switch">
@@ -296,7 +296,7 @@
 
 						<div id="cluster_widget" class="row full-width">
 							<div class="row">
-								<div class="columns large-12">Selected Cluster</div>
+								<div class="columns large-12 heading">Selected Cluster</div>
 							</div>
 
 							<div class="row">
@@ -357,7 +357,7 @@
 
 						<div id="node_widget" class="row full-width">
 							<div class="row">
-								<div class="columns large-12">Selected Node</div>
+								<div class="columns large-12 heading">Selected Node</div>
 							</div>
 
 							<div class="row">
@@ -366,9 +366,9 @@
 							</div>
 
 							<div class="row">
-								<div class="columns large-3 name">Requests </div>
+								<div class="columns large-5 name">Requests </div>
 								<div class="columns large-2 value hcenter" id="node_requests_no"></div>
-								<div class="columns large-7">
+								<div class="columns large-5">
 									<div id="node_requests_opener" class="button tiny secondary">Show</div>
 								</div>
 								<div id="node_requests_dialog" title="Requests URL">
@@ -389,9 +389,9 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="columns large-3 name">1st-party Cookies</div>
+								<div class="columns large-5 name">1st-party Cookies</div>
 								<div id="node_cookies_1st_no" class="columns large-2 value hcenter"></div>
-								<div class="columns large-7">
+								<div class="columns large-5">
 									<div id="node_cookies_1st_opener" class="button tiny secondary">Show</div>
 								</div>
 								<div id="node_cookies_1st_dialog" title="1st party cookies">
@@ -408,9 +408,9 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="columns large-3 name">3rd-party Cookies</div>
+								<div class="columns large-5 name">3rd-party Cookies</div>
 								<div id="node_cookies_3rd_no" class="columns large-2 value hcenter"></div>
-								<div class="columns large-7">
+								<div class="columns large-5">
 									<div id="node_cookies_3rd_opener" class="button tiny secondary">Show</div>
 								</div>
 								<div id="node_cookies_3rd_dialog" title="3rd party cookies">
@@ -436,7 +436,7 @@
 
 						<div id="edge_widget" class="row full-width">
 							<div class="row">
-								<div class="columns large-12">Selected Edge</div>
+								<div class="columns large-12 heading">Selected Edge</div>
 							</div>
 
 							<div class="row">
@@ -454,9 +454,9 @@
 							</div>
 
 							<div class="row">
-								<div class="columns large-3 name">Requests </div>
+								<div class="columns large-5 name">Requests </div>
 								<div class="columns large-2 value hcenter" id="edge_requests_no"></div>
-								<div class="columns large-7">
+								<div class="columns large-5">
 									<div id="edge_requests_opener" class="button tiny secondary">Show</div>
 								</div>
 								<div id="edge_requests_dialog" title="Requests URL">
@@ -475,9 +475,9 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="columns large-3 name">Redirects </div>
+								<div class="columns large-5 name">Redirects </div>
 								<div class="columns large-2 value hcenter" id="edge_redirects_no"></div>
-								<div class="columns large-7">
+								<div class="columns large-5">
 									<div id="edge_redirects_opener" class="button tiny secondary">Show</div>
 								</div>
 								<div id="edge_redirects_dialog" title="Redirects URL">
@@ -494,9 +494,9 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="columns large-3 name">Referrals </div>
+								<div class="columns large-5 name">Referrals </div>
 								<div class="columns large-2 value hcenter" id="edge_referrals_no"></div>
-								<div class="columns large-7">
+								<div class="columns large-5">
 									<div id="edge_referrals_opener" class="button tiny secondary">Show</div>
 								</div>
 								<div id="edge_referrals_dialog" title="Referrals URL">
@@ -536,7 +536,7 @@
 						<div id="online-mode" class="row option">
 							<div class="columns large-12 header">Online</div>
 							<div class="columns large-12"><img src="resources/img/online.jpg" alt="online image"></div>
-							<div class="columns large-12">This mode is more suitable for visualising small datasets (&lt; ~50 websites). If this mode is selected, the real-time visualisation of your data will be enabled and you will also able to export the monitored data in the end.</div>
+							<div class="columns large-12">This mode is more suitable for visualising small datasets (&lt; ~50 websites). If this mode is selected, the real-time visualisation of your data will be enabled and you will also be able to export the monitored data in the end.</div>
 						</div>
 					</div>
 					<div class="columns large-offset-1 large-5">

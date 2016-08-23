@@ -15,7 +15,7 @@ NodeWidgetHandler.prototype.init = function() {
 		autoOpen: false,
 		modal: true,
 		width: this.screenDimensions.width*0.9,
-		height: this.screenDimensions.height*0.6
+		height: this.screenDimensions.height*0.8
 	};
 	this.widget.requests.$dialogContent.dialog(dialogOptions);
 	this.widget.firstPartyCookies.$dialogContent.dialog(dialogOptions);
