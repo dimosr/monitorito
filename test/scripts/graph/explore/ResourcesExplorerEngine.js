@@ -200,16 +200,24 @@ QUnit.test("Referer URL not existing as request, handled correctly (different do
     graphHandler.addRequest(request4, request4);
 
     resourcesExplorerEngine.expand(graph.getNode("test.com"));
+    assert.ok(graph.existsNode("http://test.com/second"), "Resource of expanded node created");
+    assert.ok(!graph.existsNode("http://example.com/first"), "Resource of not-expanded node not created yet");
     assert.ok(graph.existsEdge("example.com", "http://test.com/second"), "Resource Edge successfully created");
 
     resourcesExplorerEngine.expand(graph.getNode("example.com"));
+    assert.ok(graph.existsNode("http://test.com/second"), "Resource of expanded node created");
+    assert.ok(graph.existsNode("http://example.com/first"), "Resource of expanded node created");
     assert.ok(!graph.existsEdge("example.com", "http://test.com/second"), "Previous Edge successfully deleted");
     assert.ok(graph.existsEdge("http://example.com/first", "http://test.com/second"), "Resource Edge successfully moved");
 
     resourcesExplorerEngine.collapse(graph.getNode("test.com"));
+    assert.ok(!graph.existsNode("http://test.com/second"), "Resource of collapsed node deleted");
+    assert.ok(graph.existsNode("http://example.com/first"), "Resource of not-collapsed node still exists");
     assert.ok(!graph.existsEdge("http://example.com/first", "http://test.com/second"), "Previous Edge successfully deleted");
     assert.ok(graph.existsEdge("http://example.com/first", "test.com"), "Resource Edge successfully moved");
 
     resourcesExplorerEngine.collapse(graph.getNode("example.com"));
+    assert.ok(!graph.existsNode("http://test.com/second"), "Resource of collapsed node deleted");
+    assert.ok(!graph.existsNode("http://example.com/first"), "Resource of collapsed node deleted");
     assert.ok(!graph.existsEdge("http://example.com/first", "test.com"), "Resource Edge successfully deleted");
 });
