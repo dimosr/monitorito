@@ -41,8 +41,8 @@ ChromeEventSource.prototype.collectRequests = function() {
 			var httpRequest = eventSource.buildHttpRequest(details);
 			eventSource.notifyForRequest(details.requestId, httpRequest, details.tabId);
 		},
-		{urls: ["<all_urls>"]},
-		['requestBody']
+		{urls: ["<all_urls>"]}/*,
+		['requestBody']  -- disabled in Firefox - API is not yet implemented */
 	);
 }
 
