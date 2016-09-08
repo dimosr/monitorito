@@ -24,6 +24,7 @@ Contributions back to the project are greatly welcome! To contribute a new funct
 - develop your feature or make the fix to an existing feature
 - add a new unit test in the existing suite, either to expose the bug (if fixing an existing feature) or to cover all the functionalities of the new feature (if developing a new feature).
 - make a pull request
+
 The pull request will be reviewed and merged to the repo as soon as possible (if the above suggestions are followed).
 
 For more information about the project: check [here](https://monitorito.github.io/)
