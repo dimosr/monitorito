@@ -25,4 +25,7 @@ Contributions back to the project are greatly welcome! To contribute a new funct
 
 For more information about the project: check [here](https://monitorito.github.io/)
 
+---------------------------------------------------------
+LICENSE: [GNU GPLv3](./LICENSE.md)
+
 [logo]: https://monitorito.github.io/assets/ico/apple-touch-icon-57-precomposed.png "Monitorito logo"
