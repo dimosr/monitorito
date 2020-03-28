@@ -1,6 +1,8 @@
 # ![alt text][logo] Monitorito
 
-This repository contains Monitorito, a browser extension capable of capturing the requests being made by your browser and generating a graph network to visualise it. There are additional functionalities for manipulating the graph, such as:
+[Project website](https://monitorito.github.io/)
+
+This repository contains Monitorito, a browser extension capable of capturing the requests being made by your browser and generating a graph network to visualise it. This graph can be used for various purposes, but the original intention was performing analyses around tracking, privacy and security. There are additional functionalities for manipulating the graph, such as:
 - filtering parts of the graph
 - clustering different nodes into a single node
 - expanding domain nodes to observe the internal resources of specific domains.
@@ -26,8 +28,6 @@ Contributions back to the project are greatly welcome! To contribute a new funct
 - make a pull request
 
 The pull request will be reviewed and merged to the repo as soon as possible (if the above suggestions are followed).
-
-For more information about the project: check [here](https://monitorito.github.io/)
 
 ---------------------------------------------------------
 LICENSE: [GNU GPLv3](./LICENSE.md)
